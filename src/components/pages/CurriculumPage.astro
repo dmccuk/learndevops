@@ -2,39 +2,43 @@
 import { curriculum, unitsInTrack } from '../../lib/curriculum';
 import { trackUrl } from '../../lib/url';
 import PipelineMap from '../PipelineMap.astro';
-import UnitList from '../UnitList.astro';
+import Roundel from '../Roundel.astro';
+import StationList from '../StationList.astro';
+import TransitMap from '../TransitMap.astro';
 
 const total = curriculum.units.length;
 const ready = curriculum.units.filter((u) => u.status === 'published').length;
 ---
 
 <p class="lead">
-	{total} units in {curriculum.tracks.length} tracks. {ready} ready so far; the rest are marked "Coming soon".
+	{total} units on {curriculum.tracks.length} lines. {ready} ready so far; the rest are marked "Coming soon".
 </p>
 
-<h2 id="pipeline">The pipeline</h2>
-<p>Every track teaches one stage of the same pipeline. Select a track to jump to it.</p>
+<h2 id="map">The map</h2>
+<p>Every track is a line and every unit is a station. Select a station to open it.</p>
+<TransitMap compact />
+
+<h2 id="pipeline">Where each line fits in the pipeline</h2>
 <PipelineMap interactive />
 
-<h2 id="tracks">All tracks</h2>
+<h2 id="tracks">All lines</h2>
 {
 	curriculum.tracks.map((t) => (
 		<section class="track" aria-labelledby={`track-${t.id.toLowerCase()}`}>
 			<h3 id={`track-${t.id.toLowerCase()}`}>
-				<a href={trackUrl(t.id)}>
-					{t.id} · {t.name}
-				</a>
+				<Roundel track={t.id} />
+				<a href={trackUrl(t.id)}>{t.name}</a>
 				{t.new && <span class="ld-badge accent">New track</span>}
 			</h3>
 			<p>{t.intro}</p>
-			<UnitList ids={unitsInTrack(t.id).map((u) => u.id)} headingLevel="h4" />
+			<StationList ids={unitsInTrack(t.id).map((u) => u.id)} headingLevel="h4" />
 		</section>
 	))
 }
 
 <style>
 	.lead {
-		font-size: 1.1875rem;
+		font-size: 1.25rem;
 	}
 	.track {
 		margin-top: 2.5rem;

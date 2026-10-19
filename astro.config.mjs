@@ -20,7 +20,7 @@ const curriculum = parse(fs.readFileSync('./src/data/curriculum.yaml', 'utf8'));
 const unitNumber = (/** @type {{id: string, track: string}} */ u) => Number(u.id.slice(u.track.length));
 
 const trackGroups = curriculum.tracks.map((/** @type {any} */ t) => ({
-	label: `${t.id} · ${t.name}`,
+	label: `${t.name} (${t.id})`,
 	collapsed: true,
 	items: [
 		{ label: 'About this track', link: `/tracks/${t.id.toLowerCase()}/` },
@@ -110,12 +110,13 @@ export default defineConfig({
 				{ icon: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/c/LondonIAC' },
 			],
 			customCss: [
-				'@fontsource/ibm-plex-sans/400.css',
-				'@fontsource/ibm-plex-sans/400-italic.css',
-				'@fontsource/ibm-plex-sans/600.css',
-				'@fontsource/ibm-plex-sans/700.css',
-				'@fontsource/ibm-plex-mono/400.css',
-				'@fontsource/ibm-plex-mono/600.css',
+				'@fontsource/overpass/400.css',
+				'@fontsource/overpass/400-italic.css',
+				'@fontsource/overpass/600.css',
+				'@fontsource/overpass/700.css',
+				'@fontsource/overpass/800.css',
+				'@fontsource/overpass-mono/400.css',
+				'@fontsource/overpass-mono/600.css',
 				'./src/styles/theme.css',
 			],
 			components: {
@@ -127,7 +128,8 @@ export default defineConfig({
 				ThemeSelect: './src/components/starlight/ThemeSelect.astro',
 			},
 			expressiveCode: {
-				themes: ['github-dark-default', 'github-light-default'],
+				// Code blocks stay dark in both themes, like a terminal.
+				themes: ['github-dark-default'],
 				styleOverrides: { borderRadius: '6px' },
 			},
 			sidebar: [

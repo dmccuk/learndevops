@@ -1,0 +1,44 @@
+---
+/**
+ * A track's line badge: its letter on its line colour. The letter is always
+ * shown, so the colour never carries meaning alone.
+ */
+interface Props {
+	track: string;
+	size?: 'sm' | 'md' | 'lg';
+	label?: string;
+}
+const { track, size = 'md', label } = Astro.props;
+---
+
+<span class:list={['roundel', size]} data-line={track.toLowerCase()} aria-label={label} role={label ? 'img' : undefined}
+	>{track}</span
+>
+
+<style>
+	.roundel {
+		display: inline-grid;
+		place-items: center;
+		flex-shrink: 0;
+		min-width: var(--ld-roundel);
+		height: var(--ld-roundel);
+		padding: 0.15em 0.4em 0;
+		border-radius: 999px;
+		background: var(--line);
+		color: var(--line-on);
+		font-weight: 800;
+		font-size: 0.9375rem;
+		line-height: 1;
+		letter-spacing: 0;
+	}
+	.sm {
+		min-width: 1.5rem;
+		height: 1.5rem;
+		font-size: 0.75rem;
+	}
+	.lg {
+		min-width: 2.75rem;
+		height: 2.75rem;
+		font-size: 1.25rem;
+	}
+</style>

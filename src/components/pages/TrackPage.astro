@@ -1,31 +1,51 @@
 ---
 import { getTrack, publishedCount, STAGE_LABELS, unitsInTrack } from '../../lib/curriculum';
 import PipelineMap from '../PipelineMap.astro';
-import UnitList from '../UnitList.astro';
+import Roundel from '../Roundel.astro';
+import StationList from '../StationList.astro';
 
 interface Props {
 	id: string;
 }
 const track = getTrack(Astro.props.id);
 const units = unitsInTrack(track.id);
-const stages = [...new Set(units.map((u) => u.stage))];
+const stages = [...new Set(units.map((u) => u.stage))].map((s) => STAGE_LABELS[s].toLowerCase());
 const ready = publishedCount(units.map((u) => u.id));
 ---
 
-<p class="ld-label">
-	Track {track.id} · {stages.map((s) => STAGE_LABELS[s]).join(' and ')}{track.new && ' · New track'}
-</p>
-<p class="lead">{track.intro}</p>
-<p>{units.length} units, {ready} ready so far. Each unit stands alone, but they build on each other in order.</p>
+<div class="intro not-content" data-line={track.id.toLowerCase()}>
+	<Roundel track={track.id} size="lg" label={`Track ${track.id}`} />
+	<div>
+		<p class="lead">{track.intro}</p>
+		<p class="meta">
+			{units.length} units on this line, {ready} ready so far. Pipeline stage: {stages.join(' and ')}.
+			{track.new && ' This is a new track in the 2026 course.'}
+		</p>
+	</div>
+</div>
 
-<h2 id="units">Units</h2>
-<UnitList ids={units.map((u) => u.id)} />
+<p>Each unit stands alone, but they build on each other in order.</p>
+
+<h2 id="units">Stations on this line</h2>
+<StationList ids={units.map((u) => u.id)} />
 
 <h2 id="where-this-fits">Where this track fits</h2>
 <PipelineMap highlightTrack={track.id} />
 
 <style>
+	.intro {
+		display: flex;
+		gap: 1rem;
+		align-items: flex-start;
+	}
 	.lead {
-		font-size: 1.1875rem;
+		margin: 0;
+		font-size: 1.25rem;
+		line-height: 1.45;
+		color: var(--ld-heading);
+	}
+	.meta {
+		margin: 0.5rem 0 0;
+		color: var(--ld-muted);
 	}
 </style>

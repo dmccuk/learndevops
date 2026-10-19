@@ -1,50 +1,27 @@
 ---
-// Home page hero (spec section 6, item 2). Only the home page sets `hero`.
+// Home page hero (spec section 6, item 2). The course map is the hero: every
+// track a line, every unit a station. Only the home page sets `hero`.
 import { REPO_URL, url } from '../../lib/url';
+import TransitMap from '../TransitMap.astro';
 
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline } = data.hero || {};
-
-const lines = [
-	{ cmd: 'git push origin main', out: 'ok lint  ok test  ok build' },
-	{ cmd: 'kubectl apply -f app.yaml', out: 'deployment.apps/app configured' },
-	{ cmd: 'kubectl rollout status deploy/app', out: 'successfully rolled out' },
-	{ cmd: 'curl -s https://[your-app]/health', out: '{"status": "ok"}' },
-];
-const description =
-	'A terminal showing a change going from git push to production: ' +
-	lines.map((l) => `${l.cmd} returns ${l.out}`).join('; ') +
-	'.';
 ---
 
 <section class="hero">
 	<div class="copy">
-		<p class="ld-label">Free · Hands-on · Nothing to install to start</p>
+		<p class="kicker">Free and hands-on. Nothing to install to start.</p>
 		<h1 id="_top" data-page-title>{title}</h1>
 		{tagline && <p class="tagline">{tagline}</p>}
 		<div class="actions">
-			<a class="ld-button" href={url('/units/l1/')}>Start module L1</a>
+			<a class="ld-button" href={url('/units/l1/')}>Start unit L1</a>
 			<a class="ld-button secondary" href={REPO_URL}>View the code on GitHub</a>
 		</div>
-		<p class="small">
-			Works on Windows, Mac and Linux. All you need is a browser and a free GitHub account.
-		</p>
+		<p class="small">Works on Windows, Mac and Linux. All you need is a browser and a free GitHub account.</p>
 	</div>
-	<div class="terminal" role="img" aria-label={description}>
-		<div class="bar" aria-hidden="true"><span></span><span></span><span></span></div>
-		<div class="screen" aria-hidden="true">
-			{
-				lines.map((l, i) => (
-					<div class={`pair step-${i}`}>
-						<div class="cmd">
-							<span class="prompt">$</span> {l.cmd}
-						</div>
-						<div class="out">{l.out}</div>
-					</div>
-				))
-			}
-			<div class="cursor-line step-4"><span class="prompt">$</span> <span class="cursor"></span></div>
-		</div>
+	<div class="map">
+		<h2 class="ld-sr-only">Course map</h2>
+		<TransitMap />
 	</div>
 </section>
 
@@ -52,25 +29,33 @@ const description =
 	.hero {
 		display: grid;
 		gap: 2.5rem;
-		align-items: center;
-		padding-block: 2rem 3rem;
+		padding-block: 1.5rem 3rem;
 	}
-	@media (min-width: 56rem) {
+	@media (min-width: 72rem) {
 		.hero {
-			grid-template-columns: 1.1fr 1fr;
-			padding-block: 4rem 5rem;
+			grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+			gap: 3.5rem;
+			align-items: center;
+			padding-block: 3.5rem 4.5rem;
 		}
+	}
+	.kicker {
+		margin: 0;
+		font-weight: 600;
+		color: var(--ld-muted);
 	}
 	h1 {
 		margin: 0.75rem 0 1rem;
-		font-size: var(--sl-text-h1);
-		line-height: 1.08;
-		letter-spacing: -0.02em;
-		font-weight: 700;
+		font-size: clamp(2.5rem, 4vw, 3.75rem);
+		font-weight: 800;
+		line-height: 1.02;
+		letter-spacing: -0.03em;
+		color: var(--ld-heading);
 	}
 	.tagline {
-		max-width: 36rem;
+		max-width: 34rem;
 		font-size: 1.1875rem;
+		line-height: 1.55;
 		color: var(--ld-text);
 	}
 	.actions {
@@ -84,87 +69,16 @@ const description =
 		font-size: 0.9375rem;
 		color: var(--ld-dim);
 	}
-	.terminal {
+	.map {
 		min-width: 0;
+		padding: 1.25rem 1rem 1.25rem;
 		border: 1px solid var(--ld-border);
 		border-radius: var(--ld-radius-card);
-		background: var(--ld-terminal);
-		overflow: hidden;
+		background: var(--ld-surface);
 	}
-	.bar {
-		display: flex;
-		gap: 0.4rem;
-		padding: 0.75rem 1rem;
-		border-bottom: 1px solid #26303a;
-	}
-	.bar span {
-		width: 0.65rem;
-		height: 0.65rem;
-		border-radius: 50%;
-		background: #26303a;
-	}
-	.screen {
-		padding: 1.25rem 1rem 1.5rem;
-		font-family: var(--__sl-font-mono);
-		font-size: 0.875rem;
-		line-height: 1.7;
-		color: var(--ld-terminal-text);
-		overflow-x: auto;
-	}
-	/* Lines appear one by one. Hidden lines use visibility, not opacity, so
-	   visible text always has full contrast. */
-	.pair,
-	.cursor-line {
-		visibility: hidden;
-		animation: appear 0s forwards;
-	}
-	.step-0 { animation-delay: 0.3s; }
-	.step-1 { animation-delay: 1.4s; }
-	.step-2 { animation-delay: 2.5s; }
-	.step-3 { animation-delay: 3.6s; }
-	.step-4 { animation-delay: 4.7s; }
-	.pair + .pair {
-		margin-top: 0.6rem;
-	}
-	.cursor-line {
-		margin-top: 0.6rem;
-	}
-	.cmd {
-		white-space: pre;
-	}
-	.out {
-		color: var(--ld-terminal-ok);
-		white-space: pre;
-	}
-	.prompt {
-		color: var(--ld-terminal-prompt);
-	}
-	.cursor {
-		display: inline-block;
-		width: 0.55em;
-		height: 1.1em;
-		vertical-align: text-bottom;
-		background: var(--ld-terminal-text);
-		animation: blink 1s steps(1) infinite;
-	}
-	@keyframes appear {
-		to {
-			visibility: visible;
-		}
-	}
-	@keyframes blink {
-		50% {
-			opacity: 0;
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.pair,
-		.cursor-line {
-			visibility: visible;
-			animation: none;
-		}
-		.cursor {
-			animation: none;
+	@media (min-width: 40rem) {
+		.map {
+			padding: 1.5rem 1.75rem;
 		}
 	}
 </style>

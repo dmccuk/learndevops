@@ -1,6 +1,6 @@
 ---
 // Same as Starlight's ThemeProvider, except the default (no saved choice)
-// is the dark theme rather than the system preference (spec section 5).
+// is the light theme rather than the system preference (spec section 5).
 import { Icon } from '@astrojs/starlight/components';
 ---
 
@@ -13,9 +13,9 @@ import { Icon } from '@astrojs/starlight/components';
 		} catch {
 			// Storage blocked: fall back to the default theme.
 		}
-		document.documentElement.dataset.theme = storedTheme === 'light' ? 'light' : 'dark';
+		document.documentElement.dataset.theme = storedTheme === 'dark' ? 'dark' : 'light';
 		return {
-			updatePickers(theme = storedTheme || 'dark') {
+			updatePickers(theme = storedTheme || 'light') {
 				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
 					const select = picker.querySelector('select');
 					if (select) select.value = theme;

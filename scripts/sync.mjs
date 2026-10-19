@@ -51,7 +51,7 @@ for (const t of data.tracks) {
 	if (fs.existsSync(file)) continue;
 	write(
 		file,
-		`---\ntitle: ${q(`${t.id} · ${t.name}`)}\ndescription: ${q(t.intro)}\ntrack: ${t.id}\n---\n\nimport TrackPage from '~/components/pages/TrackPage.astro';\n\n<TrackPage id="${t.id}" />\n`,
+		`---\ntitle: ${q(t.name)}\ndescription: ${q(t.intro)}\ntrack: ${t.id}\n---\n\nimport TrackPage from '~/components/pages/TrackPage.astro';\n\n<TrackPage id="${t.id}" />\n`,
 	);
 	created++;
 }

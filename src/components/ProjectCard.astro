@@ -1,20 +1,25 @@
 ---
-import { ENVIRONMENT_LABELS, type Project } from '../lib/curriculum';
+import { ENVIRONMENT_LABELS, getUnit, type Project } from '../lib/curriculum';
 import { projectUrl } from '../lib/url';
+import Roundel from './Roundel.astro';
 
 interface Props {
 	project: Project;
 	number: number;
 }
 const { project, number } = Astro.props;
+const lines = [...new Set(project.draws.map((id) => getUnit(id).track))];
 ---
 
 <a class="ld-card" href={projectUrl(project.id)}>
-	<span class="ld-label">Project {number}</span>
-	<h3 class="ld-card-title">{project.name}</h3>
+	<h3 class="ld-card-title">Project {number}: {project.name}</h3>
 	<p class="summary">{project.summary}</p>
+	<p class="lines">
+		<span class="ld-sr-only">Uses these tracks:</span>
+		{lines.map((t) => <Roundel track={t} size="sm" />)}
+	</p>
 	<p class="meta">
-		Runs in {ENVIRONMENT_LABELS[project.runsIn]} · Draws on {project.draws.length} units
+		Runs in {ENVIRONMENT_LABELS[project.runsIn]}. Draws on {project.draws.length} units.
 		{project.costNote && <span class="ld-badge warn">Costs money</span>}
 	</p>
 </a>
@@ -22,6 +27,11 @@ const { project, number } = Astro.props;
 <style>
 	.summary {
 		color: var(--ld-muted);
+	}
+	.lines {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
 	}
 	.meta {
 		margin-top: auto !important;

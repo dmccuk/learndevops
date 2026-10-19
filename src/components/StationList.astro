@@ -1,0 +1,127 @@
+---
+/**
+ * A vertical list of units drawn as stations on a rail.
+ *
+ * - mode="line": all units are on one line (a track page). One colour.
+ * - mode="route": units can be on different lines (a path or project). Each
+ *   stop takes its own line's colour, and a "Change to the ... line" note
+ *   appears wherever the route switches line.
+ */
+import { getTrack, getUnit, unitTitle } from '../lib/curriculum';
+import { unitUrl } from '../lib/url';
+import Badges from './Badges.astro';
+import Roundel from './Roundel.astro';
+
+interface Props {
+	ids: string[];
+	mode?: 'line' | 'route';
+	/** Appended to unit links, e.g. "?path=beginner". */
+	query?: string;
+	headingLevel?: 'h3' | 'h4';
+}
+const { ids, mode = 'line', query = '', headingLevel: H = 'h3' } = Astro.props;
+const units = ids.map(getUnit);
+---
+
+<ol class:list={['stations', mode, 'not-content']}>
+	{
+		units.map((u, i) => {
+			const changes = mode === 'route' && i > 0 && units[i - 1].track !== u.track;
+			return (
+				<>
+					{changes && (
+						<li class="change" data-line={u.track.toLowerCase()} aria-hidden="true">
+							Change to the {getTrack(u.track).name} line
+						</li>
+					)}
+					<li class:list={['station', u.status]} data-line={u.track.toLowerCase()}>
+						<span class="dot" aria-hidden="true" />
+						<div class="body">
+							<H class="title">
+								{mode === 'route' && <Roundel track={u.track} size="sm" />}
+								<a href={`${unitUrl(u.id)}${query}`}>{unitTitle(u)}</a>
+							</H>
+							<p class="outcome">{u.outcome}</p>
+							<Badges unit={u} compact />
+						</div>
+					</li>
+				</>
+			);
+		})
+	}
+</ol>
+
+<style>
+	.stations {
+		--gutter: 2.25rem;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.station,
+	.change {
+		position: relative;
+		margin: 0 !important;
+		padding: 0 0 1.5rem var(--gutter);
+	}
+	/* The rail runs down the left, in the stop's line colour. */
+	.station::before,
+	.change::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: calc(0.75rem - var(--ld-rail) / 2);
+		width: var(--ld-rail);
+		background: var(--line);
+	}
+	.station:first-child::before {
+		top: 0.6rem;
+	}
+	.station:last-child::before {
+		bottom: auto;
+		height: 0.6rem;
+	}
+	.dot {
+		position: absolute;
+		top: 0.1rem;
+		left: 0;
+		width: 1.5rem;
+		height: 1.5rem;
+		border: 4px solid var(--line);
+		border-radius: 50%;
+		background: var(--ld-surface);
+	}
+	.published .dot {
+		background: var(--line);
+	}
+	.change {
+		padding-bottom: 1rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--ld-muted);
+	}
+	.title {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1.125rem;
+		line-height: 1.3;
+	}
+	.title a {
+		color: var(--ld-heading);
+		text-decoration: none;
+	}
+	.title a:hover,
+	.title a:focus-visible {
+		color: var(--ld-accent);
+		text-decoration: underline;
+		text-underline-offset: 0.18em;
+	}
+	.outcome {
+		margin: 0.25rem 0 0.5rem;
+		color: var(--ld-muted);
+		font-size: 0.9375rem;
+	}
+</style>

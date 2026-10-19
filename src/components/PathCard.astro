@@ -1,5 +1,9 @@
 ---
-import { type LearningPath, publishedCount } from '../lib/curriculum';
+/**
+ * A learning path drawn as a route: a strip of segments in the colour of
+ * each line it travels on, in order.
+ */
+import { getUnit, type LearningPath, publishedCount } from '../lib/curriculum';
 import { pathUrl } from '../lib/url';
 
 interface Props {
@@ -8,17 +12,38 @@ interface Props {
 const { path } = Astro.props;
 const total = path.units.length;
 const ready = publishedCount(path.units);
+const legs = path.units.map((id) => getUnit(id).track);
 ---
 
-<a class="ld-card" href={pathUrl(path.id)}>
+<a class="ld-card route" href={pathUrl(path.id)}>
+	{
+		legs.length > 0 && (
+			<span class="legs" aria-hidden="true">
+				{legs.map((t) => (
+					<span class="leg" data-line={t.toLowerCase()} />
+				))}
+			</span>
+		)
+	}
 	<h3 class="ld-card-title">{path.name}</h3>
 	<p class="for">For: {path.for}</p>
 	<p class="meta">
-		{total > 0 ? `${total} units · ${ready} ready` : 'Any one track'} · Ends with: {path.endsWith}
+		{total > 0 ? `${total} stops, ${ready} ready.` : 'Any single track, start to finish.'} Ends with: {path.endsWith}
 	</p>
 </a>
 
 <style>
+	.legs {
+		display: flex;
+		gap: 2px;
+		height: var(--ld-rail);
+		margin-bottom: 0.5rem;
+	}
+	.leg {
+		flex: 1;
+		border-radius: 2px;
+		background: var(--line);
+	}
 	.for {
 		color: var(--ld-muted);
 	}

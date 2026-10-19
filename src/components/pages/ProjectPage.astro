@@ -2,7 +2,7 @@
 import { Aside } from '@astrojs/starlight/components';
 import { ENVIRONMENT_LABELS, getProject } from '../../lib/curriculum';
 import CostNotice from '../CostNotice.astro';
-import UnitList from '../UnitList.astro';
+import StationList from '../StationList.astro';
 
 interface Props {
 	id: string;
@@ -21,10 +21,10 @@ const project = getProject(Astro.props.id);
 <slot />
 
 <h2 id="draws-on">Units this project draws on</h2>
-<UnitList ids={project.draws} />
+<StationList ids={project.draws} mode="route" />
 
 <style>
 	.lead {
-		font-size: 1.1875rem;
+		font-size: 1.25rem;
 	}
 </style>

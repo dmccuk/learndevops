@@ -1,64 +1,100 @@
 /*
- * learndevops.co.uk design tokens (spec section 5).
- * The --ld-* tokens are the source of truth. They are mapped onto Starlight's
- * --sl-* variables below. scripts/check-contrast.mjs reads this file, so keep
- * each token on its own line as `--ld-name: #RRGGBB;`.
+ * learndevops.co.uk design tokens: the transit map direction (spec section 5).
+ *
+ * The course is drawn as a metro network. Each track is a line with its own
+ * colour, and its letter always travels with the colour, so colour never
+ * carries meaning alone. The rest of the page stays quiet: cool white paper,
+ * ink text, one signage blue for links and buttons.
+ *
+ * scripts/check-contrast.mjs reads this file, so keep each colour token on its
+ * own line as `--name: #rrggbb;`.
  */
 
-/* Dark theme (default) */
+/* Light theme (default) */
 :root {
-	--ld-bg: #0f1419;
-	--ld-bg-alt: #131a21;
-	--ld-surface: #161c23;
-	--ld-terminal: #0a0e12;
-	--ld-border: #26303a;
-	--ld-text: #e6e1d6;
-	--ld-heading: #f5f2ea;
-	--ld-muted: #a9b1ba;
-	--ld-dim: #8a949e;
-	--ld-accent: #f2a541;
-	--ld-on-accent: #0f1419;
-	--ld-ok: #8fcbb9;
-	--ld-warn: #e07a5f;
-	--ld-accent-tint: #2a2114;
-	--ld-warn-tint: #2a1813;
+	--ld-bg: #f6f8fa;
+	--ld-bg-alt: #edf1f5;
+	--ld-surface: #ffffff;
+	--ld-terminal: #14202b;
+	--ld-border: #d5dce3;
+	--ld-text: #14202b;
+	--ld-heading: #14202b;
+	--ld-muted: #4a5866;
+	--ld-dim: #5c6976;
+	--ld-accent: #2346c0;
+	--ld-on-accent: #ffffff;
+	--ld-accent-tint: #e6ecfb;
+	--ld-ok: #00783e;
+	--ld-warn: #b8122b;
+	--ld-warn-tint: #fbe9eb;
 
-	/* Terminal blocks stay dark in both themes. */
-	--ld-terminal-text: #e6e1d6;
-	--ld-terminal-muted: #a9b1ba;
-	--ld-terminal-prompt: #f2a541;
-	--ld-terminal-ok: #8fcbb9;
+	/* Code and terminal blocks stay dark in both themes. */
+	--ld-terminal-text: #dce4ec;
+	--ld-terminal-muted: #a3b1bf;
+	--ld-terminal-prompt: #8fa8ff;
+	--ld-terminal-ok: #5fc08f;
+
+	/* Line colours, one per track, and the text colour used on them. */
+	--line-on: #ffffff;
+	--line-l: #12395f;
+	--line-g: #c2410c;
+	--line-n: #5a6876;
+	--line-c: #00745f;
+	--line-k: #2f55d4;
+	--line-a: #b8122b;
+	--line-i: #6a3fa0;
+	--line-p: #8a5a00;
+	--line-w: #0e7490;
+	--line-o: #a3195b;
+	--line-s: #00783e;
+	--line-r: #7c2d12;
+	--line-ai: #5f6b00;
 }
 
-/* Light theme */
-:root[data-theme='light'] {
-	--ld-bg: #fbfaf7;
-	--ld-bg-alt: #f2f0ea;
-	--ld-surface: #ffffff;
-	--ld-terminal: #1b2128;
-	--ld-border: #ddd8cc;
-	--ld-text: #1b2128;
-	--ld-heading: #0f1419;
-	--ld-muted: #4a5560;
-	--ld-dim: #5e6872;
-	--ld-accent: #a05c00; /* spec: #A65F00, darkened to pass 4.5:1 on --ld-bg-alt */
-	--ld-on-accent: #ffffff;
-	--ld-ok: #1e7a5e;
-	--ld-warn: #b23a1e;
-	--ld-accent-tint: #faf1e4;
-	--ld-warn-tint: #f8e4de;
+/* Dark theme: the night map */
+:root[data-theme='dark'] {
+	--ld-bg: #0e1a26;
+	--ld-bg-alt: #122130;
+	--ld-surface: #15222f;
+	--ld-terminal: #0a131c;
+	--ld-border: #2a3c4e;
+	--ld-text: #dce4ec;
+	--ld-heading: #f2f5f8;
+	--ld-muted: #a3b1bf;
+	--ld-dim: #8c9baa;
+	--ld-accent: #8fa8ff;
+	--ld-on-accent: #0e1a26;
+	--ld-accent-tint: #1c2b4a;
+	--ld-ok: #5fc08f;
+	--ld-warn: #f08a7a;
+	--ld-warn-tint: #2e1c22;
+
+	--line-on: #0e1a26;
+	--line-l: #768ca2;
+	--line-g: #d16f46;
+	--line-n: #7e8994;
+	--line-c: #429889;
+	--line-k: #6985e0;
+	--line-a: #d26777;
+	--line-i: #9a7cbe;
+	--line-p: #a6823d;
+	--line-w: #4393a8;
+	--line-o: #c46c96;
+	--line-s: #3d986c;
+	--line-r: #ae7d6c;
+	--line-ai: #858f3d;
 }
 
 /* Map onto Starlight. Unlayered rules win over Starlight's layered defaults. */
 :root,
-:root[data-theme='light'] {
+:root[data-theme='dark'] {
 	--sl-color-white: var(--ld-heading);
 	--sl-color-gray-1: var(--ld-heading);
 	--sl-color-gray-2: var(--ld-text);
 	--sl-color-gray-3: var(--ld-muted);
 	--sl-color-gray-4: var(--ld-dim);
 	--sl-color-gray-5: var(--ld-border);
-	--sl-color-gray-6: var(--ld-surface);
+	--sl-color-gray-6: var(--ld-bg-alt);
 	--sl-color-gray-7: var(--ld-bg-alt);
 	--sl-color-black: var(--ld-bg);
 
@@ -69,7 +105,7 @@
 	--sl-color-text-accent: var(--ld-accent);
 	--sl-color-text-invert: var(--ld-on-accent);
 	--sl-color-bg: var(--ld-bg);
-	--sl-color-bg-nav: var(--ld-bg);
+	--sl-color-bg-nav: var(--ld-surface);
 	--sl-color-bg-sidebar: var(--ld-bg);
 	--sl-color-bg-inline-code: var(--ld-bg-alt);
 	--sl-color-bg-accent: var(--ld-accent);
@@ -79,45 +115,45 @@
 
 	--sl-color-orange-low: var(--ld-accent-tint);
 	--sl-color-orange: var(--ld-accent);
-	--sl-color-orange-high: var(--ld-accent);
+	--sl-color-orange-high: var(--ld-heading);
 	--sl-color-red-low: var(--ld-warn-tint);
 	--sl-color-red: var(--ld-warn);
-	--sl-color-red-high: var(--ld-warn);
-	--sl-color-green-high: var(--ld-ok);
+	--sl-color-red-high: var(--ld-heading);
 	--sl-color-green-low: var(--ld-bg-alt);
 	--sl-color-green: var(--ld-ok);
-	/* Note and tip asides use blue and purple; keep them in the palette. */
-	--sl-color-blue-low: var(--ld-bg-alt);
-	--sl-color-blue: var(--ld-dim);
+	--sl-color-green-high: var(--ld-heading);
+	--sl-color-blue-low: var(--ld-accent-tint);
+	--sl-color-blue: var(--ld-accent);
 	--sl-color-blue-high: var(--ld-heading);
 	--sl-color-purple-low: var(--ld-bg-alt);
 	--sl-color-purple: var(--ld-ok);
 	--sl-color-purple-high: var(--ld-heading);
 
-	/* No shadows (spec section 5.3). */
 	--sl-shadow-sm: none;
 	--sl-shadow-md: none;
 	--sl-shadow-lg: none;
 
-	--sl-font: 'IBM Plex Sans';
-	--sl-font-mono: 'IBM Plex Mono';
+	--sl-font: 'Overpass';
+	--sl-font-mono: 'Overpass Mono';
 	--sl-text-body: 1.0625rem; /* 17px */
-	--sl-line-height: 1.65;
-	--sl-text-h1: clamp(2.25rem, 5vw, 3.75rem); /* 36–60px */
-	--sl-text-h2: clamp(2rem, 3vw, 2.5rem); /* 32–40px */
-	--sl-text-h3: clamp(1.375rem, 2vw, 1.5rem); /* 22–24px */
+	--sl-line-height: 1.6;
+	--sl-line-height-headings: 1.15;
+	--sl-text-h1: clamp(2.25rem, 4.5vw, 3.5rem);
+	--sl-text-h2: clamp(1.75rem, 3vw, 2.25rem);
+	--sl-text-h3: clamp(1.25rem, 2vw, 1.375rem);
 
 	--ld-radius: 6px;
 	--ld-radius-card: 10px;
 	--ld-max: 1180px;
-	--ld-label-size: 0.8125rem;
+	--ld-rail: 6px;
+	--ld-roundel: 2rem;
 }
 
 @media (min-width: 50em) {
 	:root {
-		--sl-text-h1: clamp(2.25rem, 5vw, 3.75rem);
-		--sl-text-h2: clamp(2rem, 3vw, 2.5rem);
-		--sl-text-h3: clamp(1.375rem, 2vw, 1.5rem);
+		--sl-text-h1: clamp(2.25rem, 4.5vw, 3.5rem);
+		--sl-text-h2: clamp(1.75rem, 3vw, 2.25rem);
+		--sl-text-h3: clamp(1.25rem, 2vw, 1.375rem);
 	}
 }
 
@@ -131,26 +167,62 @@ h2,
 h3,
 h4 {
 	color: var(--ld-heading);
+	font-weight: 800;
+	letter-spacing: -0.015em;
+}
+h3,
+h4 {
+	font-weight: 700;
+	letter-spacing: -0.005em;
 }
 
-/* Starlight's inline code */
+.sl-markdown-content a:not(:where(.not-content *)) {
+	text-underline-offset: 0.18em;
+	text-decoration-thickness: 1px;
+}
+
 .sl-markdown-content code:not(:where(.not-content *)) {
 	border-radius: 4px;
+	font-size: 0.9em;
 }
 
-/* Small mono labels (spec section 5.2) */
+/* Small supporting text */
 .ld-label {
-	font-family: var(--__sl-font-mono);
-	font-size: var(--ld-label-size);
-	text-transform: uppercase;
-	letter-spacing: 0.07em;
+	font-size: 0.9375rem;
 	color: var(--ld-dim);
 }
 
-/* Planned units are greyed out in lists. */
+/* Planned units are greyed out in the sidebar. */
 .ld-planned:not([aria-current='page']) {
 	color: var(--ld-dim) !important;
 }
+
+/* Sidebar badges ("Soon", "Draft") stay quiet. */
+.sidebar-content .sl-badge {
+	border-color: var(--ld-border);
+	background: transparent;
+	color: var(--ld-dim);
+	font-weight: 600;
+}
+.sidebar-content a[aria-current='page'] .sl-badge {
+	border-color: var(--ld-on-accent);
+	color: var(--ld-on-accent);
+}
+
+/* Line colour for any element with data-line="k" etc. */
+[data-line='l'] { --line: var(--line-l); }
+[data-line='g'] { --line: var(--line-g); }
+[data-line='n'] { --line: var(--line-n); }
+[data-line='c'] { --line: var(--line-c); }
+[data-line='k'] { --line: var(--line-k); }
+[data-line='a'] { --line: var(--line-a); }
+[data-line='i'] { --line: var(--line-i); }
+[data-line='p'] { --line: var(--line-p); }
+[data-line='w'] { --line: var(--line-w); }
+[data-line='o'] { --line: var(--line-o); }
+[data-line='s'] { --line: var(--line-s); }
+[data-line='r'] { --line: var(--line-r); }
+[data-line='ai'] { --line: var(--line-ai); }
 
 /* Buttons */
 .ld-button {
@@ -159,10 +231,10 @@ h4 {
 	justify-content: center;
 	gap: 0.5rem;
 	min-height: 44px;
-	padding: 0.5rem 1.125rem;
-	border: 1px solid var(--ld-accent);
+	padding: 0.625rem 1.25rem 0.5rem;
+	border: 2px solid var(--ld-accent);
 	border-radius: var(--ld-radius);
-	font-weight: 600;
+	font-weight: 700;
 	text-decoration: none;
 	line-height: 1.2;
 	background: var(--ld-accent);
@@ -183,7 +255,7 @@ h4 {
 	color: var(--ld-on-accent);
 }
 
-/* Cards */
+/* Cards: used sparingly, for paths and projects. */
 .ld-card {
 	display: flex;
 	flex-direction: column;
@@ -202,8 +274,8 @@ a.ld-card:focus-visible {
 .ld-card h3,
 .ld-card .ld-card-title {
 	margin: 0;
-	font-size: 1.125rem;
-	line-height: 1.3;
+	font-size: 1.1875rem;
+	line-height: 1.25;
 	color: var(--ld-heading);
 }
 .ld-card p {
@@ -216,19 +288,17 @@ a.ld-card:focus-visible {
 	grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
 }
 
-/* Badges */
+/* Small pills for unit details */
 .ld-badge {
 	display: inline-flex;
 	align-items: center;
-	padding: 0.125rem 0.5rem;
+	padding: 0.1875rem 0.5rem 0.0625rem;
 	border: 1px solid var(--ld-border);
-	border-radius: 4px;
-	font-family: var(--__sl-font-mono);
-	font-size: 0.75rem;
+	border-radius: 999px;
+	font-size: 0.8125rem;
 	line-height: 1.5;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
 	color: var(--ld-muted);
+	background: var(--ld-surface);
 	white-space: nowrap;
 }
 .ld-badge.accent {
