@@ -1,0 +1,17 @@
+name: Content error
+description: Something on a page is wrong, unclear or out of date.
+labels: [content]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page URL
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      description: Quote the text if you can, and say what it should be. Link a source for facts and prices.
+    validations:
+      required: true
