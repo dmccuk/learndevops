@@ -5,13 +5,6 @@ import { url, YOUTUBE_URL } from '../../lib/url';
 import PathCard from '../PathCard.astro';
 import PipelineMap from '../PipelineMap.astro';
 import ProjectCard from '../ProjectCard.astro';
-
-const steps = [
-	{ label: 'Read', text: 'A short lesson that explains the why.' },
-	{ label: 'Do', text: 'A hands-on lab from a ready-made starting point.' },
-	{ label: 'Check', text: 'A script tells you whether it worked.' },
-	{ label: 'Watch', text: 'Videos on the London IAC YouTube channel, where available.' },
-];
 ---
 
 <div class="home not-content">
@@ -29,8 +22,11 @@ const steps = [
 
 	<section class="band" aria-labelledby="big-picture">
 		<div class="inner">
-			<p class="ld-label">The big picture</p>
 			<h2 id="big-picture">Every track teaches one stage of the same pipeline</h2>
+			<p class="intro">
+				A change starts as code and ends up running in production, watched by monitoring. Each line on the map covers
+				one stretch of that journey.
+			</p>
 			<PipelineMap interactive />
 		</div>
 	</section>
@@ -38,10 +34,11 @@ const steps = [
 	<section class="band alt" aria-labelledby="ways-in">
 		<div class="inner">
 			<h2 id="ways-in">Pick a path, or just pick a unit</h2>
+			<p class="intro">A path is a route across the map. The coloured strip shows which lines it travels on.</p>
 			<div class="ld-grid">
 				{curriculum.paths.map((p) => <PathCard path={p} />)}
 			</div>
-			<p class="more"><a href={url('/curriculum/')}>See all 60 units</a></p>
+			<p class="more"><a href={url('/curriculum/')}>See every unit</a></p>
 		</div>
 	</section>
 
@@ -49,31 +46,30 @@ const steps = [
 		<div class="inner">
 			<h2 id="how">How every unit works</h2>
 			<ol class="steps">
-				{
-					steps.map((s, i) => (
-						<li>
-							<span class="ld-label">0{i + 1}</span>
-							<h3>{s.label}</h3>
-							<p>
-								{s.label === 'Watch' ? (
-									<>
-										Videos on the <a href={YOUTUBE_URL}>London IAC YouTube channel</a>, where available.
-									</>
-								) : (
-									s.text
-								)}
-							</p>
-						</li>
-					))
-				}
+				<li>
+					<h3>Read</h3>
+					<p>A short lesson that explains the why.</p>
+				</li>
+				<li>
+					<h3>Do</h3>
+					<p>A hands-on lab from a ready-made starting point.</p>
+				</li>
+				<li>
+					<h3>Check</h3>
+					<p>A script tells you whether it worked.</p>
+				</li>
+				<li>
+					<h3>Watch</h3>
+					<p>Videos on the <a href={YOUTUBE_URL}>London IAC YouTube channel</a>, where available.</p>
+				</li>
 			</ol>
 		</div>
 	</section>
 
-	<section class="band alt" aria-labelledby="projects" id="what-youll-build">
+	<section class="band alt" aria-labelledby="projects">
 		<div class="inner">
-			<p class="ld-label">What you'll build</p>
-			<h2 id="projects">Three projects</h2>
+			<h2 id="projects">What you'll build</h2>
+			<p class="intro">Three projects join the units into the full journey from laptop to production.</p>
 			<div class="ld-grid">
 				{curriculum.projects.map((p, i) => <ProjectCard project={p} number={i + 1} />)}
 			</div>
@@ -84,14 +80,14 @@ const steps = [
 		<div class="inner teacher">
 			<div class="photo" role="img" aria-label="[PHOTO]">[PHOTO]</div>
 			<div>
-				<p class="ld-label">Who's teaching</p>
-				<h2 id="teacher">[YOUR NAME]</h2>
+				<h2 id="teacher">Who's teaching</h2>
+				<p class="name">[YOUR NAME]</p>
 				<p>[A few lines on your DevOps background]</p>
 			</div>
 		</div>
 	</section>
 
-	<section class="band alt cta" aria-labelledby="ready">
+	<section class="band cta" aria-labelledby="ready">
 		<div class="inner narrow">
 			<h2 id="ready">Ready? Unit L1 runs right here in your browser.</h2>
 			<a class="ld-button" href={url('/units/l1/')}>Start unit L1</a>
@@ -101,11 +97,10 @@ const steps = [
 
 <style>
 	.home {
-		/* Break out of Starlight's content column to full width bands. */
 		margin-inline: calc(-1 * var(--sl-content-pad-x));
 	}
 	.band {
-		padding: 3.5rem var(--sl-content-pad-x);
+		padding: 4rem var(--sl-content-pad-x);
 		border-top: 1px solid var(--ld-border);
 	}
 	.band.alt {
@@ -116,16 +111,23 @@ const steps = [
 		margin: 0 auto;
 	}
 	.inner.narrow {
-		max-width: 46rem;
+		max-width: 44rem;
 	}
 	h2 {
-		margin: 0.25rem 0 1.5rem;
+		margin: 0 0 1rem;
 		font-size: var(--sl-text-h2);
-		line-height: 1.15;
-		letter-spacing: -0.01em;
+		font-weight: 800;
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+	}
+	.intro {
+		max-width: 44rem;
+		margin: 0 0 1.75rem;
+		color: var(--ld-muted);
+		font-size: 1.125rem;
 	}
 	.ai p {
-		font-size: 1.125rem;
+		font-size: 1.1875rem;
 	}
 	.ai p + p {
 		margin-top: 1rem;
@@ -133,23 +135,51 @@ const steps = [
 	.more {
 		margin-top: 1.5rem;
 	}
+	/* Read, Do, Check, Watch is a real sequence, so it reads left to right
+	   along a rail, like stops on a line. */
 	.steps {
+		position: relative;
 		display: grid;
-		gap: 1rem;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+		gap: 1.5rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
+		counter-reset: step;
+	}
+	@media (min-width: 50rem) {
+		.steps {
+			grid-template-columns: repeat(4, 1fr);
+		}
+		.steps::before {
+			content: '';
+			position: absolute;
+			top: 0.75rem;
+			left: 0.75rem;
+			right: 12%;
+			height: var(--ld-rail);
+			margin-top: calc(var(--ld-rail) / -2);
+			border-radius: 3px;
+			background: var(--ld-accent);
+		}
 	}
 	.steps li {
-		padding: 1.25rem;
-		border: 1px solid var(--ld-border);
-		border-radius: var(--ld-radius-card);
-		background: var(--ld-surface);
+		position: relative;
+		padding-top: 2.25rem;
+	}
+	.steps li::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 1.5rem;
+		height: 1.5rem;
+		border: 4px solid var(--ld-accent);
+		border-radius: 50%;
+		background: var(--ld-bg);
 	}
 	.steps h3 {
-		margin: 0.25rem 0 0.5rem;
-		font-size: var(--sl-text-h3);
+		margin: 0 0 0.25rem;
+		font-size: 1.375rem;
 	}
 	.steps p {
 		margin: 0;
@@ -161,6 +191,15 @@ const steps = [
 		gap: 2rem;
 		align-items: center;
 	}
+	.teacher h2 {
+		margin-bottom: 0.5rem;
+	}
+	.name {
+		margin: 0 0 0.25rem;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--ld-heading);
+	}
 	.photo {
 		display: grid;
 		place-items: center;
@@ -170,7 +209,6 @@ const steps = [
 		border: 1px dashed var(--ld-border);
 		border-radius: 50%;
 		background: var(--ld-surface);
-		font-family: var(--__sl-font-mono);
 		color: var(--ld-dim);
 	}
 	.cta {

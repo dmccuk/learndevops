@@ -1,5 +1,5 @@
 ---
-// Stage, environment, time and status badges for a unit.
+// Stage, environment, time and status pills for a unit.
 import { ENVIRONMENT_LABELS, getTrack, STAGE_LABELS, type Unit } from '../lib/curriculum';
 
 interface Props {
@@ -8,15 +8,14 @@ interface Props {
 }
 const { unit, compact = false } = Astro.props;
 const track = getTrack(unit.track);
+const where = [unit.runsIn, ...unit.alsoRunsIn].map((e) => ENVIRONMENT_LABELS[e]).join(' or ');
 ---
 
 <ul class="badges" aria-label="Unit details">
-	<li class="ld-badge">{STAGE_LABELS[unit.stage]}</li>
-	<li class="ld-badge">
-		{ENVIRONMENT_LABELS[unit.runsIn]}{unit.alsoRunsIn.length > 0 && ` or ${unit.alsoRunsIn.map((e) => ENVIRONMENT_LABELS[e]).join(', ')}`}
-	</li>
+	{!compact && <li class="ld-badge">{STAGE_LABELS[unit.stage]} stage</li>}
+	<li class="ld-badge">{where}</li>
 	<li class="ld-badge">{unit.minutes} min</li>
-	{!compact && track.new && <li class="ld-badge accent">New</li>}
+	{!compact && track.new && <li class="ld-badge accent">New track</li>}
 	{unit.costNote && <li class="ld-badge warn">Costs money</li>}
 	{unit.status === 'planned' && <li class="ld-badge">Coming soon</li>}
 	{unit.status === 'draft' && <li class="ld-badge warn">Draft</li>}

@@ -1,16 +1,16 @@
 ---
-// Dark and light only. Dark is the default (spec section 5). The choice is
+// Light and dark only. Light is the default (spec section 5). The choice is
 // saved in localStorage when storage is available; the site works without it.
 import Select from '@astrojs/starlight/components/Select.astro';
 ---
 
 <starlight-theme-select>
 	<Select
-		icon="moon"
+		icon="sun"
 		label={Astro.locals.t('themeSelect.accessibleLabel')}
 		options={[
-			{ label: Astro.locals.t('themeSelect.dark'), selected: true, value: 'dark' },
-			{ label: Astro.locals.t('themeSelect.light'), selected: false, value: 'light' },
+			{ label: Astro.locals.t('themeSelect.light'), selected: true, value: 'light' },
+			{ label: Astro.locals.t('themeSelect.dark'), selected: false, value: 'dark' },
 		]}
 		width="6.25em"
 	/>
@@ -24,13 +24,13 @@ import Select from '@astrojs/starlight/components/Select.astro';
 <script>
 	type Theme = 'dark' | 'light';
 	const storageKey = 'starlight-theme';
-	const parseTheme = (theme: unknown): Theme => (theme === 'light' ? 'light' : 'dark');
+	const parseTheme = (theme: unknown): Theme => (theme === 'dark' ? 'dark' : 'light');
 
 	function loadTheme(): Theme {
 		try {
 			return parseTheme(localStorage.getItem(storageKey));
 		} catch {
-			return 'dark';
+			return 'light';
 		}
 	}
 

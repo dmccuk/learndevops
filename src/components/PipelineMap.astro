@@ -54,7 +54,8 @@ const GAP = 22;
 const CHIP_X = LEFT + STAGE_W + 36;
 const CHIP_H = 32;
 const TOP = 16;
-const chipWidth = (c: Chip) => 26 + c.id.length * 8.4 + c.label.length * 7.1;
+const pillWidth = (c: Chip) => 14 + c.id.length * 9;
+const chipWidth = (c: Chip) => 4 + pillWidth(c) + 10 + c.label.length * 7.2 + (isNew(c.id) ? 34 : 0) + 10;
 
 const rows = STAGES.map((s, i) => {
 	const y = TOP + i * (ROW_H + GAP);
@@ -70,8 +71,7 @@ const rows = STAGES.map((s, i) => {
 const lastY = TOP + (STAGES.length - 1) * (ROW_H + GAP);
 const bandY1 = lastY + ROW_H + 30;
 const bandY2 = bandY1 + 56;
-const keyY = bandY2 + 66;
-const H = keyY + 24;
+const H = bandY2 + 52;
 
 const alt =
 	'The DevOps pipeline, top to bottom: ' +
@@ -79,7 +79,7 @@ const alt =
 	'. A return arrow from Observe back to Code says: what you observe feeds the next change. ' +
 	`Across every stage: ${SECURITY.map((c) => `${c.id} ${c.label}`).join(', ')}. ` +
 	`Underneath everything: ${FOUNDATIONS.map((c) => `${c.id} ${c.label}`).join(', ')}. ` +
-	'New tracks: Kubernetes, DevSecOps, Running production and AI in DevOps.' +
+	'Tracks marked new: Kubernetes, DevSecOps, Running production and AI in DevOps.' +
 	(highlightStage ? ` Highlighted stage: ${highlightStage}.` : '');
 
 const uid = `pm-${Math.random().toString(36).slice(2, 8)}`;
@@ -145,11 +145,18 @@ const listId = `${uid}-list`;
 					<line class="pm-tie" x1={LEFT + STAGE_W} x2={CHIP_X - 6} y1={r.y + ROW_H / 2} y2={r.y + ROW_H / 2} />
 					{r.chips.map((c) => {
 						const chip = (
-							<g class:list={['pm-chip', { new: isNew(c.id), on: anyHighlight && chipOn(r.stage, c.id), dim: !chipOn(r.stage, c.id) }]}>
-								<rect x={c.x} y={c.y} width={c.w} height={CHIP_H} rx="6" />
-								<text x={c.x + 12} y={c.y + CHIP_H / 2 + 4.5}>
-									<tspan class="pm-chip-id">{c.id}</tspan>
-									<tspan dx="7">{c.label}</tspan>
+							<g
+								class:list={['pm-chip', { on: anyHighlight && chipOn(r.stage, c.id), dim: !chipOn(r.stage, c.id) }]}
+								data-line={c.id.toLowerCase()}
+							>
+								<rect class="pm-chip-box" x={c.x} y={c.y} width={c.w} height={CHIP_H} rx="16" />
+								<rect class="pm-pill" x={c.x + 4} y={c.y + 4} width={pillWidth(c)} height={CHIP_H - 8} rx="12" />
+								<text class="pm-pill-id" x={c.x + 4 + pillWidth(c) / 2} y={c.y + CHIP_H / 2 + 4.5} text-anchor="middle">
+									{c.id}
+								</text>
+								<text class="pm-chip-label" x={c.x + 4 + pillWidth(c) + 8} y={c.y + CHIP_H / 2 + 4.5}>
+									{c.label}
+									{isNew(c.id) && <tspan class="pm-new" dx="6">new</tspan>}
 								</text>
 							</g>
 						);
@@ -182,11 +189,15 @@ const listId = `${uid}-list`;
 							const cx = x;
 							x += chipWidth(c) + 10;
 							const body = (
-								<g class:list={['pm-chip', { new: isNew(c.id) }]}>
-									<rect x={cx} y={b.y + 6} width={chipWidth(c)} height={CHIP_H} rx="6" />
-									<text x={cx + 12} y={b.y + 6 + CHIP_H / 2 + 4.5}>
-										<tspan class="pm-chip-id">{c.id}</tspan>
-										<tspan dx="7">{c.label}</tspan>
+								<g class="pm-chip" data-line={c.id.toLowerCase()}>
+									<rect class="pm-chip-box" x={cx} y={b.y + 6} width={chipWidth(c)} height={CHIP_H} rx="16" />
+									<rect class="pm-pill" x={cx + 4} y={b.y + 10} width={pillWidth(c)} height={CHIP_H - 8} rx="12" />
+									<text class="pm-pill-id" x={cx + 4 + pillWidth(c) / 2} y={b.y + 6 + CHIP_H / 2 + 4.5} text-anchor="middle">
+										{c.id}
+									</text>
+									<text class="pm-chip-label" x={cx + 4 + pillWidth(c) + 8} y={b.y + 6 + CHIP_H / 2 + 4.5}>
+										{c.label}
+										{isNew(c.id) && <tspan class="pm-new" dx="6">new</tspan>}
 									</text>
 								</g>
 							);
@@ -203,12 +214,6 @@ const listId = `${uid}-list`;
 			})
 		}
 
-		<g class="pm-key">
-			<rect class="pm-key-swatch" x={LEFT} y={keyY} width="28" height="18" rx="4"></rect>
-			<text x={LEFT + 38} y={keyY + 13.5}>New track</text>
-			<rect class="pm-key-swatch-old" x={LEFT + 140} y={keyY} width="28" height="18" rx="4"></rect>
-			<text x={LEFT + 178} y={keyY + 13.5}>Existing track</text>
-		</g>
 	</svg>
 
 	<div class="pm-list-wrap" id={listId}>
@@ -224,14 +229,14 @@ const listId = `${uid}-list`;
 							{s.chips.map((c) => (
 								<li>
 									{interactive ? (
-										<a class:list={['pm-list-chip', { new: isNew(c.id) }]} href={trackUrl(c.id)}>
+										<a class="pm-list-chip" data-line={c.id.toLowerCase()} href={trackUrl(c.id)}>
 											<b>{c.id}</b> {c.label}
-											{isNew(c.id) && <span class="ld-sr-only">(new track)</span>}
+											{isNew(c.id) && <span class="pm-new">new</span>}
 										</a>
 									) : (
-										<span class:list={['pm-list-chip', { new: isNew(c.id) }]}>
+										<span class="pm-list-chip" data-line={c.id.toLowerCase()}>
 											<b>{c.id}</b> {c.label}
-											{isNew(c.id) && <span class="ld-sr-only">(new track)</span>}
+											{isNew(c.id) && <span class="pm-new">new</span>}
 										</span>
 									)}
 								</li>
@@ -253,14 +258,14 @@ const listId = `${uid}-list`;
 						{b.chips.map((c) => (
 							<li>
 								{interactive ? (
-									<a class:list={['pm-list-chip', { new: isNew(c.id) }]} href={trackUrl(c.id)}>
-										<b>{c.id}</b> {c.label}
-										{isNew(c.id) && <span class="ld-sr-only">(new track)</span>}
+									<a class="pm-list-chip" data-line={c.id.toLowerCase()} href={trackUrl(c.id)}>
+											<b>{c.id}</b> {c.label}
+											{isNew(c.id) && <span class="pm-new">new</span>}
 									</a>
 								) : (
-									<span class:list={['pm-list-chip', { new: isNew(c.id) }]}>
-										<b>{c.id}</b> {c.label}
-										{isNew(c.id) && <span class="ld-sr-only">(new track)</span>}
+									<span class="pm-list-chip" data-line={c.id.toLowerCase()}>
+											<b>{c.id}</b> {c.label}
+											{isNew(c.id) && <span class="pm-new">new</span>}
 									</span>
 								)}
 							</li>
@@ -269,7 +274,6 @@ const listId = `${uid}-list`;
 				</div>
 			))
 		}
-		<p class="pm-list-key" aria-hidden="true"><span class="pm-list-chip new">New track</span></p>
 	</div>
 </figure>
 
@@ -325,28 +329,33 @@ const listId = `${uid}-list`;
 		fill: var(--ld-dim);
 		font-size: 12px;
 	}
-	.pm-chip rect {
-		fill: var(--ld-bg);
+	.pm-chip-box {
+		fill: var(--ld-surface);
 		stroke: var(--ld-border);
 	}
-	.pm-chip text {
+	.pm-pill {
+		fill: var(--line);
+	}
+	.pm-pill-id {
+		fill: var(--line-on);
+		font-weight: 800;
+		font-size: 13px;
+	}
+	.pm-chip-label {
 		fill: var(--ld-text);
-	}
-	.pm-chip-id {
-		font-family: var(--__sl-font-mono);
 		font-weight: 600;
-		fill: var(--ld-heading);
 	}
-	.pm-chip.new rect {
-		stroke: var(--ld-accent);
+	.pm-new {
+		fill: var(--ld-dim);
+		font-weight: 400;
+		font-style: italic;
 	}
-	.pm-chip.on rect {
-		fill: var(--ld-accent-tint);
-		stroke: var(--ld-accent);
+	.pm-chip.on .pm-chip-box {
+		stroke: var(--line);
 		stroke-width: 2;
 	}
-	a .pm-chip:hover rect {
-		stroke: var(--ld-accent);
+	a .pm-chip:hover .pm-chip-box {
+		stroke: var(--line);
 		stroke-width: 2;
 	}
 	.pm-band > rect {
@@ -364,18 +373,6 @@ const listId = `${uid}-list`;
 	}
 	.dim {
 		opacity: 0.4;
-	}
-	.pm-key text {
-		fill: var(--ld-muted);
-		font-size: 12px;
-	}
-	.pm-key-swatch {
-		fill: var(--ld-bg);
-		stroke: var(--ld-accent);
-	}
-	.pm-key-swatch-old {
-		fill: var(--ld-bg);
-		stroke: var(--ld-border);
 	}
 
 	/* --- List (below 640px) --- */
@@ -432,33 +429,38 @@ const listId = `${uid}-list`;
 		min-height: 44px;
 		padding: 0.25rem 0.75rem;
 		border: 1px solid var(--ld-border);
-		border-radius: var(--ld-radius);
-		background: var(--ld-bg);
+		border-radius: 999px;
+		background: var(--ld-surface);
 		color: var(--ld-text);
 		font-size: 0.9375rem;
+		font-weight: 600;
 		text-decoration: none;
 	}
 	.pm-list-chip b {
-		font-family: var(--__sl-font-mono);
-		color: var(--ld-heading);
+		display: inline-grid;
+		place-items: center;
+		min-width: 1.5rem;
+		height: 1.5rem;
+		padding: 0.15em 0.35em 0;
+		border-radius: 999px;
+		background: var(--line);
+		color: var(--line-on);
+		font-size: 0.75rem;
+		font-weight: 800;
 	}
-	.pm-list-chip.new {
-		border-color: var(--ld-accent);
+	.pm-new {
+		color: var(--ld-dim);
+		font-style: italic;
 	}
 	a.pm-list-chip:hover,
 	a.pm-list-chip:focus-visible {
-		border-color: var(--ld-accent);
-		color: var(--ld-accent);
+		border-color: var(--line);
+		color: var(--ld-heading);
 	}
-	.pm-list-loop,
-	.pm-list-key {
+	.pm-list-loop {
 		margin: 0.5rem 0 0 !important;
 		font-size: 0.875rem;
 		color: var(--ld-dim);
-	}
-	.pm-list-key .pm-list-chip {
-		min-height: 0;
-		font-size: 0.8125rem;
 	}
 
 	@media (min-width: 640px) {

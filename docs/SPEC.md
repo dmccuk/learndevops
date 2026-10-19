@@ -1,7 +1,7 @@
 # learndevops.co.uk — Build Specification
 
 **Owner:** dmccuk (GitHub)  
-**Version:** 1.0 — 19 October 2026  
+**Version:** 1.1 — 19 October 2026 (design direction changed to the transit map)  
 **Audience for this document:** Claude Code (the builder) and the site owner (the reviewer)
 
 ---
@@ -180,38 +180,59 @@ Let learners tick a unit as done. Store progress in `localStorage` only, wrapped
 
 ## 5. Design system
 
-The look is a dark, terminal-inspired editorial style. Implement as CSS custom properties in `src/styles/theme.css`, mapped onto Starlight's `--sl-*` variables. Provide both dark (default) and light themes.
+**Direction: the transit map** (chosen by the owner on 19 October 2026, replacing the original dark terminal style). The course is drawn as a metro network: every track is a line with its own colour, every unit is a station, and learning paths are routes. The map is the one bold element; everything around it stays quiet. Implement as CSS custom properties in `src/styles/theme.css`, mapped onto Starlight's `--sl-*` variables. Provide light (default) and dark ("night map") themes.
 
 ### 5.1 Colour tokens
 
-| Token | Dark | Light | Use |
+| Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `--ld-bg` | `#0F1419` | `#FBFAF7` | Page background |
-| `--ld-bg-alt` | `#131A21` | `#F2F0EA` | Alternate section bands |
-| `--ld-surface` | `#161C23` | `#FFFFFF` | Cards |
-| `--ld-terminal` | `#0A0E12` | `#1B2128` | Terminal blocks (dark in both themes) |
-| `--ld-border` | `#26303A` | `#DDD8CC` | Borders and rules |
-| `--ld-text` | `#E6E1D6` | `#1B2128` | Body text |
-| `--ld-heading` | `#F5F2EA` | `#0F1419` | Headings |
-| `--ld-muted` | `#A9B1BA` | `#4A5560` | Secondary text |
-| `--ld-dim` | `#8A949E` | `#5E6872` | Captions, metadata |
-| `--ld-accent` | `#F2A541` | `#A65F00` | Links, buttons, highlights |
-| `--ld-on-accent` | `#0F1419` | `#FFFFFF` | Text on accent buttons |
-| `--ld-ok` | `#8FCBB9` | `#1E7A5E` | Success, PASS |
-| `--ld-warn` | `#E07A5F` | `#B23A1E` | Warnings, FAIL, cost notices |
+| `--ld-bg` | `#F6F8FA` | `#0E1A26` | Page background (cool white, not cream; night navy, not black) |
+| `--ld-bg-alt` | `#EDF1F5` | `#122130` | Alternate section bands |
+| `--ld-surface` | `#FFFFFF` | `#15222F` | Panels and cards |
+| `--ld-terminal` | `#14202B` | `#0A131C` | Code and terminal blocks (dark in both themes) |
+| `--ld-border` | `#D5DCE3` | `#2A3C4E` | Borders and rules |
+| `--ld-text` | `#14202B` | `#DCE4EC` | Body text |
+| `--ld-heading` | `#14202B` | `#F2F5F8` | Headings |
+| `--ld-muted` | `#4A5866` | `#A3B1BF` | Secondary text |
+| `--ld-dim` | `#5C6976` | `#8C9BAA` | Captions, metadata |
+| `--ld-accent` | `#2346C0` | `#8FA8FF` | Links and buttons (signage blue) |
+| `--ld-on-accent` | `#FFFFFF` | `#0E1A26` | Text on accent buttons |
+| `--ld-ok` | `#00783E` | `#5FC08F` | Success, PASS |
+| `--ld-warn` | `#B8122B` | `#F08A7A` | Warnings, FAIL, cost notices |
 
-All text must meet WCAG 2.2 AA contrast (4.5:1 for body, 3:1 for large text) in both themes. Write a small script (`scripts/check-contrast.mjs`) that checks the token pairs actually used together and fails CI if any pair fails.
+**Line colours**, one per track (`--line-l`, `--line-g` …). The track letter is always shown with its colour, so colour never carries meaning alone. In light mode letters are white on the line colour; in dark mode they are night navy on a lighter version of it.
+
+| Track | Light | Dark | Track | Light | Dark |
+| --- | --- | --- | --- | --- | --- |
+| L | `#12395F` | `#768CA2` | W | `#0E7490` | `#4393A8` |
+| G | `#C2410C` | `#D16F46` | A | `#B8122B` | `#D26777` |
+| N | `#5A6876` | `#7E8994` | K | `#2F55D4` | `#6985E0` |
+| AI | `#5F6B00` | `#858F3D` | R | `#7C2D12` | `#AE7D6C` |
+| P | `#8A5A00` | `#A6823D` | O | `#A3195B` | `#C46C96` |
+| C | `#00745F` | `#429889` | S | `#00783E` | `#3D986C` |
+| I | `#6A3FA0` | `#9A7CBE` | | | |
+
+All text must meet WCAG 2.2 AA contrast (4.5:1 for body, 3:1 for large text and for line colours against backgrounds) in both themes. `scripts/check-contrast.mjs` checks every pair actually used together, including each line colour, and fails CI if any pair fails.
 
 ### 5.2 Typography
 
-- **IBM Plex Sans** for text, **IBM Plex Mono** for code, labels and the logo. Self-host via `@fontsource` packages (no Google Fonts requests).
-- Scale: body 17px / 1.65; h1 clamp(36px, 5vw, 60px); h2 32–40px; h3 22–24px; labels 13–14px mono, uppercase, letter-spacing 0.06–0.08em.
+- **Overpass** (an open-source face based on highway signage) for all text, in heavy weights (800) for headings. **Overpass Mono** for code and commands only. Self-host via `@fontsource` packages (no Google Fonts requests).
+- Scale: body 17px / 1.6; h1 clamp(36px, 4.5vw, 56px); h2 28–36px; h3 20–22px.
+- Sentence case everywhere. No uppercase or monospace labels, no "A · B · C" metadata strings, and no labels above headings.
 
 ### 5.3 Shape and layout
 
-- Radius 6px for buttons, 10px for cards. Borders 1px. No shadows, no gradients, no emoji.
+- Radius 6px for buttons, 10px for panels and cards, round for line badges ("roundels") and stations. Borders 1px. Rails 6px. No shadows, no gradients, no emoji.
 - Content max width 1180px on custom pages; Starlight's default width on docs pages.
 - Must work at 360px wide with no horizontal page scroll. Touch targets at least 44px.
+
+### 5.4 Map elements
+
+- **Roundel:** the track letter on its line colour.
+- **Station:** filled when the unit is ready, hollow when it is coming soon, a double ring for an interchange (a unit that other tracks build on).
+- **Unit header:** a station sign (roundel, track name, "Stop 2 of 10") with the line's stations underneath and the current one marked.
+- **Track page:** a vertical line diagram of its units.
+- **Path page:** a route, with "Change to the … line" wherever it switches track.
 
 ---
 
@@ -219,14 +240,14 @@ All text must meet WCAG 2.2 AA contrast (4.5:1 for body, 3:1 for large text) in 
 
 Build `/` as a custom Starlight page (`template: splash` or a custom Astro layout) matching this structure and copy. Text in square brackets is a placeholder for the owner.
 
-1. **Header bar:** logo `learndevops.co.uk` (".co.uk" in accent), links: Curriculum, What you'll build, Videos, GitHub, button **Start free** (→ `/start-here/`).
+1. **Header bar:** logo (a short line with an interchange station, then `learndevops.co.uk`), links: Curriculum, What you'll build, Videos, GitHub, button **Start free** (→ `/start-here/`) on wider screens.
 2. **Hero** (two columns, stacking on mobile):
-   - Label: `FREE · HANDS-ON · NOTHING TO INSTALL TO START`
+   - Short line above the heading: "Free and hands-on. Nothing to install to start."
    - H1: **From a blank laptop to a working CI/CD pipeline.**
    - Text: "A free DevOps course in 60 short, hands-on units. Start with Linux in your browser, move into a ready-made cloud workspace, and finish by deploying a real app to AWS or Kubernetes."
-   - Buttons: **Start module L1** (→ `/units/l1/`), **View the code on GitHub** (→ repo).
+   - Buttons: **Start unit L1** (→ `/units/l1/`), **View the code on GitHub** (→ repo).
    - Small print: "Works on Windows, Mac and Linux. All you need is a browser and a free GitHub account."
-   - Right column: an animated terminal (CSS only, respects `prefers-reduced-motion`) showing: `git push origin main` → `ok lint ok test ok build`; `kubectl apply -f app.yaml` → `deployment.apps/app configured`; `kubectl rollout status deploy/app` → `successfully rolled out`; `curl -s https://[your-app]/health` → `{"status": "ok"}`. Mark it `role="img"` with a descriptive `aria-label`.
+   - Right column: the course map (`TransitMap`): every track as a line in pipeline order, every unit as a station link, with a key for ready, coming soon and interchange stations.
 3. **AI band:** H2 "Is DevOps still worth learning now AI writes code?" Text: "**Yes.** AI can write code, but someone still has to build it, test it, ship it, secure it and keep it running. AI means more code arrives, faster. That makes reliable pipelines, infrastructure as code and good monitoring matter more, not less." Link: "Read the full answer" → FAQ.
 4. **Pipeline map:** label "The big picture", H2 "Every track teaches one stage of the same pipeline", then the `PipelineMap` component (section 8) with every track clickable.
 5. **Ways in:** H2 "Pick a path, or just pick a unit". Cards for the five paths (section 7.5), each with who it's for and unit count.
@@ -482,6 +503,8 @@ Build these as Astro components in `src/components/`. Each must work with JavaSc
 | `UnitCard` / `TrackCard` / `PathCard` | Cards for lists |
 | `WhatsNext` | Next unit, dependent units, path continuation |
 | `ProgressTick` | Optional client-side island (section 4.3) |
+| `TransitMap` | The course as a metro network (section 5.4); the home hero and the curriculum page |
+| `Roundel` / `LineStrip` / `StationList` | Track badge, a line's stations, and a vertical line or route of units (section 5.4) |
 | `GlossaryTerm` | Inline term with a link to the glossary entry |
 
 ### 8.1 Pipeline map

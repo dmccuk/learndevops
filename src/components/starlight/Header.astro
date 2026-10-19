@@ -47,7 +47,6 @@ const current = Astro.url.pathname;
 		<ThemeSelect />
 		{isHome && <a class="ld-button start" href={url('/start-here/')}>Start free</a>}
 	</div>
-	{isHome && <a class="ld-button start mobile-start" href={url('/start-here/')}>Start free</a>}
 </div>
 
 <style>
@@ -94,15 +93,6 @@ const current = Astro.url.pathname;
 	}
 	.start {
 		font-size: 0.9375rem;
-	}
-	.mobile-start {
-		flex-shrink: 0;
-		padding-inline: 0.75rem;
-	}
-	@media (min-width: 50rem) {
-		.mobile-start {
-			display: none;
-		}
 	}
 	/* The extra links need room; hide them on mid-size screens. */
 	@media (max-width: 72rem) {

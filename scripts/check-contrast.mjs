@@ -14,18 +14,21 @@ import path from 'node:path';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const css = fs.readFileSync(path.join(ROOT, 'src/styles/theme.css'), 'utf8');
 
-/** Reads `--ld-*: #hex;` declarations from the first block matching `selector {`. */
+/** Reads `--ld-*` and `--line-*` colour declarations from the block matching `selector {`. */
 function tokens(selector) {
 	const start = css.indexOf(`${selector} {`);
 	if (start === -1) throw new Error(`No "${selector}" block in theme.css`);
 	const block = css.slice(start, css.indexOf('}', start));
 	return Object.fromEntries(
-		[...block.matchAll(/--ld-([\w-]+):\s*(#[0-9a-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]),
+		[...block.matchAll(/--(ld-[\w-]+|line-[\w-]+):\s*(#[0-9a-f]{6})\s*;/gi)].map((m) => [
+			m[1].replace(/^ld-/, ''),
+			m[2],
+		]),
 	);
 }
 
-const dark = tokens(':root');
-const light = { ...dark, ...tokens(":root[data-theme='light']") };
+const light = tokens(':root');
+const dark = { ...light, ...tokens(":root[data-theme='dark']") };
 
 // [foreground, background, minimum ratio]. 4.5 for body text, 3 for large
 // text and non-text UI (borders of inputs and focus indicators).
@@ -60,8 +63,17 @@ const PAIRS = [
 	['terminal-muted', 'terminal', TEXT],
 	['terminal-prompt', 'terminal', TEXT],
 	['terminal-ok', 'terminal', TEXT],
-	['accent', 'bg', LARGE],
 ];
+
+// Line colours: the letter on each line (text), and each line against the
+// page and card backgrounds (non-text graphics, 3:1).
+const LINES = ['l', 'g', 'n', 'c', 'k', 'a', 'i', 'p', 'w', 'o', 's', 'r', 'ai'];
+for (const l of LINES) {
+	PAIRS.push(['line-on', `line-${l}`, TEXT]);
+	PAIRS.push([`line-${l}`, 'bg', LARGE]);
+	PAIRS.push([`line-${l}`, 'surface', LARGE]);
+	PAIRS.push([`line-${l}`, 'bg-alt', LARGE]);
+}
 
 function luminance(hex) {
 	const [r, g, b] = [1, 3, 5].map((i) => {
@@ -78,12 +90,12 @@ function ratio(a, b) {
 
 let failures = 0;
 for (const [name, theme] of [
-	['dark', dark],
 	['light', light],
+	['dark', dark],
 ]) {
 	for (const [fg, bg, min] of PAIRS) {
 		if (!theme[fg] || !theme[bg]) {
-			console.error(`FAIL ${name}: missing token --ld-${!theme[fg] ? fg : bg}`);
+			console.error(`FAIL ${name}: missing token ${!theme[fg] ? fg : bg}`);
 			failures++;
 			continue;
 		}
@@ -91,7 +103,7 @@ for (const [name, theme] of [
 		const ok = r >= min;
 		if (!ok) failures++;
 		console.log(
-			`${ok ? 'PASS' : 'FAIL'} ${name.padEnd(5)} ${`--ld-${fg}`.padEnd(22)} on ${`--ld-${bg}`.padEnd(18)} ${r.toFixed(2)}:1 (needs ${min}:1)`,
+			`${ok ? 'PASS' : 'FAIL'} ${name.padEnd(5)} ${fg.padEnd(18)} on ${bg.padEnd(14)} ${r.toFixed(2)}:1 (needs ${min}:1)`,
 		);
 	}
 }

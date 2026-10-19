@@ -1,0 +1,105 @@
+---
+/**
+ * All the stations on one line, with the current unit marked. Used in the
+ * unit header so learners can see where they are on the track.
+ */
+import { unitsInTrack, unitTitle } from '../lib/curriculum';
+import { unitUrl } from '../lib/url';
+
+interface Props {
+	track: string;
+	current: string;
+}
+const { track, current } = Astro.props;
+const units = unitsInTrack(track);
+---
+
+<ol class="strip" data-line={track.toLowerCase()} style={`--n: ${units.length}`} aria-label="Units on this track">
+	{
+		units.map((u) => (
+			<li>
+				<a
+					href={unitUrl(u.id)}
+					class:list={['stop', u.status, { current: u.id === current }]}
+					aria-current={u.id === current ? 'page' : undefined}
+					aria-label={unitTitle(u)}
+				>
+					<span class="dot" aria-hidden="true" />
+					<span class="id" aria-hidden="true">
+						{u.id}
+					</span>
+				</a>
+			</li>
+		))
+	}
+</ol>
+
+<style>
+	.strip {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(var(--n), 1fr);
+		width: min(100%, calc(var(--n) * 2.75rem));
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.strip::before {
+		content: '';
+		position: absolute;
+		top: calc(16px - var(--ld-rail) / 2);
+		left: calc(50% / var(--n));
+		width: calc(100% - 100% / var(--n));
+		height: var(--ld-rail);
+		border-radius: 3px;
+		background: var(--line);
+	}
+	.strip li {
+		margin: 0 !important;
+	}
+	.stop {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-height: 44px;
+		padding-top: 9px;
+		text-decoration: none;
+		color: var(--ld-dim);
+	}
+	.dot {
+		width: 14px;
+		height: 14px;
+		border: 3px solid var(--line);
+		border-radius: 50%;
+		background: var(--ld-surface);
+	}
+	.published .dot {
+		background: var(--line);
+	}
+	.current {
+		padding-top: 4px;
+		color: var(--ld-heading);
+	}
+	.current .dot {
+		width: 24px;
+		height: 24px;
+		border-width: 4px;
+		border-color: var(--ld-heading);
+		box-shadow:
+			inset 0 0 0 3px var(--ld-surface),
+			inset 0 0 0 9px var(--line);
+	}
+	.id {
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		line-height: 1;
+	}
+	.current .id {
+		font-weight: 800;
+	}
+	.stop:hover .id {
+		color: var(--ld-heading);
+	}
+</style>

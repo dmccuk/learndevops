@@ -1,6 +1,7 @@
 ---
-import { publishedCount, STAGE_LABELS, type Track, unitsInTrack } from '../lib/curriculum';
+import { publishedCount, type Track, unitsInTrack } from '../lib/curriculum';
 import { trackUrl } from '../lib/url';
+import Roundel from './Roundel.astro';
 
 interface Props {
 	track: Track;
@@ -10,21 +11,20 @@ const units = unitsInTrack(track.id);
 const ready = publishedCount(units.map((u) => u.id));
 ---
 
-<a class:list={['ld-card', { new: track.new }]} href={trackUrl(track.id)}>
-	<span class="ld-label">{STAGE_LABELS[track.stage]}{track.new && ' · New track'}</span>
-	<h3 class="ld-card-title"><span class="id">{track.id}</span> {track.name}</h3>
+<a class="ld-card track" href={trackUrl(track.id)} data-line={track.id.toLowerCase()}>
+	<h3 class="ld-card-title"><Roundel track={track.id} /> {track.name}</h3>
 	<p class="intro">{track.intro}</p>
-	<p class="count">{units.length} units · {ready} ready</p>
+	<p class="count">{units.length} units, {ready} ready{track.new && '. New track'}</p>
 </a>
 
 <style>
-	.new {
-		border-color: var(--ld-accent);
+	.track {
+		border-top: var(--ld-rail) solid var(--line);
 	}
-	.id {
-		font-family: var(--__sl-font-mono);
-		color: var(--ld-accent);
-		margin-inline-end: 0.25rem;
+	.ld-card-title {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
 	}
 	.intro {
 		color: var(--ld-muted);
