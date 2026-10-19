@@ -1,0 +1,107 @@
+---
+// Starlight's page footer plus the site footer (spec section 6, item 10).
+import EditLink from 'virtual:starlight/components/EditLink';
+import LastUpdated from 'virtual:starlight/components/LastUpdated';
+import Pagination from 'virtual:starlight/components/Pagination';
+import { getUnit } from '../../lib/curriculum';
+import { REPO_URL, url, YOUTUBE_URL } from '../../lib/url';
+
+const { entry } = Astro.locals.starlightRoute;
+const unit = entry.data.unit ? getUnit(entry.data.unit) : undefined;
+const isSplash = entry.data.template === 'splash';
+---
+
+<footer>
+	{
+		!isSplash && (
+			<>
+				<div class="meta">
+					<EditLink />
+					<LastUpdated />
+				</div>
+				<Pagination />
+			</>
+		)
+	}
+	{
+		unit?.costNote && (
+			<p class="disclaimer">
+				You are responsible for any charges in your own cloud accounts. Follow the cleanup steps in every
+				unit. See <a href={url('/start-here/costs-and-safety/')}>Costs and safety</a>.
+			</p>
+		)
+	}
+	<div class="site-footer">
+		<p>
+			<span class="mono">learndevops<span class="tld">.co.uk</span></span> · Free and open source · © 2026 [YOUR
+			NAME]
+		</p>
+		<nav aria-label="Footer">
+			<a href={REPO_URL}>GitHub</a>
+			<a href={YOUTUBE_URL}>YouTube</a>
+			<a href={url('/about/#licences')}>Licences</a>
+			<a href={url('/start-here/costs-and-safety/')}>Costs and safety</a>
+		</nav>
+	</div>
+</footer>
+
+<style>
+	footer {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+	.meta {
+		display: flex;
+		gap: 0.75rem 3rem;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		margin-top: 3rem;
+		font-size: var(--sl-text-sm);
+		color: var(--ld-dim);
+	}
+	.meta > :global(p:only-child) {
+		margin-inline-start: auto;
+	}
+	.disclaimer {
+		padding: 1rem;
+		border: 1px solid var(--ld-warn);
+		border-radius: var(--ld-radius-card);
+		font-size: var(--sl-text-sm);
+	}
+	.site-footer {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 2rem;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--ld-border);
+		font-size: var(--sl-text-sm);
+		color: var(--ld-dim);
+	}
+	.site-footer p {
+		margin: 0;
+	}
+	.site-footer nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 1.25rem;
+	}
+	.site-footer a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		color: var(--ld-muted);
+	}
+	.site-footer a:hover {
+		color: var(--ld-accent);
+	}
+	.mono {
+		font-family: var(--__sl-font-mono);
+	}
+	.tld {
+		color: var(--ld-accent);
+	}
+</style>

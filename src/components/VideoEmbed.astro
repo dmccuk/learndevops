@@ -1,0 +1,109 @@
+---
+/**
+ * Click-to-load YouTube video (spec section 7.3, item 11).
+ * Nothing is requested from YouTube until the learner clicks. Without
+ * JavaScript, the button is a plain link to the video on YouTube.
+ */
+interface Props {
+	youtubeId: string;
+	title: string;
+	legacy?: boolean;
+}
+const { youtubeId, title, legacy = false } = Astro.props;
+const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1`;
+---
+
+<ld-video class="video not-content" data-embed={embedUrl} data-title={title}>
+	<a class="placeholder" href={watchUrl}>
+		<span class="play" aria-hidden="true">
+			<svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z" fill="currentColor"></path></svg>
+		</span>
+		<span class="text">
+			<span class="title">{title}</span>
+			<span class="note">Play video. This loads YouTube (privacy-enhanced mode).</span>
+		</span>
+	</a>
+	{
+		legacy && (
+			<p class="legacy">
+				This video is from the original course; the approach differs slightly from this unit.
+			</p>
+		)
+	}
+</ld-video>
+
+<script>
+	class LdVideo extends HTMLElement {
+		connectedCallback() {
+			const link = this.querySelector<HTMLAnchorElement>('.placeholder');
+			link?.addEventListener('click', (e) => {
+				e.preventDefault();
+				const frame = document.createElement('iframe');
+				frame.src = this.dataset.embed ?? '';
+				frame.title = this.dataset.title ?? 'Video';
+				frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+				frame.allowFullscreen = true;
+				frame.className = 'frame';
+				link.replaceWith(frame);
+				frame.focus();
+			});
+		}
+	}
+	customElements.define('ld-video', LdVideo);
+</script>
+
+<style>
+	.video {
+		display: block;
+		margin: 1.5rem 0;
+	}
+	.placeholder,
+	.video :global(.frame) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border: 1px solid var(--ld-border);
+		border-radius: var(--ld-radius-card);
+		background: var(--ld-terminal);
+	}
+	.placeholder {
+		padding: 1.5rem;
+		color: var(--ld-terminal-text);
+		text-decoration: none;
+	}
+	.placeholder:hover .play,
+	.placeholder:focus-visible .play {
+		background: var(--ld-terminal-prompt);
+		color: #0f1419;
+	}
+	.play {
+		display: grid;
+		place-items: center;
+		flex-shrink: 0;
+		width: 3.5rem;
+		height: 3.5rem;
+		border: 2px solid var(--ld-terminal-prompt);
+		border-radius: 50%;
+		color: var(--ld-terminal-prompt);
+	}
+	.text {
+		display: grid;
+		gap: 0.25rem;
+	}
+	.title {
+		font-weight: 600;
+	}
+	.note {
+		font-size: 0.875rem;
+		color: var(--ld-terminal-muted);
+	}
+	.legacy {
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		color: var(--ld-muted);
+	}
+</style>

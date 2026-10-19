@@ -1,0 +1,30 @@
+---
+import { Aside } from '@astrojs/starlight/components';
+import { ENVIRONMENT_LABELS, getProject } from '../../lib/curriculum';
+import CostNotice from '../CostNotice.astro';
+import UnitList from '../UnitList.astro';
+
+interface Props {
+	id: string;
+}
+const project = getProject(Astro.props.id);
+---
+
+<p class="lead">{project.summary}</p>
+<p>Runs in: {ENVIRONMENT_LABELS[project.runsIn]}.</p>
+{project.costNote && <CostNotice />}
+
+<Aside title="Coming soon">
+	The full brief, acceptance criteria and <code>./check {project.id}</code> script arrive in a later milestone.
+</Aside>
+
+<slot />
+
+<h2 id="draws-on">Units this project draws on</h2>
+<UnitList ids={project.draws} />
+
+<style>
+	.lead {
+		font-size: 1.1875rem;
+	}
+</style>

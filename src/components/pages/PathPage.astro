@@ -1,0 +1,96 @@
+---
+import { getPath, getUnit, publishedCount, unitTitle } from '../../lib/curriculum';
+import { unitUrl } from '../../lib/url';
+import Badges from '../Badges.astro';
+
+interface Props {
+	id: string;
+}
+const path = getPath(Astro.props.id);
+const minutes = path.units.reduce((sum, id) => sum + getUnit(id).minutes, 0);
+const ready = publishedCount(path.units);
+---
+
+<p class="lead"><strong>For:</strong> {path.for}</p>
+{
+	path.units.length > 0 && (
+		<p>
+			{path.units.length} units, {ready} ready so far. About {Math.round(minutes / 60)} hours in total. Ends with:{' '}
+			{path.endsWith}.
+		</p>
+	)
+}
+
+{
+	path.units.length > 0 && (
+		<>
+			<h2 id="units">Units in order</h2>
+			<ol class="path-units not-content">
+				{path.units.map((id) => {
+					const u = getUnit(id);
+					return (
+						<li class:list={{ planned: u.status === 'planned' }}>
+							<a href={`${unitUrl(u.id)}?path=${path.id}`}>{unitTitle(u)}</a>
+							<span class="outcome">{u.outcome}</span>
+							<Badges unit={u} compact />
+						</li>
+					);
+				})}
+			</ol>
+		</>
+	)
+}
+
+{
+	path.optional.length > 0 && (
+		<>
+			<h2 id="optional">Optional</h2>
+			<ul>
+				{path.optional.map((id) => {
+					const u = getUnit(id);
+					return (
+						<li>
+							<a href={`${unitUrl(u.id)}?path=${path.id}`}>{unitTitle(u)}</a>: {u.outcome}
+						</li>
+					);
+				})}
+			</ul>
+		</>
+	)
+}
+
+<slot />
+
+<style>
+	.lead {
+		font-size: 1.1875rem;
+	}
+	.path-units {
+		display: grid;
+		gap: 0.75rem;
+		margin: 1rem 0 0;
+		padding-inline-start: 2rem;
+	}
+	.path-units li {
+		display: grid;
+		gap: 0.375rem;
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--ld-border);
+		border-radius: var(--ld-radius-card);
+		background: var(--ld-surface);
+	}
+	.path-units li::marker {
+		font-family: var(--__sl-font-mono);
+		color: var(--ld-dim);
+	}
+	.path-units a {
+		font-weight: 600;
+	}
+	.outcome {
+		color: var(--ld-muted);
+		font-size: 0.9375rem;
+	}
+	.planned {
+		background: var(--ld-bg) !important;
+	}
+</style>

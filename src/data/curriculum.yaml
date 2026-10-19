@@ -1,0 +1,157 @@
+# Single source of truth for tracks, units, paths and projects.
+# Validated by src/lib/curriculum.ts. The build fails on any error.
+# Unit IDs are upper case here and lower case in URLs and file names.
+
+tracks:
+  - { id: L,  name: "Linux and the shell",         stage: foundations, new: false, intro: "The command line skills every other track builds on." }
+  - { id: G,  name: "Git and collaboration",       stage: code,        new: false, intro: "Track every change and work with other people safely." }
+  - { id: N,  name: "Networking essentials",       stage: foundations, new: false, intro: "Enough networking to debug anything you deploy." }
+  - { id: C,  name: "Containers",                  stage: package,     new: false, intro: "Package an app so it runs the same everywhere." }
+  - { id: K,  name: "Kubernetes",                  stage: deploy,      new: true,  intro: "Run, scale and update containers on a cluster." }
+  - { id: A,  name: "Configuration with Ansible",  stage: configure,   new: false, intro: "Configure many servers the same way, every time." }
+  - { id: I,  name: "Infrastructure as code",      stage: provision,   new: false, intro: "Create and destroy infrastructure from code." }
+  - { id: P,  name: "CI/CD and delivery",          stage: build-test,  new: false, intro: "Test, build and deploy automatically on every change." }
+  - { id: W,  name: "Cloud with AWS",              stage: provision,   new: false, intro: "Use a real cloud account safely and cheaply." }
+  - { id: O,  name: "Observability",               stage: observe,     new: false, intro: "Know what your systems are doing, and hear about problems first." }
+  - { id: S,  name: "DevSecOps",                   stage: security,    new: true,  intro: "Build security into every stage, not on at the end." }
+  - { id: R,  name: "Running production",          stage: operate,     new: true,  intro: "Keep things running, and recover well when they don't." }
+  - { id: AI, name: "AI in DevOps",                stage: code,        new: true,  intro: "Use AI assistants for infrastructure work without lowering the bar." }
+
+units:
+  # L · Linux and the shell
+  - { id: L1, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [], title: "The command line", outcome: "Move around, create, copy and find files without a GUI", status: planned }
+  - { id: L2, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Permissions and users", outcome: "Read and change permissions and ownership, and use sudo safely", status: planned }
+  - { id: L3, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Processes and logs", outcome: "Find what is running, stop it, and read system logs", status: planned }
+  - { id: L4, track: L, stage: foundations, runsIn: laptop, minutes: 45, prerequisites: [L3], title: "Services with systemd", outcome: "Start, stop, enable and debug a service", status: planned }
+  - { id: L5, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 60, prerequisites: [L1], title: "Bash scripting", outcome: "Write a script with arguments, loops and proper exit codes", status: planned }
+  - { id: L6, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [L1], title: "Text processing", outcome: "Pull answers out of log files with grep, sed, awk and pipes", status: planned }
+
+  # G · Git and collaboration
+  - { id: G1, track: G, stage: code, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [L1], title: "Git basics", outcome: "Commit, branch, merge and undo a mistake", status: planned }
+  - { id: G2, track: G, stage: code, runsIn: codespaces, minutes: 40, prerequisites: [G1], title: "Working with GitHub", outcome: "Push, open a pull request, review and merge it", status: planned }
+  - { id: G3, track: G, stage: code, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [G1], title: "Conflicts and history", outcome: "Resolve a merge conflict, rebase, and read history to find a change", status: planned }
+  - { id: G4, track: G, stage: code, runsIn: codespaces, minutes: 30, prerequisites: [G2], title: "Branching strategies", outcome: "Choose trunk-based or feature branches and protect main", status: planned }
+
+  # N · Networking essentials
+  - { id: N1, track: N, stage: foundations, runsIn: codespaces, minutes: 60, prerequisites: [L1], title: "Networking for DevOps", outcome: "Explain ports, DNS, HTTP and TLS, and debug with curl and dig", status: planned }
+  - { id: N2, track: N, stage: foundations, runsIn: laptop, minutes: 45, prerequisites: [L2], title: "SSH properly", outcome: "Create keys, write an SSH config and hop through a jump host", status: planned }
+  - { id: N3, track: N, stage: foundations, runsIn: codespaces, minutes: 45, prerequisites: [N1, C4], title: "Load balancers and proxies", outcome: "Put a reverse proxy in front of two app servers", status: planned }
+
+  # C · Containers
+  - { id: C1, track: C, stage: package, runsIn: codespaces, minutes: 45, prerequisites: [L1], title: "Containers explained", outcome: "Run, inspect and stop containers, and explain images vs containers", status: planned }
+  - { id: C2, track: C, stage: package, runsIn: codespaces, minutes: 45, prerequisites: [C1], title: "Writing a Dockerfile", outcome: "Containerise the course app", status: planned }
+  - { id: C3, track: C, stage: package, runsIn: codespaces, minutes: 40, prerequisites: [C2], title: "Smaller, safer images", outcome: "Use multi-stage builds and non-root users", status: planned }
+  - { id: C4, track: C, stage: package, runsIn: codespaces, minutes: 45, prerequisites: [C2], title: "Docker Compose", outcome: "Run the app, a database and a proxy together", status: planned }
+  - { id: C5, track: C, stage: package, runsIn: codespaces, minutes: 30, prerequisites: [C2, G2], title: "Registries", outcome: "Tag and push images to GitHub Container Registry", status: planned }
+
+  # K · Kubernetes (new)
+  - { id: K1,  track: K, stage: deploy, runsIn: codespaces, minutes: 60, prerequisites: [C1], title: "Kubernetes in an hour", outcome: "Create a cluster and explore nodes, pods and namespaces with kubectl", status: planned }
+  - { id: K2,  track: K, stage: deploy, runsIn: codespaces, minutes: 45, prerequisites: [K1, C2], title: "Deploying an app", outcome: "Run the course app as a Deployment and reach it through a Service", status: planned }
+  - { id: K3,  track: K, stage: deploy, runsIn: codespaces, minutes: 40, prerequisites: [K2], title: "Config and secrets", outcome: "Feed settings in with ConfigMaps and Secrets", status: planned }
+  - { id: K4,  track: K, stage: deploy, runsIn: codespaces, minutes: 45, prerequisites: [K2], title: "Health and rollouts", outcome: "Add health probes, roll out a new version and roll back a bad one", status: planned }
+  - { id: K5,  track: K, stage: deploy, runsIn: codespaces, minutes: 45, prerequisites: [K2], title: "Scaling and resources", outcome: "Set requests and limits, and scale with the autoscaler", status: planned }
+  - { id: K6,  track: K, stage: deploy, runsIn: codespaces, minutes: 45, prerequisites: [K2], title: "Storage", outcome: "Run a database on a persistent volume that survives restarts", status: planned }
+  - { id: K7,  track: K, stage: deploy, runsIn: codespaces, minutes: 45, prerequisites: [K2, N1], title: "Traffic in", outcome: "Route web traffic to several apps with Gateway API", status: planned }
+  - { id: K8,  track: K, stage: deploy, runsIn: codespaces, minutes: 50, prerequisites: [K3], title: "Helm", outcome: "Install software from a chart and package the course app as one", status: planned }
+  - { id: K9,  track: K, stage: deploy, runsIn: laptop, minutes: 60, prerequisites: [K2, N2], title: "A real cluster", outcome: "Build a 3-node k3s cluster, drain a node and survive a node failure", status: planned }
+  - { id: K10, track: K, stage: deploy, runsIn: aws, minutes: 60, costNote: true, prerequisites: [K2, I2, W1], title: "Managed Kubernetes", outcome: "Create an EKS cluster with Terraform, deploy to it and tear it down", status: planned }
+
+  # A · Configuration with Ansible
+  - { id: A1, track: A, stage: configure, runsIn: codespaces, minutes: 45, prerequisites: [L2], title: "Ansible basics", outcome: "Write an inventory and run commands across many servers", status: planned }
+  - { id: A2, track: A, stage: configure, runsIn: codespaces, minutes: 50, prerequisites: [A1], title: "Playbooks", outcome: "Install and configure a web server, safely re-runnable", status: planned }
+  - { id: A3, track: A, stage: configure, runsIn: codespaces, minutes: 50, prerequisites: [A2], title: "Roles and templates", outcome: "Turn a playbook into a reusable role with variables", status: planned }
+  - { id: A4, track: A, stage: configure, runsIn: codespaces, minutes: 40, prerequisites: [A2], title: "Testing Ansible", outcome: "Use assert, ansible-lint and check-mode dry runs", status: planned }
+
+  # I · Infrastructure as code
+  - { id: I1, track: I, stage: provision, runsIn: codespaces, minutes: 45, prerequisites: [C1], title: "IaC concepts", outcome: "Plan, apply and destroy infrastructure locally with the Docker provider", status: planned, video: { youtubeId: "VS2sQgUgomE", title: "Install Terraform and build instances in AWS", legacy: true } }
+  - { id: I2, track: I, stage: provision, runsIn: codespaces, minutes: 50, prerequisites: [I1], title: "Variables and modules", outcome: "Make Terraform code reusable with variables, outputs and modules", status: planned }
+  - { id: I3, track: I, stage: provision, runsIn: aws, minutes: 45, costNote: true, prerequisites: [I2, W1], title: "State", outcome: "Explain state, store it remotely in S3 and recover from drift", status: planned }
+  - { id: I4, track: I, stage: provision, runsIn: aws, minutes: 50, costNote: true, prerequisites: [I2, W1], title: "Golden images with Packer", outcome: "Bake a machine image with the app's dependencies", status: planned, video: { youtubeId: "dIAhHhQ_J-c", title: "Install, configure and run Packer", legacy: true } }
+  - { id: I5, track: I, stage: provision, runsIn: aws, minutes: 60, costNote: true, prerequisites: [I3, N1], title: "A network in AWS", outcome: "Build a VPC, subnets, security groups and a load balancer", status: planned, video: { youtubeId: "yLvDSrnWMyQ", title: "Terraform code: build your datacentre", legacy: true } }
+
+  # P · CI/CD and delivery
+  - { id: P1, track: P, stage: build-test, runsIn: codespaces, minutes: 45, prerequisites: [G2], title: "Your first pipeline", outcome: "Run tests on every push with GitHub Actions", status: planned }
+  - { id: P2, track: P, stage: build-test, runsIn: codespaces, minutes: 45, prerequisites: [P1, C5], title: "Build and publish", outcome: "Build an image and push it to a registry on every merge", status: planned }
+  - { id: P3, track: P, stage: build-test, runsIn: codespaces, minutes: 45, prerequisites: [P1], title: "Quality gates", outcome: "Block a merge that fails linting, tests or a security scan", status: planned }
+  - { id: P4, track: P, stage: deploy, runsIn: aws, minutes: 60, costNote: true, prerequisites: [P2, I5, A2], title: "Deploy from a pipeline", outcome: "Deploy to AWS using OIDC, with no stored keys", status: planned }
+  - { id: P5, track: P, stage: deploy, runsIn: codespaces, minutes: 50, prerequisites: [K2, G2], title: "GitOps with Argo CD", outcome: "Make Git the source of truth and let Argo CD sync the cluster", status: planned }
+  - { id: P6, track: P, stage: deploy, runsIn: codespaces, minutes: 50, prerequisites: [K4], title: "Release strategies", outcome: "Run rolling, blue-green and canary releases, and pick between them", status: planned }
+
+  # W · Cloud with AWS
+  - { id: W1, track: W, stage: provision, runsIn: aws, minutes: 45, prerequisites: [], title: "Account safety", outcome: "Set up MFA, Identity Center and a budget alert before building anything", status: planned }
+  - { id: W2, track: W, stage: provision, runsIn: aws, minutes: 45, costNote: true, prerequisites: [W1], title: "Core services tour", outcome: "Explain what EC2, S3, IAM and VPC are for", status: planned, video: { youtubeId: "XzWyudb4N04", title: "Build your first AWS EC2 instance", legacy: true } }
+  - { id: W3, track: W, stage: provision, runsIn: aws, minutes: 45, prerequisites: [W1], title: "IAM in practice", outcome: "Write least-privilege roles and policies", status: planned }
+  - { id: W4, track: W, stage: provision, runsIn: aws, minutes: 30, prerequisites: [W1], title: "Cost control", outcome: "Tag resources, track spend and spot a runaway bill", status: planned }
+
+  # O · Observability
+  - { id: O1, track: O, stage: observe, runsIn: codespaces, minutes: 30, prerequisites: [], title: "Monitoring concepts", outcome: "Explain metrics, logs and traces, and the four golden signals", status: planned }
+  - { id: O2, track: O, stage: observe, runsIn: codespaces, minutes: 50, prerequisites: [O1, C4], title: "Prometheus and Grafana", outcome: "Collect the app's metrics and build a dashboard", status: planned }
+  - { id: O3, track: O, stage: observe, runsIn: codespaces, minutes: 45, prerequisites: [O2], title: "Centralised logs", outcome: "Ship logs to Loki and search them", status: planned }
+  - { id: O4, track: O, stage: observe, runsIn: codespaces, minutes: 45, prerequisites: [O2], title: "Alerts", outcome: "Alert on a real problem and send it to Slack", status: planned }
+  - { id: O5, track: O, stage: observe, runsIn: codespaces-4core, minutes: 50, prerequisites: [O2, K2], title: "Monitoring Kubernetes", outcome: "Install the Prometheus stack on a cluster and read its health", status: planned }
+
+  # S · DevSecOps (new)
+  - { id: S1, track: S, stage: security, runsIn: codespaces, minutes: 40, prerequisites: [G2], title: "Secrets hygiene", outcome: "Keep secrets out of Git and rotate a leaked key", status: planned }
+  - { id: S2, track: S, stage: security, runsIn: codespaces, minutes: 40, prerequisites: [C2, P1], title: "Supply chain scanning", outcome: "Scan dependencies and images in the pipeline", status: planned }
+  - { id: S3, track: S, stage: security, runsIn: codespaces, minutes: 45, prerequisites: [K2], title: "Policy as code", outcome: "Block insecure Kubernetes manifests before they deploy", status: planned }
+
+  # R · Running production (new)
+  - { id: R1, track: R, stage: operate, runsIn: codespaces, minutes: 50, prerequisites: [O2], title: "Incidents", outcome: "Follow a runbook, find the cause and write a short postmortem", status: planned }
+  - { id: R2, track: R, stage: operate, runsIn: codespaces, minutes: 40, prerequisites: [C4], title: "Backups and restores", outcome: "Back up a database and prove the restore works", status: planned }
+  - { id: R3, track: R, stage: operate, runsIn: codespaces, minutes: 40, prerequisites: [O2], title: "SLOs", outcome: "Set a service level objective and an error budget", status: planned }
+
+  # AI · AI in DevOps (new, optional)
+  - { id: AI1, track: AI, stage: code, runsIn: codespaces, minutes: 45, prerequisites: [I1, K2], title: "AI for infrastructure code", outcome: "Generate Terraform and Kubernetes manifests with an assistant and review them properly", status: planned }
+  - { id: AI2, track: AI, stage: code, runsIn: codespaces, minutes: 40, prerequisites: [AI1, P3], title: "Guardrails", outcome: "Route AI-written changes through the same reviews, tests and policy checks as yours", status: planned }
+
+paths:
+  - id: beginner
+    name: "Complete beginner"
+    for: "No Linux or Git experience yet"
+    units: [L1, L2, L3, L5, L6, G1, G2, G3, N1, C1, C2, C3, C4, P1, P2]
+    endsWith: "An app that is tested and built on every push"
+  - id: servers
+    name: "Servers and automation"
+    for: "Sysadmins moving into DevOps"
+    units: [W1, N2, A1, A2, A3, A4, I1, I2, I3, I4, I5, P1, P2, P3, P4, O2, O4]
+    endsWith: "Project 1: Ship it on servers"
+  - id: kubernetes
+    name: "Kubernetes"
+    for: "Comfortable running Docker containers"
+    units: [K1, K2, K3, K4, K5, K6, K7, K8, P5, O5, K9]
+    optional: [K10]
+    endsWith: "Project 2: Ship it on Kubernetes"
+  - id: reliability
+    name: "Reliability"
+    for: "Already deploying, and want to run things well"
+    units: [O1, O2, O3, O4, O5, R1, R2, R3, S1, S2, S3]
+    endsWith: "Project 3: Keep it running"
+  - id: one-tool
+    name: "Just one tool"
+    for: "Need a single skill for work"
+    units: []        # page explains: pick any one track and follow it in order
+    endsWith: "That track's last unit"
+
+projects:
+  - id: project-1
+    name: "Ship it on servers"
+    summary: "The course app on EC2 behind a load balancer, deployed automatically on every merge."
+    draws: [W1, I1, I2, I3, I4, I5, A1, A2, A3, A4, P1, P2, P3, P4, O2, O4]
+    runsIn: aws
+    costNote: true
+  - id: project-2
+    name: "Ship it on Kubernetes"
+    summary: "The same app on a cluster, deployed by GitOps, with dashboards and alerts."
+    draws: [C1, C2, C3, C4, C5, K1, K2, K3, K4, K5, K6, K7, K8, P1, P2, P3, P5, O5]
+    runsIn: codespaces-4core
+  - id: project-3
+    name: "Keep it running"
+    summary: "A broken system to diagnose, fix and write up, then harden."
+    draws: [O1, O2, O3, O4, R1, R2, R3, S1, S2, S3]
+    runsIn: codespaces
+
+# Videos from the original course that are not attached to a unit.
+# Shown on the Videos page only.
+unattachedVideos:
+  - { youtubeId: "1y3IsgvvY84", title: "Set up IAM and save your access and secret keys", chapter: 2, note: "Teaches stored access keys, which this course now avoids. Use IAM Identity Center and aws sso login instead (see W1)." }
+  - { youtubeId: "1l545lhadz4", title: "Set up your control node", chapter: 3, note: "Replaced by GitHub Codespaces in this course." }

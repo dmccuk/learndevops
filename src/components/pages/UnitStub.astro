@@ -1,0 +1,61 @@
+---
+/**
+ * Short page for a unit that has not been written yet (status: planned).
+ * Shows the title, outcome and where it fits (spec section 7.1).
+ * When a unit is written, its MDX page replaces this component with the full
+ * template in docs/writing-a-unit.md.
+ */
+import { Aside } from '@astrojs/starlight/components';
+import { getUnit, unitTitle } from '../../lib/curriculum';
+import { unitUrl, url } from '../../lib/url';
+import UnitHeader from '../UnitHeader.astro';
+import VideoEmbed from '../VideoEmbed.astro';
+import WhatsNext from '../WhatsNext.astro';
+import WhereThisFits from '../WhereThisFits.astro';
+
+interface Props {
+	id: string;
+}
+const unit = getUnit(Astro.props.id);
+const prerequisites = unit.prerequisites.map(getUnit);
+---
+
+<UnitHeader id={unit.id} />
+
+<Aside title="Coming soon">
+	This unit is planned but not written yet. You can still see what it covers and where it fits.
+	<a href={url('/curriculum/')}>Browse the units that are ready</a>.
+</Aside>
+
+<h2 id="youll-be-able-to">You'll be able to</h2>
+<p>{unit.outcome}.</p>
+
+<h2 id="before-you-start">Before you start</h2>
+{
+	prerequisites.length ? (
+		<ul>
+			{prerequisites.map((p) => (
+				<li>
+					{p.outcome}: see <a href={unitUrl(p.id)}>{unitTitle(p)}</a>
+				</li>
+			))}
+		</ul>
+	) : (
+		<p>Nothing. You can start this unit cold.</p>
+	)
+}
+
+<h2 id="where-this-fits">Where this fits</h2>
+<WhereThisFits id={unit.id} />
+
+{
+	unit.video && (
+		<>
+			<h2 id="video">Video</h2>
+			<VideoEmbed youtubeId={unit.video.youtubeId} title={unit.video.title} legacy={unit.video.legacy} />
+		</>
+	)
+}
+
+<h2 id="whats-next">What's next</h2>
+<WhatsNext id={unit.id} />
