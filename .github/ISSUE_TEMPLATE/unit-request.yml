@@ -1,0 +1,16 @@
+name: Unit request
+description: Suggest a skill the course should teach.
+labels: [unit-request]
+body:
+  - type: textarea
+    id: skill
+    attributes:
+      label: What should the unit teach?
+      description: Describe the outcome, as in "After this unit, you can…"
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does it matter?
+      description: Where it fits in the pipeline, or how it comes up at work.

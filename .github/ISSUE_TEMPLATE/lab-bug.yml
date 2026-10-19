@@ -1,0 +1,30 @@
+name: Bug in a lab
+description: A lab step, or the start, check or cleanup command, does not work.
+labels: [lab-bug]
+body:
+  - type: input
+    id: unit
+    attributes:
+      label: Unit ID
+      placeholder: K2
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where were you running the lab?
+      options: [Browser (webvm.io), GitHub Codespaces, Laptop (Multipass), AWS]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: The step you were on, the command you ran, and the full output. Remove any secrets or account IDs.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
