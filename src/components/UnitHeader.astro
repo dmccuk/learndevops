@@ -1,0 +1,35 @@
+---
+// Unit header block generated from curriculum.yaml (spec section 7.3, item 1).
+import { getTrack, getUnit } from '../lib/curriculum';
+import { trackUrl } from '../lib/url';
+import Badges from './Badges.astro';
+import CostNotice from './CostNotice.astro';
+
+interface Props {
+	id: string;
+}
+const unit = getUnit(Astro.props.id);
+const track = getTrack(unit.track);
+---
+
+<div class="unit-header not-content">
+	<p class="ld-label">
+		Unit {unit.id} · <a href={trackUrl(track.id)}>{track.id} · {track.name}</a>
+	</p>
+	<Badges unit={unit} />
+	{unit.costNote && <CostNotice />}
+</div>
+
+<style>
+	.unit-header {
+		display: grid;
+		gap: 0.75rem;
+		margin-bottom: 2rem;
+	}
+	.ld-label {
+		margin: 0;
+	}
+	.ld-label a {
+		color: var(--ld-muted);
+	}
+</style>

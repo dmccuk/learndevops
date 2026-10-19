@@ -1,0 +1,30 @@
+---
+import { type LearningPath, publishedCount } from '../lib/curriculum';
+import { pathUrl } from '../lib/url';
+
+interface Props {
+	path: LearningPath;
+}
+const { path } = Astro.props;
+const total = path.units.length;
+const ready = publishedCount(path.units);
+---
+
+<a class="ld-card" href={pathUrl(path.id)}>
+	<h3 class="ld-card-title">{path.name}</h3>
+	<p class="for">For: {path.for}</p>
+	<p class="meta">
+		{total > 0 ? `${total} units · ${ready} ready` : 'Any one track'} · Ends with: {path.endsWith}
+	</p>
+</a>
+
+<style>
+	.for {
+		color: var(--ld-muted);
+	}
+	.meta {
+		margin-top: auto !important;
+		font-size: 0.875rem;
+		color: var(--ld-dim);
+	}
+</style>

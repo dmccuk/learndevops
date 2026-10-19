@@ -1,0 +1,15 @@
+---
+// A grid of unit cards for a list of unit IDs.
+import { getUnit } from '../lib/curriculum';
+import UnitCard from './UnitCard.astro';
+
+interface Props {
+	ids: string[];
+	headingLevel?: 'h3' | 'h4';
+}
+const { ids, headingLevel } = Astro.props;
+---
+
+<div class="ld-grid not-content">
+	{ids.map((id) => <UnitCard unit={getUnit(id)} headingLevel={headingLevel} />)}
+</div>

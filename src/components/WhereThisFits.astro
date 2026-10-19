@@ -1,0 +1,14 @@
+---
+// The pipeline map with this unit's stage highlighted, plus the author's
+// paragraph on what happens before and after this step (spec section 7.3, item 4).
+import { getUnit } from '../lib/curriculum';
+import PipelineMap from './PipelineMap.astro';
+
+interface Props {
+	id: string;
+}
+const unit = getUnit(Astro.props.id);
+---
+
+<PipelineMap highlightStage={unit.stage} highlightTrack={unit.track} />
+<slot />
