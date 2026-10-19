@@ -1,0 +1,268 @@
+/*
+ * learndevops.co.uk design tokens (spec section 5).
+ * The --ld-* tokens are the source of truth. They are mapped onto Starlight's
+ * --sl-* variables below. scripts/check-contrast.mjs reads this file, so keep
+ * each token on its own line as `--ld-name: #RRGGBB;`.
+ */
+
+/* Dark theme (default) */
+:root {
+	--ld-bg: #0f1419;
+	--ld-bg-alt: #131a21;
+	--ld-surface: #161c23;
+	--ld-terminal: #0a0e12;
+	--ld-border: #26303a;
+	--ld-text: #e6e1d6;
+	--ld-heading: #f5f2ea;
+	--ld-muted: #a9b1ba;
+	--ld-dim: #8a949e;
+	--ld-accent: #f2a541;
+	--ld-on-accent: #0f1419;
+	--ld-ok: #8fcbb9;
+	--ld-warn: #e07a5f;
+	--ld-accent-tint: #2a2114;
+	--ld-warn-tint: #2a1813;
+
+	/* Terminal blocks stay dark in both themes. */
+	--ld-terminal-text: #e6e1d6;
+	--ld-terminal-muted: #a9b1ba;
+	--ld-terminal-prompt: #f2a541;
+	--ld-terminal-ok: #8fcbb9;
+}
+
+/* Light theme */
+:root[data-theme='light'] {
+	--ld-bg: #fbfaf7;
+	--ld-bg-alt: #f2f0ea;
+	--ld-surface: #ffffff;
+	--ld-terminal: #1b2128;
+	--ld-border: #ddd8cc;
+	--ld-text: #1b2128;
+	--ld-heading: #0f1419;
+	--ld-muted: #4a5560;
+	--ld-dim: #5e6872;
+	--ld-accent: #a05c00; /* spec: #A65F00, darkened to pass 4.5:1 on --ld-bg-alt */
+	--ld-on-accent: #ffffff;
+	--ld-ok: #1e7a5e;
+	--ld-warn: #b23a1e;
+	--ld-accent-tint: #faf1e4;
+	--ld-warn-tint: #f8e4de;
+}
+
+/* Map onto Starlight. Unlayered rules win over Starlight's layered defaults. */
+:root,
+:root[data-theme='light'] {
+	--sl-color-white: var(--ld-heading);
+	--sl-color-gray-1: var(--ld-heading);
+	--sl-color-gray-2: var(--ld-text);
+	--sl-color-gray-3: var(--ld-muted);
+	--sl-color-gray-4: var(--ld-dim);
+	--sl-color-gray-5: var(--ld-border);
+	--sl-color-gray-6: var(--ld-surface);
+	--sl-color-gray-7: var(--ld-bg-alt);
+	--sl-color-black: var(--ld-bg);
+
+	--sl-color-accent-low: var(--ld-accent-tint);
+	--sl-color-accent: var(--ld-accent);
+	--sl-color-accent-high: var(--ld-accent);
+	--sl-color-text: var(--ld-text);
+	--sl-color-text-accent: var(--ld-accent);
+	--sl-color-text-invert: var(--ld-on-accent);
+	--sl-color-bg: var(--ld-bg);
+	--sl-color-bg-nav: var(--ld-bg);
+	--sl-color-bg-sidebar: var(--ld-bg);
+	--sl-color-bg-inline-code: var(--ld-bg-alt);
+	--sl-color-bg-accent: var(--ld-accent);
+	--sl-color-hairline-light: var(--ld-border);
+	--sl-color-hairline: var(--ld-border);
+	--sl-color-hairline-shade: var(--ld-border);
+
+	--sl-color-orange-low: var(--ld-accent-tint);
+	--sl-color-orange: var(--ld-accent);
+	--sl-color-orange-high: var(--ld-accent);
+	--sl-color-red-low: var(--ld-warn-tint);
+	--sl-color-red: var(--ld-warn);
+	--sl-color-red-high: var(--ld-warn);
+	--sl-color-green-high: var(--ld-ok);
+	--sl-color-green-low: var(--ld-bg-alt);
+	--sl-color-green: var(--ld-ok);
+	/* Note and tip asides use blue and purple; keep them in the palette. */
+	--sl-color-blue-low: var(--ld-bg-alt);
+	--sl-color-blue: var(--ld-dim);
+	--sl-color-blue-high: var(--ld-heading);
+	--sl-color-purple-low: var(--ld-bg-alt);
+	--sl-color-purple: var(--ld-ok);
+	--sl-color-purple-high: var(--ld-heading);
+
+	/* No shadows (spec section 5.3). */
+	--sl-shadow-sm: none;
+	--sl-shadow-md: none;
+	--sl-shadow-lg: none;
+
+	--sl-font: 'IBM Plex Sans';
+	--sl-font-mono: 'IBM Plex Mono';
+	--sl-text-body: 1.0625rem; /* 17px */
+	--sl-line-height: 1.65;
+	--sl-text-h1: clamp(2.25rem, 5vw, 3.75rem); /* 36–60px */
+	--sl-text-h2: clamp(2rem, 3vw, 2.5rem); /* 32–40px */
+	--sl-text-h3: clamp(1.375rem, 2vw, 1.5rem); /* 22–24px */
+
+	--ld-radius: 6px;
+	--ld-radius-card: 10px;
+	--ld-max: 1180px;
+	--ld-label-size: 0.8125rem;
+}
+
+@media (min-width: 50em) {
+	:root {
+		--sl-text-h1: clamp(2.25rem, 5vw, 3.75rem);
+		--sl-text-h2: clamp(2rem, 3vw, 2.5rem);
+		--sl-text-h3: clamp(1.375rem, 2vw, 1.5rem);
+	}
+}
+
+body {
+	background-color: var(--ld-bg);
+	color: var(--ld-text);
+}
+
+h1,
+h2,
+h3,
+h4 {
+	color: var(--ld-heading);
+}
+
+/* Starlight's inline code */
+.sl-markdown-content code:not(:where(.not-content *)) {
+	border-radius: 4px;
+}
+
+/* Small mono labels (spec section 5.2) */
+.ld-label {
+	font-family: var(--__sl-font-mono);
+	font-size: var(--ld-label-size);
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	color: var(--ld-dim);
+}
+
+/* Planned units are greyed out in lists. */
+.ld-planned:not([aria-current='page']) {
+	color: var(--ld-dim) !important;
+}
+
+/* Buttons */
+.ld-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-height: 44px;
+	padding: 0.5rem 1.125rem;
+	border: 1px solid var(--ld-accent);
+	border-radius: var(--ld-radius);
+	font-weight: 600;
+	text-decoration: none;
+	line-height: 1.2;
+	background: var(--ld-accent);
+	color: var(--ld-on-accent);
+}
+.ld-button:hover,
+.ld-button:focus-visible {
+	background: transparent;
+	color: var(--ld-accent);
+}
+.ld-button.secondary {
+	background: transparent;
+	color: var(--ld-accent);
+}
+.ld-button.secondary:hover,
+.ld-button.secondary:focus-visible {
+	background: var(--ld-accent);
+	color: var(--ld-on-accent);
+}
+
+/* Cards */
+.ld-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1.25rem;
+	border: 1px solid var(--ld-border);
+	border-radius: var(--ld-radius-card);
+	background: var(--ld-surface);
+	color: var(--ld-text);
+	text-decoration: none;
+}
+a.ld-card:hover,
+a.ld-card:focus-visible {
+	border-color: var(--ld-accent);
+}
+.ld-card h3,
+.ld-card .ld-card-title {
+	margin: 0;
+	font-size: 1.125rem;
+	line-height: 1.3;
+	color: var(--ld-heading);
+}
+.ld-card p {
+	margin: 0;
+}
+
+.ld-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+/* Badges */
+.ld-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.125rem 0.5rem;
+	border: 1px solid var(--ld-border);
+	border-radius: 4px;
+	font-family: var(--__sl-font-mono);
+	font-size: 0.75rem;
+	line-height: 1.5;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--ld-muted);
+	white-space: nowrap;
+}
+.ld-badge.accent {
+	border-color: var(--ld-accent);
+	color: var(--ld-accent);
+}
+.ld-badge.warn {
+	border-color: var(--ld-warn);
+	color: var(--ld-warn);
+}
+.ld-badge.ok {
+	border-color: var(--ld-ok);
+	color: var(--ld-ok);
+}
+
+/* Visually hidden, still read by screen readers */
+.ld-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

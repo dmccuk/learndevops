@@ -1,0 +1,32 @@
+---
+// Warning panel for units that create billable AWS resources.
+import { url } from '../lib/url';
+---
+
+<aside class="cost-notice" aria-label="Cost notice">
+	<p class="head">This unit costs money</p>
+	<p>
+		It creates real resources in your own AWS account, and AWS will bill you for them. Complete unit W1
+		first, finish the lab in one sitting, and run every cleanup step. Read
+		<a href={url('/start-here/costs-and-safety/')}>Costs and safety</a> before you start.
+	</p>
+</aside>
+
+<style>
+	.cost-notice {
+		margin-top: 1rem;
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--ld-warn);
+		border-inline-start-width: 4px;
+		border-radius: var(--ld-radius-card);
+		background: var(--ld-warn-tint);
+	}
+	.cost-notice p {
+		margin: 0;
+	}
+	.head {
+		margin-bottom: 0.25rem !important;
+		font-weight: 600;
+		color: var(--ld-warn);
+	}
+</style>

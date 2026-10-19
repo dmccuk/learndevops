@@ -1,0 +1,38 @@
+---
+import { curriculum, unitTitle } from '../../lib/curriculum';
+import { unitUrl, YOUTUBE_URL } from '../../lib/url';
+import VideoEmbed from '../VideoEmbed.astro';
+
+const attached = curriculum.units.filter((u) => u.video);
+---
+
+<p>
+	Videos are on the <a href={YOUTUBE_URL}>London IAC YouTube channel</a>. New short videos for the main units are
+	planned. Until then, the videos below come from the original course.
+</p>
+
+<h2 id="by-unit">Videos by unit</h2>
+{
+	attached.map((u) => (
+		<section aria-labelledby={`video-${u.id.toLowerCase()}`}>
+			<h3 id={`video-${u.id.toLowerCase()}`}>
+				<a href={unitUrl(u.id)}>{unitTitle(u)}</a>
+			</h3>
+			<VideoEmbed youtubeId={u.video!.youtubeId} title={u.video!.title} legacy={u.video!.legacy} />
+		</section>
+	))
+}
+
+<h2 id="original-course">Other videos from the original course</h2>
+<p>These videos are not attached to a unit, because this course now does things differently.</p>
+{
+	curriculum.unattachedVideos.map((v) => (
+		<section aria-labelledby={`video-ch${v.chapter}`}>
+			<h3 id={`video-ch${v.chapter}`}>
+				Chapter {v.chapter}: {v.title}
+			</h3>
+			<p>{v.note}</p>
+			<VideoEmbed youtubeId={v.youtubeId} title={v.title} />
+		</section>
+	))
+}

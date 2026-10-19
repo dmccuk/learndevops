@@ -1,0 +1,41 @@
+---
+import fs from 'node:fs';
+import { parse } from 'yaml';
+import { z } from 'zod';
+
+const Glossary = z.strictObject({
+	terms: z
+		.array(z.strictObject({ term: z.string(), id: z.string().optional(), definition: z.string() }))
+		.min(40),
+});
+const { terms } = Glossary.parse(parse(fs.readFileSync('src/data/glossary.yaml', 'utf8')));
+const slug = (s: string) =>
+	s
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+const sorted = [...terms].sort((a, b) => a.term.localeCompare(b.term, 'en-GB', { sensitivity: 'base' }));
+---
+
+<dl class="glossary">
+	{
+		sorted.map((t) => (
+			<>
+				<dt id={t.id ?? slug(t.term)}>{t.term}</dt>
+				<dd>{t.definition}</dd>
+			</>
+		))
+	}
+</dl>
+
+<style>
+	.glossary dt {
+		margin-top: 1.5rem;
+		font-weight: 600;
+		color: var(--ld-heading);
+		scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
+	}
+	.glossary dd {
+		margin: 0.25rem 0 0;
+	}
+</style>

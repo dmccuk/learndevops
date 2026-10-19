@@ -1,0 +1,140 @@
+---
+// Starlight's header plus the site's top links (spec sections 4.2 and 6).
+import Search from '@astrojs/starlight/components/Search.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import SiteTitle from './SiteTitle.astro';
+import ThemeSelect from './ThemeSelect.astro';
+import { url, YOUTUBE_URL } from '../../lib/url';
+
+
+const isHome = Astro.locals.starlightRoute.id === '';
+
+const links = isHome
+	? [
+			{ label: 'Curriculum', href: url('/curriculum/') },
+			{ label: "What you'll build", href: url('/projects/') },
+			{ label: 'Videos', href: YOUTUBE_URL },
+		]
+	: [
+			{ label: 'Curriculum', href: url('/curriculum/') },
+			{ label: 'Paths', href: url('/paths/') },
+			{ label: 'Projects', href: url('/projects/') },
+			{ label: 'Videos', href: YOUTUBE_URL },
+		];
+const current = Astro.url.pathname;
+---
+
+<div class="header">
+	<div class="title-wrapper sl-flex">
+		<SiteTitle />
+	</div>
+	<div class="sl-flex print:hidden search-wrapper">
+		<Search />
+	</div>
+	<div class="sl-hidden md:sl-flex print:hidden right-group">
+		<nav aria-label="Main" class="top-links">
+			{
+				links.map((l) => (
+					<a href={l.href} aria-current={current.startsWith(l.href) ? 'page' : undefined}>
+						{l.label}
+					</a>
+				))
+			}
+		</nav>
+		<div class="sl-flex social-icons">
+			<SocialIcons />
+		</div>
+		<ThemeSelect />
+		{isHome && <a class="ld-button start" href={url('/start-here/')}>Start free</a>}
+	</div>
+	{isHome && <a class="ld-button start mobile-start" href={url('/start-here/')}>Start free</a>}
+</div>
+
+<style>
+	.header {
+		display: flex;
+		gap: var(--sl-nav-gap);
+		justify-content: space-between;
+		align-items: center;
+		height: 100%;
+	}
+	.title-wrapper {
+		overflow: clip;
+		padding: 0.25rem;
+		margin: -0.25rem;
+		min-width: 0;
+	}
+	.right-group,
+	.social-icons {
+		gap: 1rem;
+		align-items: center;
+	}
+	.social-icons::after {
+		content: '';
+		height: 2rem;
+		border-inline-end: 1px solid var(--ld-border);
+	}
+	.top-links {
+		display: flex;
+		gap: 1.25rem;
+		align-items: center;
+	}
+	.top-links a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		font-size: 0.9375rem;
+		color: var(--ld-muted);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.top-links a:hover,
+	.top-links a[aria-current='page'] {
+		color: var(--ld-heading);
+	}
+	.start {
+		font-size: 0.9375rem;
+	}
+	.mobile-start {
+		flex-shrink: 0;
+		padding-inline: 0.75rem;
+	}
+	@media (min-width: 50rem) {
+		.mobile-start {
+			display: none;
+		}
+	}
+	/* The extra links need room; hide them on mid-size screens. */
+	@media (max-width: 72rem) {
+		.top-links {
+			display: none;
+		}
+	}
+	@media (min-width: 50rem) {
+		:global(:root[data-has-sidebar]) {
+			--__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+		}
+		:global(:root:not([data-has-toc])) {
+			--__toc-width: 0rem;
+		}
+		.header {
+			--__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+			--__main-column-fr: calc(
+				(
+						100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+							(2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+							var(--sl-content-width)
+					) / 2
+			);
+			display: grid;
+			grid-template-columns:
+				minmax(
+					calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
+					auto
+				)
+				1fr
+				auto;
+			align-content: center;
+		}
+	}
+</style>

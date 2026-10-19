@@ -1,0 +1,38 @@
+---
+import { type Unit } from '../lib/curriculum';
+import { unitUrl } from '../lib/url';
+import Badges from './Badges.astro';
+
+interface Props {
+	unit: Unit;
+	headingLevel?: 'h3' | 'h4';
+}
+const { unit, headingLevel: H = 'h3' } = Astro.props;
+const planned = unit.status === 'planned';
+---
+
+<a class:list={['ld-card', 'unit-card', { planned }]} href={unitUrl(unit.id)}>
+	<H class="ld-card-title"><span class="id">{unit.id}</span> {unit.title}</H>
+	<p class="outcome">{unit.outcome}</p>
+	<Badges unit={unit} compact />
+</a>
+
+<style>
+	.id {
+		font-family: var(--__sl-font-mono);
+		color: var(--ld-accent);
+		margin-inline-end: 0.25rem;
+	}
+	.outcome {
+		color: var(--ld-muted);
+		font-size: 0.9375rem;
+	}
+	.planned {
+		background: var(--ld-bg);
+	}
+	.planned .ld-card-title,
+	.planned .id,
+	.planned .outcome {
+		color: var(--ld-dim);
+	}
+</style>

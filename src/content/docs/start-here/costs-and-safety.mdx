@@ -1,0 +1,71 @@
+---
+title: Costs and safety
+description: Who pays for what, how to keep cloud costs at zero or close to it, the AWS safety rules every unit follows, and what to do about an unexpected bill.
+lastChecked: '2026-10-19'
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution" title="Disclaimer">
+You are responsible for any charges in your own cloud accounts. Follow the cleanup steps in every unit.
+</Aside>
+
+## Who pays for what
+
+| What | Who pays | Notes |
+| --- | --- | --- |
+| This website and course | Nobody | The course is free and open source. The owner pays only for the domain name. |
+| Browser units | Nobody | They run in your browser. |
+| GitHub Codespaces | Your GitHub account | Free within GitHub's monthly allowance. GitHub Free accounts get 120 core hours and 15 GB-month of storage a month ([GitHub Docs](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)). See [the free allowance](/start-here/environments/#the-free-allowance). |
+| Multipass (laptop units) | Nobody | Open-source software on your own computer. |
+| AWS units | You, on your own AWS account and card | Every AWS unit is marked "Costs money" and shows an estimated cost. |
+
+## Things only run when you use them
+
+Nothing in this course should keep running after you stop working.
+
+- **Codespaces** stop on their own after a period of no activity: 30 minutes by default. You can change this to anywhere from 5 to 240 minutes in your GitHub settings under **Codespaces → Default idle timeout** ([GitHub Docs](https://docs.github.com/en/codespaces/setting-your-user-preferences/setting-your-timeout-period-for-github-codespaces)). Stopped codespaces still use storage until you delete them.
+- **Kubernetes clusters** made with kind inside a codespace are deleted by each unit's `./cleanup` command.
+- **Multipass VMs** are deleted by each laptop unit's teardown step.
+- **AWS resources** are deleted by `terraform destroy` and then checked by `./cleanup`. See the rules below.
+
+## AWS safety rules
+
+Every AWS unit, and the Terraform code that comes with it, follows these rules:
+
+1. **W1 comes first.** Unit [W1 Account safety](/units/w1/) is required before any other AWS unit. It turns on multi-factor authentication (MFA) for the root user, creates an IAM Identity Center user for day-to-day work, and sets up a monthly budget with an email alert.
+2. **No long-lived access keys.** You sign in with `aws sso login`. Pipelines use GitHub's OpenID Connect (OIDC) integration, which issues short-lived credentials.
+3. **Everything is tagged.** Every resource gets the tags `Project = learndevops` and `Unit = <unit ID>`, so you can always find what the course created.
+4. **Cleanup is checked.** Each lab ends with `terraform destroy`, then `./cleanup <unit>`. The cleanup command lists anything still tagged `Project = learndevops` and fails loudly if something is left.
+5. **No NAT gateways**, and no unattached Elastic IP addresses. Both charge by the hour even when idle.
+6. **Small instances.** Labs use the smallest instance types that work.
+7. **Same-day cleanup.** Finish each AWS lab in one sitting and delete everything the same day.
+
+## The AWS free plan
+
+New AWS accounts can choose a free plan or a paid plan. At the time of writing, AWS says ([AWS Billing docs: free tier plans](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html), [aws.amazon.com/free](https://aws.amazon.com/free/)):
+
+- New customers get USD $100 in credits when they create an account, whichever plan they choose, and can earn up to USD $100 more by completing activities.
+- The free plan does not charge you while you use it, and is limited to selected services.
+- The free plan ends after six months or when the credits run out, whichever comes first. The account then closes unless you upgrade to a paid plan, and AWS deletes the account and its content if you do not upgrade within 90 days.
+
+Some services a unit needs may not be available on the free plan. Each AWS unit says so where this applies. For example, Amazon EKS (managed Kubernetes, unit K10) charges USD $0.10 per cluster per hour for standard support ([Amazon EKS pricing](https://aws.amazon.com/eks/pricing/)).
+
+{/* TODO(owner): before publishing K10, confirm on AWS's site whether EKS is available on the free plan for all new accounts (spec section 9.5). */}
+
+Last checked: 19 October 2026. Prices and plans change. Always check the linked pages before you start.
+
+## If you get a bill you didn't expect
+
+Don't panic. Most unexpected charges come from one forgotten resource.
+
+1. **Find it.** In the AWS console, open **Billing and Cost Management → Cost Explorer** and group costs by service and by region.
+2. **Look for course resources.** Open **Resource Groups & Tag Editor**, choose **All regions**, and search for the tag `Project = learndevops`.
+3. **Delete it.** Run `terraform destroy` in the unit's folder, then `./cleanup <unit>`. The `./cleanup aws-all` command, which arrives with the AWS units, lists every tagged resource left in any region and can delete them for you.
+4. **Contact AWS.** All AWS account owners get account and billing support free of charge. In the AWS console, open **Support Center → Create case → Account and billing**. If you cannot sign in, use the [AWS account support form](https://support.aws.amazon.com/#/contacts/aws-account-support) ([AWS Billing docs: getting help](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-get-answers.html)).
+
+Last checked: 19 October 2026.
+
+## Disclaimer
+
+You are responsible for any charges in your own cloud accounts. Follow the cleanup steps in every unit.

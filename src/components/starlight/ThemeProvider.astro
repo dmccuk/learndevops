@@ -1,0 +1,41 @@
+---
+// Same as Starlight's ThemeProvider, except the default (no saved choice)
+// is the dark theme rather than the system preference (spec section 5).
+import { Icon } from '@astrojs/starlight/components';
+---
+
+{/* This is intentionally inlined to avoid a flash of the wrong theme. */}
+<script is:inline>
+	window.StarlightThemeProvider = (() => {
+		let storedTheme = '';
+		try {
+			storedTheme = localStorage.getItem('starlight-theme') || '';
+		} catch {
+			// Storage blocked: fall back to the default theme.
+		}
+		document.documentElement.dataset.theme = storedTheme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'dark') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script>
+
+<template id="theme-icons">
+	<Icon name="sun" class="light" />
+	<Icon name="moon" class="dark" />
+	<Icon name="laptop" class="auto" />
+</template>
