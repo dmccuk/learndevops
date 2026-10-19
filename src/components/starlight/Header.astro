@@ -1,15 +1,11 @@
 ---
 // Starlight's header plus the site's top links (spec sections 4.2 and 6).
-import config from 'virtual:starlight/user-config';
-import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
-import Search from 'virtual:starlight/components/Search';
-import SiteTitle from 'virtual:starlight/components/SiteTitle';
-import SocialIcons from 'virtual:starlight/components/SocialIcons';
-import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import Search from '@astrojs/starlight/components/Search.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import SiteTitle from './SiteTitle.astro';
+import ThemeSelect from './ThemeSelect.astro';
 import { url, YOUTUBE_URL } from '../../lib/url';
 
-const shouldRenderSearch =
-	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
 
 const isHome = Astro.locals.starlightRoute.id === '';
 
@@ -33,7 +29,7 @@ const current = Astro.url.pathname;
 		<SiteTitle />
 	</div>
 	<div class="sl-flex print:hidden search-wrapper">
-		{shouldRenderSearch && <Search />}
+		<Search />
 	</div>
 	<div class="sl-hidden md:sl-flex print:hidden right-group">
 		<nav aria-label="Main" class="top-links">
@@ -49,10 +45,9 @@ const current = Astro.url.pathname;
 			<SocialIcons />
 		</div>
 		<ThemeSelect />
-		<LanguageSelect />
 		{isHome && <a class="ld-button start" href={url('/start-here/')}>Start free</a>}
 	</div>
-	{isHome && <a class="ld-button start mobile-start md:sl-hidden" href={url('/start-here/')}>Start free</a>}
+	{isHome && <a class="ld-button start mobile-start" href={url('/start-here/')}>Start free</a>}
 </div>
 
 <style>
@@ -103,6 +98,11 @@ const current = Astro.url.pathname;
 	.mobile-start {
 		flex-shrink: 0;
 		padding-inline: 0.75rem;
+	}
+	@media (min-width: 50rem) {
+		.mobile-start {
+			display: none;
+		}
 	}
 	/* The extra links need room; hide them on mid-size screens. */
 	@media (max-width: 72rem) {

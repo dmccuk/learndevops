@@ -1,0 +1,8 @@
+---
+import { curriculum } from '../lib/curriculum';
+import PathCard from './PathCard.astro';
+---
+
+<div class="ld-grid not-content">
+	{curriculum.paths.map((p) => <PathCard path={p} />)}
+</div>

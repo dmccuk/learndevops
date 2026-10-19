@@ -1,0 +1,156 @@
+---
+title: Your lab environments
+description: Set up the browser terminal, GitHub Codespaces, Multipass on your laptop, and AWS, with steps for Windows and Mac.
+lastChecked: '2026-10-19'
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Each unit says where its lab runs. There are four places, from "nothing to install" to "your own cloud account". You only need to set up an environment when you reach a unit that uses it.
+
+| Environment | Units | Cost to you |
+| --- | --- | --- |
+| [Browser](#browser) | L1–L3, L5, L6, G1, G3 | Free |
+| [GitHub Codespaces](#github-codespaces) | Most units | Free within GitHub's monthly allowance |
+| [Laptop (Multipass)](#laptop-multipass) | L4, N2, K9 | Free |
+| [AWS](#aws) | W1–W4, I3–I5, K10, P4, Project 1 | Your own AWS bill |
+
+## Browser
+
+The first Linux and Git units run in a Linux terminal inside your web browser, using [WebVM](https://webvm.io). Nothing is installed on your computer.
+
+<Steps>
+
+1. Open [webvm.io](https://webvm.io) in a new tab. It can take a minute to start the first time.
+2. Go back to the unit page and copy its **setup block**. This is one command that creates the practice files for that unit.
+3. Paste the setup block into the WebVM terminal and press Enter.
+
+</Steps>
+
+<Aside>
+The browser terminal has no internet access. That is why each browser unit gives you a setup block instead of downloading files. Browser units use a self-check list instead of the `./check` script.
+</Aside>
+
+Prefer a full environment? Every browser unit can also be done in Codespaces, where `./check` works.
+
+## GitHub Codespaces
+
+A codespace is a ready-made Linux workspace that runs in the cloud and opens in your browser. The course's codespace comes with every tool the labs need already installed: Docker, kubectl, kind, Terraform, Ansible and more.
+
+### What you need
+
+A free [GitHub account](https://github.com/signup).
+
+### Open the course codespace
+
+<Steps>
+
+1. Sign in to GitHub.
+2. On a unit page, select **Open in Codespaces**. GitHub creates a codespace from this course's repository.
+3. Wait for the terminal to finish setting up. You will see a welcome message.
+4. Run the unit's start command, for example `./start k2`.
+
+</Steps>
+
+<Aside type="note" title="Coming in milestone 2">
+The course codespace configuration and the `./start`, `./check` and `./cleanup` commands are being built now. Until then, Codespaces units show as "Coming soon".
+</Aside>
+
+### The free allowance
+
+GitHub includes a monthly allowance of Codespaces use with personal accounts. At the time of writing, GitHub Free accounts get **120 core hours** of compute and **15 GB-month** of storage each month ([GitHub Docs: About billing for GitHub Codespaces](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)).
+
+Core hours are not the same as hours. A 2-core machine uses 2 core hours for each hour it runs, and a 4-core machine uses 4. So the free compute allowance covers about 60 hours a month on the course's default 2-core machine, or about 30 hours on the 4-core machine some monitoring units need.
+
+If your GitHub account has no payment method, GitHub blocks further use once you reach the allowance, rather than charging you ([same page](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)).
+
+The course's default codespace uses the smallest machine type, with 2 cores, 8 GB of RAM and 32 GB of storage ([GitHub Docs: What are GitHub Codespaces?](https://docs.github.com/en/codespaces/about-codespaces/what-are-codespaces)).
+
+### Stop and delete codespaces you are not using
+
+A codespace uses your compute allowance while it runs and your storage allowance until you delete it.
+
+- **Stop** a codespace when you take a break. It also stops on its own after 30 minutes of no activity by default. You can set this idle timeout to anything from 5 to 240 minutes in your GitHub settings, under **Codespaces → Default idle timeout** ([GitHub Docs: Setting your timeout period](https://docs.github.com/en/codespaces/setting-your-user-preferences/setting-your-timeout-period-for-github-codespaces)).
+- **Delete** a codespace when you finish a unit. Go to [github.com/codespaces](https://github.com/codespaces), select **…** next to the codespace, then **Delete** ([GitHub Docs: Deleting a codespace](https://docs.github.com/en/codespaces/developing-in-a-codespace/deleting-a-codespace)).
+- Stopped codespaces are deleted automatically after 30 days of no activity by default. You can shorten this under **Codespaces → Default retention period** ([GitHub Docs: Configuring automatic deletion](https://docs.github.com/en/codespaces/setting-your-user-preferences/configuring-automatic-deletion-of-your-codespaces)).
+
+Last checked: 19 October 2026.
+
+## Laptop (Multipass)
+
+Three units need a real Linux virtual machine (VM) on your own computer: L4 (systemd), N2 (SSH) and K9 (a three-node Kubernetes cluster). These use [Multipass](https://canonical.com/multipass), an open-source tool (GPL-3.0 licence) from Canonical that creates Ubuntu VMs with one command.
+
+<Tabs syncKey="os">
+<TabItem label="Windows">
+
+Multipass supports Windows 10 and 11 on Home, Pro and Enterprise editions, version 1809 or later, with the Windows **Virtual Machine Platform** feature turned on ([Multipass install guide](https://canonical.com/multipass/docs/latest/how-to-guides/install-multipass/)).
+
+<Steps>
+
+1. Download the Windows installer from [canonical.com/multipass/install](https://canonical.com/multipass/install).
+2. Run the installer and follow the prompts. Restart if it asks you to.
+3. Open PowerShell and check it works:
+
+   ```powershell
+   multipass version
+   ```
+
+</Steps>
+
+</TabItem>
+<TabItem label="Mac">
+
+Multipass runs on any Mac, Apple silicon (M-series) or Intel, with macOS 14 Sonoma or later ([Multipass install guide](https://canonical.com/multipass/docs/latest/how-to-guides/install-multipass/)).
+
+<Steps>
+
+1. Download the macOS installer from [canonical.com/multipass/install](https://canonical.com/multipass/install).
+2. Open the package and follow the prompts.
+3. Open Terminal and check it works:
+
+   ```sh
+   multipass version
+   ```
+
+</Steps>
+
+</TabItem>
+<TabItem label="Linux">
+
+<Steps>
+
+1. Install Multipass with snap:
+
+   ```sh
+   sudo snap install multipass
+   ```
+
+2. Check it works:
+
+   ```sh
+   multipass version
+   ```
+
+</Steps>
+
+</TabItem>
+</Tabs>
+
+Each laptop unit tells you how much free memory it needs and ends with a teardown step that deletes its VMs.
+
+{/* TODO(owner): confirm K9's free-RAM requirement when K9 is written (spec section 9.4). */}
+
+Last checked: 19 October 2026.
+
+## AWS
+
+Some later units build real infrastructure in Amazon Web Services (AWS), using **your own AWS account**. AWS bills you for what you create.
+
+Before any AWS unit:
+
+1. Read [Costs and safety](/start-here/costs-and-safety/).
+2. Complete unit [W1 Account safety](/units/w1/). It sets up multi-factor authentication, a day-to-day user, and a budget alert that emails you before spending gets out of hand.
+
+The course uses the London region, `eu-west-2`, by default. You can change it in one variable.
+
+The course never asks you to create long-lived access keys. You sign in with `aws sso login`, and pipelines use short-lived credentials instead.

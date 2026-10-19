@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { defineMdastPlugin } from 'satteri';
 import { parse } from 'yaml';
+import cspInlineHashes from './src/integrations/csp-inline-hashes.mjs';
 
 // Site address. Switching to learndevops.co.uk is a two-variable change
 // (see docs/custom-domain.md).
@@ -65,6 +66,9 @@ export default defineConfig({
 	trailingSlash: 'always',
 	markdown: {
 		processor: satteri({ mdastPlugins: [baseLinks] }),
+		// Expressive Code (via Starlight) highlights code blocks without inline
+		// styles, so Astro's own highlighter is not needed.
+		syntaxHighlight: false,
 	},
 	security: {
 		// Astro adds a strict Content-Security-Policy <meta> tag with hashes for
@@ -80,6 +84,9 @@ export default defineConfig({
 				"base-uri 'self'",
 				"form-action 'self'",
 			],
+			// Starlight and Expressive Code set CSS custom properties in style
+			// attributes. Allow those, but keep <style> elements hash-checked.
+			styleDirective: { resources: ["'self'", { resource: "'unsafe-inline'", kind: 'attribute' }] },
 			// Pagefind search runs WebAssembly.
 			scriptDirective: { resources: ["'self'", "'wasm-unsafe-eval'"] },
 		},
@@ -164,5 +171,7 @@ export default defineConfig({
 				},
 			],
 		}),
+		// Must run after Starlight so it sees the final HTML.
+		cspInlineHashes(),
 	],
 });

@@ -1,0 +1,56 @@
+# Glossary terms. Each term gets an anchor on /reference/glossary/ from its
+# `id` (or a slug of the term). Keep definitions to one or two plain sentences.
+# Units will link to terms with the GlossaryTerm component (milestone 3).
+terms:
+  - { term: "Ansible", definition: "A tool that configures many servers the same way by running tasks over SSH, described in YAML files called playbooks." }
+  - { term: "API", definition: "Application programming interface. A defined way for one program to ask another for data or to do something, often over HTTP." }
+  - { term: "Artefact", definition: "Something a build produces and keeps, such as a container image, a package or a compiled binary." }
+  - { term: "AWS", definition: "Amazon Web Services. A cloud provider that rents out servers, storage, networking and many other services by the hour or by use." }
+  - { term: "Bash", definition: "The most common Linux shell. It runs the commands you type and can run them from a script file." }
+  - { term: "Blue-green deployment", definition: "A release method that runs the new version next to the old one, then switches all traffic across at once, so you can switch back quickly." }
+  - { term: "Branch", definition: "In Git, a separate line of work. You make changes on a branch, then merge it back when it is ready." }
+  - { term: "Canary release", definition: "A release method that sends a small share of traffic to the new version first, and increases it only if the new version behaves well." }
+  - { term: "CI/CD", id: "ci-cd", definition: "Continuous integration and continuous delivery (or deployment). Automatically testing every change, then building it and releasing it through a pipeline." }
+  - { term: "Cluster", definition: "A group of machines that work together. In Kubernetes, a set of nodes that run your containers, managed by a control plane." }
+  - { term: "Codespace", definition: "A ready-made development environment from GitHub that runs in the cloud and opens in your browser." }
+  - { term: "Commit", definition: "In Git, a saved snapshot of your changes with a message saying what changed and why." }
+  - { term: "Configuration management", definition: "Keeping servers in a known, consistent state by describing that state in code and applying it automatically." }
+  - { term: "Container", definition: "A running process isolated from the rest of the system, with its own files and settings, started from a container image." }
+  - { term: "Container image", definition: "A packaged, read-only bundle of an app and everything it needs to run. Containers are started from images." }
+  - { term: "Container registry", definition: "A server that stores container images so other machines can download them, for example GitHub Container Registry." }
+  - { term: "Deployment", definition: "In Kubernetes, an object that keeps a set number of identical pods running and updates them in a controlled way." }
+  - { term: "DevOps", definition: "A way of working where the people who build software and the people who run it share responsibility, and automate the path from change to production." }
+  - { term: "DevSecOps", definition: "DevOps with security checks built into every stage of the pipeline, rather than added at the end." }
+  - { term: "DNS", definition: "Domain Name System. Turns names such as learndevops.co.uk into the IP addresses computers use to connect." }
+  - { term: "Docker", definition: "A popular tool for building container images and running containers." }
+  - { term: "Dockerfile", definition: "A text file of instructions that Docker follows to build a container image." }
+  - { term: "Error budget", definition: "The amount of failure a service level objective allows. While budget remains, you can ship changes; when it runs out, you focus on reliability." }
+  - { term: "Git", definition: "A version control system. It records every change to a set of files so you can see history, work in parallel and undo mistakes." }
+  - { term: "GitOps", definition: "Running deployments from a Git repository: the repository describes what should be running, and a tool makes the system match it." }
+  - { term: "Helm", definition: "A package manager for Kubernetes. A Helm chart bundles the manifests for an app with settings you can change." }
+  - { term: "IAM", definition: "Identity and Access Management. Controls who can do what in a cloud account, using users, roles and policies." }
+  - { term: "Idempotent", definition: "Safe to run more than once. Running an idempotent task again leaves the system in the same state, without errors or duplicates." }
+  - { term: "Infrastructure as code", id: "iac", definition: "Describing servers, networks and other infrastructure in code files, so you can create, change and destroy them repeatably." }
+  - { term: "kubectl", definition: "The command-line tool for talking to a Kubernetes cluster." }
+  - { term: "Kubernetes", definition: "A system that runs containers across a cluster of machines, restarts them when they fail, scales them and routes traffic to them." }
+  - { term: "Load balancer", definition: "A service that spreads incoming traffic across several servers, and stops sending traffic to servers that are unhealthy." }
+  - { term: "Logs", definition: "Timestamped records of events written by an app or system, used to find out what happened." }
+  - { term: "Metrics", definition: "Numbers measured over time, such as requests per second or memory use, used to watch how a system behaves." }
+  - { term: "Multipass", definition: "A tool from Canonical that creates Ubuntu virtual machines on your laptop with a single command." }
+  - { term: "Observability", definition: "How well you can understand what a system is doing from the outside, using its metrics, logs and traces." }
+  - { term: "OIDC", definition: "OpenID Connect. A standard for proving identity. GitHub Actions can use it to get short-lived cloud credentials without stored keys." }
+  - { term: "Pipeline", definition: "An automated series of steps, such as test, build and deploy, that runs every time code changes." }
+  - { term: "Pod", definition: "The smallest unit Kubernetes runs: one or more containers that share a network address and storage." }
+  - { term: "Prometheus", definition: "An open-source monitoring system that collects metrics from apps and servers and stores them over time." }
+  - { term: "Pull request", definition: "A request to merge changes from one branch into another, where others can review and discuss them first." }
+  - { term: "Rollback", definition: "Returning to the previous working version after a bad release." }
+  - { term: "Secret", definition: "A sensitive value such as a password, token or key. Secrets must never be stored in Git." }
+  - { term: "Service", definition: "In Kubernetes, a stable network address that sends traffic to a changing set of pods." }
+  - { term: "Shell", definition: "A program that reads the commands you type and runs them. Bash is the most common shell on Linux." }
+  - { term: "SLO", definition: "Service level objective. A target for how reliable a service should be, such as 99.9% of requests succeeding over 30 days." }
+  - { term: "SSH", definition: "Secure Shell. A way to log in to and run commands on another computer over an encrypted connection." }
+  - { term: "Terraform", definition: "An infrastructure as code tool. You describe infrastructure in files, and Terraform works out what to create, change or delete. OpenTofu is a drop-in open-source alternative." }
+  - { term: "Terraform state", id: "terraform-state", definition: "A file where Terraform records what it has created, so it can work out what to change next time." }
+  - { term: "Virtual machine", definition: "A computer simulated in software, with its own operating system, running on a physical machine." }
+  - { term: "VPC", definition: "Virtual Private Cloud. Your own private network inside AWS, divided into subnets." }
+  - { term: "YAML", definition: "A text format for structured data that uses indentation. Kubernetes, Ansible and GitHub Actions all use it." }
