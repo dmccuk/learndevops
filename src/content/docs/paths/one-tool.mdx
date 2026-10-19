@@ -1,0 +1,25 @@
+---
+title: "Just one tool path"
+description: "For: Need a single skill for work. Ends with: That track's last unit."
+path: one-tool
+---
+
+import PathPage from '~/components/pages/PathPage.astro';
+import TrackCard from '~/components/TrackCard.astro';
+import { curriculum } from '~/lib/curriculum';
+
+<PathPage id="one-tool">
+
+## How this path works
+
+Pick the one track that covers the skill you need, and work through its units in order. Each track page lists its units, what you will be able to do after each one, and where it runs.
+
+If a unit lists something under "Before you start" that you have not done, the link takes you to the unit that teaches it.
+
+## Pick a track
+
+<div class="ld-grid not-content">
+  {curriculum.tracks.map((t) => <TrackCard track={t} />)}
+</div>
+
+</PathPage>

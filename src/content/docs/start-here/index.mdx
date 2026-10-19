@@ -1,0 +1,46 @@
+---
+title: Start here
+description: How the course works, which path to pick, and where the labs run.
+---
+
+import PathCards from '~/components/PathCards.astro';
+
+This is a free course that takes you from a blank laptop to a working CI/CD pipeline. It is built for complete beginners and for sysadmins moving into DevOps. You do not need to have used Linux before.
+
+## How the course works
+
+The course is a library of 60 short units in 13 tracks. Each unit takes 30 to 60 minutes and teaches one skill with one clear outcome.
+
+Every unit follows the same pattern:
+
+1. **Read** a short lesson that explains why the tool exists before showing how to use it.
+2. **Do** a hands-on lab that starts from a ready-made checkpoint, so you can start any unit cold.
+3. **Check** your work. A script tells you whether each step worked, with a hint when it did not.
+4. **Watch** a video on the London IAC YouTube channel, where one exists.
+
+Each unit also shows where it fits in the whole pipeline, so you can see how the pieces join up.
+
+## Pick a way in
+
+You can follow a learning path from start to finish, or pick any single unit you need.
+
+<PathCards />
+
+Not sure? Start with the [complete beginner path](/paths/beginner/). Its first unit, [L1 The command line](/units/l1/), runs in your browser.
+
+## Where the labs run
+
+Labs run in four places. You need nothing installed to begin.
+
+| Environment | Used for | You need |
+| --- | --- | --- |
+| Browser | Linux and Git basics | A browser |
+| GitHub Codespaces | Most units, including all core Kubernetes units | A free GitHub account |
+| Laptop (Multipass virtual machines) | systemd, SSH, a real multi-node Kubernetes cluster | Multipass installed |
+| AWS | Cloud provisioning, deployment, managed Kubernetes | Your own AWS account |
+
+[Set up your lab environments](/start-here/environments/) explains each one, with steps for Windows and Mac.
+
+## Before you use AWS
+
+Some units create real resources in your own AWS account, and those cost money. Every one of them is marked. Read [Costs and safety](/start-here/costs-and-safety/) before you start any of them.

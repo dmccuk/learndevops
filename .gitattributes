@@ -1,0 +1,6 @@
+# Normalise line endings. Shell scripts must stay LF to run in Codespaces.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff binary
+*.woff2 binary

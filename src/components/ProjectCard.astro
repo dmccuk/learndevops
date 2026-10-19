@@ -1,0 +1,35 @@
+---
+import { ENVIRONMENT_LABELS, type Project } from '../lib/curriculum';
+import { projectUrl } from '../lib/url';
+
+interface Props {
+	project: Project;
+	number: number;
+}
+const { project, number } = Astro.props;
+---
+
+<a class="ld-card" href={projectUrl(project.id)}>
+	<span class="ld-label">Project {number}</span>
+	<h3 class="ld-card-title">{project.name}</h3>
+	<p class="summary">{project.summary}</p>
+	<p class="meta">
+		Runs in {ENVIRONMENT_LABELS[project.runsIn]} · Draws on {project.draws.length} units
+		{project.costNote && <span class="ld-badge warn">Costs money</span>}
+	</p>
+</a>
+
+<style>
+	.summary {
+		color: var(--ld-muted);
+	}
+	.meta {
+		margin-top: auto !important;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: center;
+		font-size: 0.875rem;
+		color: var(--ld-dim);
+	}
+</style>

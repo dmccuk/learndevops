@@ -1,0 +1,20 @@
+{
+  // Markdown lint for repository docs and site pages (spec section 14.1).
+  "config": {
+    "default": true,
+    // Long lines are fine; editors wrap prose.
+    "MD013": false,
+    // MDX pages use components and inline HTML.
+    "MD033": false,
+    // Pages take their H1 from front matter.
+    "MD041": false,
+    // Ordered lists use 1. 2. 3.
+    "MD029": { "style": "ordered" },
+    // MDX comments ({/* ... */}) look like emphasis to the linter.
+    "MD037": false,
+    // Tables are written compactly.
+    "MD060": false
+  },
+  "globs": ["**/*.md", "src/content/**/*.mdx"],
+  "ignores": ["node_modules/**", "dist/**", "legacy/**", ".astro/**", "docs/SPEC.md"]
+}

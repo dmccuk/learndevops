@@ -1,0 +1,80 @@
+---
+/**
+ * Next unit in the track, units that build on this one, and the next unit in
+ * a learning path when the learner arrived with ?path=<id> (spec section 7.3,
+ * item 12). The path line needs JavaScript; everything else works without it.
+ */
+import { curriculum, dependents, getUnit, unitTitle, unitsInTrack } from '../lib/curriculum';
+import { pathUrl, unitUrl } from '../lib/url';
+
+interface Props {
+	id: string;
+}
+const unit = getUnit(Astro.props.id);
+const track = unitsInTrack(unit.track);
+const next = track[track.findIndex((u) => u.id === unit.id) + 1];
+const after = dependents(unit.id).filter((u) => u.id !== next?.id);
+
+const pathNext = curriculum.paths
+	.filter((p) => p.units.includes(unit.id))
+	.map((p) => {
+		const n = p.units[p.units.indexOf(unit.id) + 1];
+		return { id: p.id, name: p.name, next: n ? getUnit(n) : undefined };
+	});
+---
+
+<div class="whats-next not-content">
+	<ul>
+		{
+			next && (
+				<li>
+					Next in this track: <a href={unitUrl(next.id)}>{unitTitle(next)}</a>
+				</li>
+			)
+		}
+		{
+			after.length > 0 && (
+				<li>
+					Builds on this unit:{' '}
+					{after.map((u, i) => (
+						<>
+							{i > 0 && ', '}
+							<a href={unitUrl(u.id)}>{unitTitle(u)}</a>
+						</>
+					))}
+				</li>
+			)
+		}
+		{
+			pathNext.map((p) => (
+				<li class="path-next" data-path={p.id} hidden>
+					Next in the <a href={pathUrl(p.id)}>{p.name}</a> path:{' '}
+					{p.next ? (
+						<a href={`${unitUrl(p.next.id)}?path=${p.id}`}>{unitTitle(p.next)}</a>
+					) : (
+						'you have reached the end of this path.'
+					)}
+				</li>
+			))
+		}
+	</ul>
+</div>
+
+<script>
+	// Show the path line that matches ?path=<id>. No storage is used.
+	const id = new URLSearchParams(location.search).get('path');
+	if (id) {
+		document.querySelectorAll<HTMLElement>('.path-next').forEach((el) => {
+			if (el.dataset.path === id) el.hidden = false;
+		});
+	}
+</script>
+
+<style>
+	.whats-next ul {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0;
+		padding-inline-start: 1.25rem;
+	}
+</style>

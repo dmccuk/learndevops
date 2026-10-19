@@ -1,0 +1,40 @@
+{
+  "name": "learndevops",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check && npm run check:contrast && npm run check:prose && npm run lint:md",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:prose": "node scripts/check-prose.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "lint:md": "markdownlint-cli2",
+    "sync": "node scripts/sync.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "0.4.4",
+    "@astrojs/sitemap": "3.7.4",
+    "@astrojs/starlight": "0.42.6",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "astro": "7.4.1",
+    "satteri": "0.10.5",
+    "sharp": "0.35.5",
+    "yaml": "2.9.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.11",
+    "linkinator": "8.1.0",
+    "markdownlint-cli2": "0.23.3",
+    "typescript": "6.0.3"
+  }
+}

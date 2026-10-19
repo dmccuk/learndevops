@@ -1,0 +1,26 @@
+---
+// Text logo: learndevops.co.uk with ".co.uk" in the accent colour.
+const { siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a href={siteTitleHref} class="site-title" aria-label="Learn DevOps home">
+	<span aria-hidden="true">learndevops<span class="tld">.co.uk</span></span>
+</a>
+
+<style>
+	.site-title {
+		display: flex;
+		align-items: center;
+		min-height: 44px;
+		font-family: var(--__sl-font-mono);
+		font-weight: 600;
+		font-size: 1.0625rem;
+		letter-spacing: -0.01em;
+		color: var(--ld-heading);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.tld {
+		color: var(--ld-accent);
+	}
+</style>
