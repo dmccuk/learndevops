@@ -1,19 +1,20 @@
 ---
 title: Your lab environments
-description: Set up the browser terminal, GitHub Codespaces, Multipass on your laptop, and AWS, with steps for Windows and Mac.
+description: Set up the browser terminal, GitHub Codespaces, the multi-machine lab, Multipass and AWS, with steps for Windows and Mac.
 lastChecked: '2026-10-19'
 ---
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Each unit says where its lab runs. There are four places, from "nothing to install" to "your own cloud account". You only need to set up an environment when you reach a unit that uses it.
+Each unit says where its lab runs. There are five places, from "nothing to install" to "your own cloud account". You only need to set up an environment when you reach a unit that uses it.
 
 | Environment | Units | Cost to you |
 | --- | --- | --- |
 | [Browser](#browser) | L1–L3, L5, L6, G1, G3 | Free |
 | [GitHub Codespaces](#github-codespaces) | Most units | Free within GitHub's monthly allowance |
-| [Laptop (Multipass)](#laptop-multipass) | L4, N2, K9 | Free |
-| [AWS](#aws) | W1–W4, I3–I5, K10, P4, Project 1 | Your own AWS bill |
+| [Multi-machine lab](#multi-machine-lab) | L4, L7–L10, N2, N4, A1–A5, Projects 1 and 2 | Free locally, or within the Codespaces allowance |
+| [Laptop (Multipass)](#laptop-multipass) | K9 | Free |
+| [AWS](#aws) | W1–W4, I3–I5, K10, P4, Project 3 | Your own AWS bill |
 
 ## Browser
 
@@ -76,9 +77,28 @@ A codespace uses your compute allowance while it runs and your storage allowance
 
 Last checked: 19 October 2026.
 
+## Multi-machine lab
+
+Some units need several servers talking to each other: logging in with SSH, copying files between machines, or running Ansible across a fleet. The multi-machine lab gives you a handful of small Linux servers on a private network, all on one computer.
+
+Each server is a container set up to behave like a small virtual machine. It has its own name and address, runs systemd so services start and stop as they would on a real server, and accepts SSH logins. You can also open a terminal on any server from your browser.
+
+You can run the lab in two places:
+
+- **In GitHub Codespaces.** Nothing to install. Run `./start <unit>` and the servers start inside your codespace.
+- **On your own computer**, with Docker installed. This works on Windows, Mac (Apple silicon and Intel) and Linux.
+
+<Aside type="note" title="Coming in milestone 2">
+The multi-machine lab is being built now, with the other lab tools. Units that use it show as "Coming soon" until then.
+</Aside>
+
+{/* TODO(owner): before publishing local setup steps, check Docker Desktop's current licence terms on docker.com and name free alternatives (spec section 9.6). */}
+
+These servers share your computer's operating system kernel, so they are lighter than real virtual machines. A few things, such as loading kernel modules, need a real VM. The one unit that does, K9, uses Multipass instead.
+
 ## Laptop (Multipass)
 
-Three units need a real Linux virtual machine (VM) on your own computer: L4 (systemd), N2 (SSH) and K9 (a three-node Kubernetes cluster). These use [Multipass](https://canonical.com/multipass), an open-source tool (GPL-3.0 licence) from Canonical that creates Ubuntu VMs with one command.
+One unit needs real Linux virtual machines (VMs) on your own computer: K9, which builds a three-node Kubernetes cluster. These use [Multipass](https://canonical.com/multipass), an open-source tool (GPL-3.0 licence) from Canonical that creates Ubuntu VMs with one command.
 
 <Tabs syncKey="os">
 <TabItem label="Windows">
@@ -136,7 +156,7 @@ Multipass runs on any Mac, Apple silicon (M-series) or Intel, with macOS 14 Sono
 </TabItem>
 </Tabs>
 
-Each laptop unit tells you how much free memory it needs and ends with a teardown step that deletes its VMs.
+K9 tells you how much free memory it needs and ends with a teardown step that deletes its VMs.
 
 {/* TODO(owner): confirm K9's free-RAM requirement when K9 is written (spec section 9.4). */}
 

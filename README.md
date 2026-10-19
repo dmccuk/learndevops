@@ -2,7 +2,7 @@
 
 > **2026 refresh:** this course has been rebuilt as [learndevops.co.uk](https://dmccuk.github.io/learndevops/). The original course is at tag [`v1-original`](https://github.com/dmccuk/learndevops/tree/v1-original), and its files are in [`legacy/`](legacy/).
 
-A free, open-source DevOps course: 60 short, hands-on units in 13 tracks, from a blank laptop to a working CI/CD pipeline. Start with Linux in your browser, move into a ready-made cloud workspace, and finish by deploying a real app to AWS or Kubernetes.
+A free, open-source DevOps course: 66 short, hands-on units in 13 tracks, from a blank laptop to a working CI/CD pipeline. Start with Linux in your browser, move into a ready-made cloud workspace, and finish by deploying a real app to AWS or Kubernetes.
 
 **Read the course:** <https://dmccuk.github.io/learndevops/> (moving to learndevops.co.uk later).
 
@@ -12,7 +12,8 @@ A free, open-source DevOps course: 60 short, hands-on units in 13 tracks, from a
 | --- | --- | --- |
 | Browser | Linux and Git basics | A browser |
 | GitHub Codespaces | Most units | A free GitHub account |
-| Laptop (Multipass) | systemd, SSH, a multi-node Kubernetes cluster | Multipass installed |
+| Multi-machine lab | A small fleet of Linux servers for SSH, files, performance and Ansible | Codespaces, or Docker on your computer |
+| Laptop (Multipass) | A multi-node Kubernetes cluster | Multipass installed |
 | AWS | Cloud provisioning and deployment | Your own AWS account |
 
 ### GitHub Codespaces costs
