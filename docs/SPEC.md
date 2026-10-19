@@ -794,7 +794,7 @@ Progress ticks, Open Graph images, JSON-LD, full glossary, final accessibility a
 | Decision | Default | Owner to confirm |
 | --- | --- | --- |
 | Repo name | Rename `dmccuk/devops_tools_course` to `dmccuk/learndevops` (section 2.1) | Decided |
-| Owner name, photo and bio | Placeholders `[YOUR NAME]`, `[PHOTO]`, `[BIO]` | Yes |
+| Owner name, photo and bio | Dennis McCarthy, photo in `src/assets/`, bio on the home and About pages | Decided |
 | Content licence | CC BY 4.0 (code MIT) | Yes |
 | Kubernetes Gateway API implementation for K7 | An actively maintained implementation that works on kind (for example Envoy Gateway); verify maintenance status first | Yes |
 | Policy engine for S3 | Kyverno | No |
@@ -815,3 +815,70 @@ Create `CLAUDE.md` at the repo root with:
 - The rules from section 0 (verify versions, never invent facts, ask before adding services).
 - The style rules from section 11 in short form.
 - A pointer to this spec, saved as `docs/SPEC.md`.
+
+---
+
+## 19. Future options (not scheduled)
+
+Ideas the owner wants to keep in view. None of these is part of milestones M1 to M8. Each one needs the owner's approval before work starts, and anything that adds a backend, accounts, cookies or a third-party service changes the fixed decisions in section 2 and the privacy rules in section 14.4.
+
+### 19.1 Badges and progress
+
+Build in this order, so each step works without the next.
+
+1. **Map badges (no backend, part of M8).** Ticking a unit as done fills its station on the learner's own map. Completing a track earns that line's roundel; completing a path earns a route badge. Stored in `localStorage` only (section 4.3).
+2. **Proof-of-work records (no backend).** When every criterion in `./check <unit>` passes, the script writes a dated completion record (unit ID, date, check results) into the learner's own repository or fork. Their GitHub profile then shows real evidence of completed labs. A record cannot be earned by ticking a box.
+3. **Synced progress with accounts (backend, see 19.3).** Progress and badges follow the learner across devices.
+4. **Verifiable certificates (backend and paid, see 19.5).** Shareable credentials that an employer can check, for example in the Open Badges format. Only for assessed work.
+
+### 19.2 Bringing learners back
+
+- **"Continue where you left off":** the home map highlights the learner's next station (local progress).
+- **Review drills:** each unit ends with 3–5 recall questions (add these from M3 onwards, so this needs no rework later). The site suggests revisiting them after one day, one week and one month.
+- **Reminders without collecting emails:** a "Remind me to review" button that downloads a calendar file (`.ics`).
+- **"Break it" drills:** repeatable fault scenarios in the style of Project 3, for practising diagnosis.
+- **What's new:** an RSS feed of new and updated units, linked from the footer and the YouTube channel.
+- **Community:** GitHub Discussions for questions and "show what you built". Free, with no tracking on this site.
+- **Measuring return visits** needs analytics, which section 2 rules out. If the owner wants numbers, consider a cookie-free, privacy-friendly counter, and record that decision here first.
+
+### 19.3 Optional accounts with Supabase and OAuth
+
+Use [Supabase](https://supabase.com/docs) (hosted Postgres, auth and row-level security) to sync progress, badges and review schedules across devices.
+
+**Principles**
+
+- **Accounts are optional.** Every page, lab and local progress feature keeps working with no account and with storage blocked. Signing in only adds syncing.
+- **Sign in with GitHub first.** Learners already need a GitHub account for Codespaces, so GitHub OAuth adds no new account. Google can be added later. No passwords stored by the course.
+- **Store the minimum:** user ID, GitHub username, completed unit IDs with dates, badge IDs and review dates. No tracking of page views.
+- **Row-level security** on every table, so learners can only read and write their own rows. The site uses only the public anon key; no service keys in the browser or the repository.
+- **The site stays static** on GitHub Pages. Supabase is called from a small client-side island loaded only when the learner opens their progress panel or signs in.
+
+**Changes this needs before it ships**
+
+- Section 2: Backend changes from "None" to "Optional Supabase for signed-in learners".
+- Section 14.4: a privacy notice explaining what is stored, why, where it is hosted, and how to export or delete it (UK GDPR). Sign-in sets cookies or storage for the session, so explain that too.
+- The CSP adds the project's Supabase URL to `connect-src`.
+- A "Delete my account and data" button, and a data export.
+- An import step that uploads existing local progress on first sign-in.
+- A sketch of the schema to agree first: `profiles`, `progress (user_id, unit_id, completed_at, check_passed)`, `badges (user_id, badge_id, earned_at)`, `reviews (user_id, unit_id, due_at)`.
+
+TODO(owner): check Supabase's current free-plan limits and pricing on its official pages before choosing it, and record the "Last checked" date here.
+
+**Alternative:** if syncing is the only goal, a private GitHub Gist written through GitHub OAuth could hold progress with no database at all. Compare the two before building.
+
+### 19.4 Content licence and monetisation
+
+The written content is currently CC BY 4.0, which lets anyone reuse it, including commercially. **Decide before most units are written:** if the owner wants to keep commercial rights to the lessons, switch new content to **CC BY-NC 4.0**. A change only applies going forward; content already published under CC BY stays reusable under CC BY. Code stays MIT either way.
+
+### 19.5 Ways to earn from the course
+
+Keep the core course free. That builds trust and the audience everything else depends on. Options, roughly in order of effort:
+
+- **Sponsorship:** GitHub Sponsors, or a sponsor for a track ("Kubernetes track supported by …"), shown as a plain text credit with no tracking scripts.
+- **YouTube:** the videos in `docs/video-plan.md`.
+- **Paid video course:** the same units recorded as a structured video course on a paid platform, with the free text course as the funnel.
+- **Assessed certificates:** a paid, proctored or project-based assessment that issues a verifiable credential (19.1, step 4). Needs accounts (19.3).
+- **Live cohorts and mentoring:** a few weeks of guided group sessions through a path, CV and portfolio reviews, or one-to-one mentoring.
+- **Team training:** companies pay for private delivery, a branded copy for onboarding, or a team progress dashboard. Often the best earner for open DevOps material. Needs accounts with team roles.
+
+Avoid affiliate links inside lessons. They conflict with advice to use the cheapest option that works. Any paid offer must be clearly separate from the free course, and the free course must never be cut back to push people to pay.
