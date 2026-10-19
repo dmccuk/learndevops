@@ -41,11 +41,11 @@
 	--ld-heading: #0f1419;
 	--ld-muted: #4a5560;
 	--ld-dim: #5e6872;
-	--ld-accent: #a65f00;
+	--ld-accent: #a05c00; /* spec: #A65F00, darkened to pass 4.5:1 on --ld-bg-alt */
 	--ld-on-accent: #ffffff;
 	--ld-ok: #1e7a5e;
 	--ld-warn: #b23a1e;
-	--ld-accent-tint: #f6ead8;
+	--ld-accent-tint: #faf1e4;
 	--ld-warn-tint: #f8e4de;
 }
 
@@ -84,6 +84,15 @@
 	--sl-color-red: var(--ld-warn);
 	--sl-color-red-high: var(--ld-warn);
 	--sl-color-green-high: var(--ld-ok);
+	--sl-color-green-low: var(--ld-bg-alt);
+	--sl-color-green: var(--ld-ok);
+	/* Note and tip asides use blue and purple; keep them in the palette. */
+	--sl-color-blue-low: var(--ld-bg-alt);
+	--sl-color-blue: var(--ld-dim);
+	--sl-color-blue-high: var(--ld-heading);
+	--sl-color-purple-low: var(--ld-bg-alt);
+	--sl-color-purple: var(--ld-ok);
+	--sl-color-purple-high: var(--ld-heading);
 
 	/* No shadows (spec section 5.3). */
 	--sl-shadow-sm: none;
@@ -139,7 +148,7 @@ h4 {
 }
 
 /* Planned units are greyed out in lists. */
-.ld-planned {
+.ld-planned:not([aria-current='page']) {
 	color: var(--ld-dim) !important;
 }
 

@@ -1,0 +1,8 @@
+---
+import { curriculum } from '../lib/curriculum';
+import ProjectCard from './ProjectCard.astro';
+---
+
+<div class="ld-grid not-content">
+	{curriculum.projects.map((p, i) => <ProjectCard project={p} number={i + 1} />)}
+</div>

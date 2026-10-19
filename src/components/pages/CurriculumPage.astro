@@ -1,0 +1,55 @@
+---
+import { curriculum, unitsInTrack } from '../../lib/curriculum';
+import { trackUrl } from '../../lib/url';
+import PipelineMap from '../PipelineMap.astro';
+import UnitList from '../UnitList.astro';
+
+const total = curriculum.units.length;
+const ready = curriculum.units.filter((u) => u.status === 'published').length;
+---
+
+<p class="lead">
+	{total} units in {curriculum.tracks.length} tracks. {ready} ready so far; the rest are marked "Coming soon".
+</p>
+
+<h2 id="pipeline">The pipeline</h2>
+<p>Every track teaches one stage of the same pipeline. Select a track to jump to it.</p>
+<PipelineMap interactive />
+
+<h2 id="tracks">All tracks</h2>
+{
+	curriculum.tracks.map((t) => (
+		<section class="track" aria-labelledby={`track-${t.id.toLowerCase()}`}>
+			<h3 id={`track-${t.id.toLowerCase()}`}>
+				<a href={trackUrl(t.id)}>
+					{t.id} · {t.name}
+				</a>
+				{t.new && <span class="ld-badge accent">New track</span>}
+			</h3>
+			<p>{t.intro}</p>
+			<UnitList ids={unitsInTrack(t.id).map((u) => u.id)} headingLevel="h4" />
+		</section>
+	))
+}
+
+<style>
+	.lead {
+		font-size: 1.1875rem;
+	}
+	.track {
+		margin-top: 2.5rem;
+	}
+	.track h3 {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		align-items: center;
+	}
+	.track h3 a {
+		color: var(--ld-heading);
+		text-decoration: none;
+	}
+	.track h3 a:hover {
+		color: var(--ld-accent);
+	}
+</style>

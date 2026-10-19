@@ -1,0 +1,66 @@
+---
+title: FAQ
+description: Common questions about the course, including whether DevOps is still worth learning now AI writes code.
+---
+
+## Is DevOps still worth learning now AI writes code?
+
+**Yes.** AI can write code, but someone still has to build it, test it, ship it, secure it and keep it running. AI means more code arrives, faster. That makes reliable pipelines, infrastructure as code and good monitoring matter more, not less.
+
+Here is the longer answer.
+
+**More code means more change.** When a team can produce code faster, more changes reach the pipeline every day. Each one still has to be tested, built, reviewed, deployed and rolled back if it goes wrong. The pipeline is what makes that safe. Without it, faster code only means faster breakage.
+
+**AI-written code needs the same checks as yours.** An assistant can produce a Terraform file or a Kubernetes manifest that looks right and is subtly wrong: an open security group, a missing resource limit, a secret in plain text. Linting, tests, policy checks and code review catch those problems whoever wrote the code. Building those checks is DevOps work.
+
+**Production does not care who wrote the code.** When something breaks at 3am, someone has to read the dashboards and logs, find the cause and fix it. Observability, incident response and recovery are skills, not prompts.
+
+**AI is a tool you should learn to use well.** The optional [AI in DevOps](/tracks/ai/) track shows how to use assistants for infrastructure work, and how to route their output through the same reviews, tests and policy checks as everything else.
+
+## Is the course really free?
+
+Yes. The course, the labs and the code are free and open source. Most units run in your browser or in GitHub Codespaces within GitHub's free monthly allowance. The only units that can cost money are the AWS units, which use your own AWS account. They are clearly marked. See [Costs and safety](/start-here/costs-and-safety/).
+
+## Do I need to install anything?
+
+Not to start. The first Linux and Git units run in your browser, and most other units run in GitHub Codespaces, which also opens in your browser. Three units (L4, N2 and K9) need [Multipass](/start-here/environments/#laptop-multipass) on your laptop.
+
+## Which computer do I need?
+
+Any Windows, Mac or Linux computer with a modern browser. The laptop units need enough memory to run Linux virtual machines; each one says how much.
+
+## I have never used Linux. Can I do this?
+
+Yes. The course is written for complete beginners. Start with the [complete beginner path](/paths/beginner/), which begins with [L1 The command line](/units/l1/).
+
+## How long does it take?
+
+Each unit takes 30 to 60 minutes. The learning paths take roughly 8 to 14 hours of lab time, not counting projects. Each path page shows its own estimate. You can stop after any unit.
+
+## Do I need an AWS account?
+
+Only for the AWS units, which come later. Most of the course, including all the core Kubernetes units, runs without one. When you get there, complete [W1 Account safety](/units/w1/) first.
+
+## Do I get a certificate?
+
+No. The course does not offer certificates. Each project gives you something real to show instead: working code in your own GitHub account.
+
+## Why GitHub Actions and not Jenkins or GitLab?
+
+The course teaches one CI/CD tool well rather than several briefly. GitHub Actions is built into GitHub, which learners already use for the labs, so there is nothing extra to set up. The ideas carry over to other tools.
+
+## Why Terraform? What about OpenTofu?
+
+Terraform is the default in this course. OpenTofu is an open-source fork of Terraform, and its commands work as drop-in equivalents. Each infrastructure as code unit includes a note about it.
+
+## What happened to the original course?
+
+This site is a 2026 refresh of the original *Introduction to DevOps tools* course. The original is preserved in the repository at the [`v1-original`](https://github.com/dmccuk/learndevops/tree/v1-original) tag. Some of its videos are linked from units in this course. See [Videos](/reference/videos/).
+
+## I found a mistake, or a lab doesn't work
+
+Please [open an issue on GitHub](https://github.com/dmccuk/learndevops/issues/new/choose). Include the unit ID and what you saw.
+
+## Can I contribute?
+
+Yes. See the [About page](/about/#contributing).

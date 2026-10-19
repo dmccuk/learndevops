@@ -35,7 +35,7 @@ const description =
 		<div class="screen" aria-hidden="true">
 			{
 				lines.map((l, i) => (
-					<div class="pair" style={`--i: ${i}`}>
+					<div class={`pair step-${i}`}>
 						<div class="cmd">
 							<span class="prompt">$</span> {l.cmd}
 						</div>
@@ -43,7 +43,7 @@ const description =
 					</div>
 				))
 			}
-			<div class="cursor-line" style="--i: 4"><span class="prompt">$</span> <span class="cursor"></span></div>
+			<div class="cursor-line step-4"><span class="prompt">$</span> <span class="cursor"></span></div>
 		</div>
 	</div>
 </section>
@@ -111,12 +111,18 @@ const description =
 		color: var(--ld-terminal-text);
 		overflow-x: auto;
 	}
+	/* Lines appear one by one. Hidden lines use visibility, not opacity, so
+	   visible text always has full contrast. */
 	.pair,
 	.cursor-line {
-		opacity: 0;
-		animation: appear 0.4s ease-out forwards;
-		animation-delay: calc(var(--i) * 1.1s + 0.3s);
+		visibility: hidden;
+		animation: appear 0s forwards;
 	}
+	.step-0 { animation-delay: 0.3s; }
+	.step-1 { animation-delay: 1.4s; }
+	.step-2 { animation-delay: 2.5s; }
+	.step-3 { animation-delay: 3.6s; }
+	.step-4 { animation-delay: 4.7s; }
 	.pair + .pair {
 		margin-top: 0.6rem;
 	}
@@ -142,13 +148,8 @@ const description =
 		animation: blink 1s steps(1) infinite;
 	}
 	@keyframes appear {
-		from {
-			opacity: 0;
-			transform: translateY(4px);
-		}
 		to {
-			opacity: 1;
-			transform: none;
+			visibility: visible;
 		}
 	}
 	@keyframes blink {
@@ -159,7 +160,7 @@ const description =
 	@media (prefers-reduced-motion: reduce) {
 		.pair,
 		.cursor-line {
-			opacity: 1;
+			visibility: visible;
 			animation: none;
 		}
 		.cursor {
