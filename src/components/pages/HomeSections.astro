@@ -1,100 +1,55 @@
 ---
-// Home page sections below the hero (spec section 6, items 3 to 9).
+// Home page sections below the hero (spec section 6). Deliberately short:
+// try Linux, see where the course goes, meet the teacher. The course map,
+// paths and projects live on their own pages.
 import { Image } from 'astro:assets';
 import portrait from '../../assets/dennis-mccarthy.png';
-import { curriculum } from '../../lib/curriculum';
-import { url, YOUTUBE_URL } from '../../lib/url';
-import PathCard from '../PathCard.astro';
-import PipelineMap from '../PipelineMap.astro';
-import ProjectCard from '../ProjectCard.astro';
+import { url } from '../../lib/url';
+import BrowserVM from '../BrowserVM.astro';
 ---
 
 <div class="home not-content">
 	<section class="band try" aria-labelledby="try">
-		<div class="inner try-inner">
-			<div>
-				<h2 id="try">Try Linux right now, in this browser</h2>
-				<p>
-					Unit L1 is ready. It runs a real Linux computer inside the page: no account, no install, nothing sent to a
-					server. Or open the playground and try any command you like.
-				</p>
-			</div>
-			<div class="try-actions">
-				<a class="ld-button" href={url('/units/l1/')}>Start unit L1</a>
-				<a class="ld-button secondary" href={url('/playground/')}>Open the Linux playground</a>
-			</div>
-		</div>
-	</section>
-
-	<section class="band ai" aria-labelledby="ai">
-		<div class="inner narrow">
-			<h2 id="ai">Is DevOps still worth learning now AI writes code?</h2>
-			<p>
-				<strong>Yes.</strong> AI can write code, but someone still has to build it, test it, ship it, secure it and
-				keep it running. AI means more code arrives, faster. That makes reliable pipelines, infrastructure as code and
-				good monitoring matter more, not less.
-			</p>
-			<p><a href={url('/reference/faq/#is-devops-still-worth-learning-now-ai-writes-code')}>Read the full answer</a></p>
-		</div>
-	</section>
-
-	<section class="band" aria-labelledby="big-picture">
 		<div class="inner">
-			<h2 id="big-picture">Every track teaches one stage of the same pipeline</h2>
+			<h2 id="try">Try Linux right now, in this browser</h2>
 			<p class="intro">
-				A change starts as code and ends up running in production, watched by monitoring. Each line on the map covers
-				one stretch of that journey.
+				This is a real Linux computer running inside the page: no account, no install, nothing sent to a server. Start
+				it, then try <code>ls</code>, <code>pwd</code> or <code>cat notes.txt</code>.
 			</p>
-			<PipelineMap interactive />
+			<BrowserVM
+				setup="mkdir -p ~/practice && cd ~/practice && echo alpha > notes.txt && echo beta >> notes.txt && echo gamma >> notes.txt"
+			/>
+			<p class="next">
+				Ready to learn it properly? <a href={url('/units/l1/')}>Start unit L1</a>, or open the{' '}
+				<a href={url('/playground/network/')}>network playground</a> to run two servers that talk to each other.
+			</p>
 		</div>
 	</section>
 
-	<section class="band alt" aria-labelledby="ways-in">
+	<section class="band" aria-labelledby="journey">
 		<div class="inner">
-			<h2 id="ways-in">Pick a path, or just pick a unit</h2>
-			<p class="intro">A path is a route across the map. The coloured strip shows which lines it travels on.</p>
-			<div class="ld-grid">
-				{curriculum.paths.map((p) => <PathCard path={p} />)}
-			</div>
-			<p class="more"><a href={url('/curriculum/')}>See every unit</a></p>
-		</div>
-	</section>
-
-	<section class="band" aria-labelledby="how">
-		<div class="inner">
-			<h2 id="how">How every unit works</h2>
+			<h2 id="journey">Where the course takes you</h2>
 			<ol class="steps">
 				<li>
-					<h3>Read</h3>
-					<p>A short lesson that explains the why.</p>
+					<h3>Linux in your browser</h3>
+					<p>The command line, files, SSH and servers, with nothing to install.</p>
 				</li>
 				<li>
-					<h3>Do</h3>
-					<p>A hands-on lab from a ready-made starting point.</p>
+					<h3>A ready-made cloud workspace</h3>
+					<p>Git, CI/CD, containers and infrastructure as code in GitHub Codespaces.</p>
 				</li>
 				<li>
-					<h3>Check</h3>
-					<p>A script tells you whether it worked.</p>
-				</li>
-				<li>
-					<h3>Watch</h3>
-					<p>Videos on the <a href={YOUTUBE_URL}>London IAC YouTube channel</a>, where available.</p>
+					<h3>Real deploys</h3>
+					<p>Ship a real app to AWS or Kubernetes, then monitor and secure it.</p>
 				</li>
 			</ol>
+			<p class="more">
+				<a href={url('/curriculum/')}>See the full curriculum</a> or <a href={url('/paths/')}>pick a learning path</a>.
+			</p>
 		</div>
 	</section>
 
-	<section class="band alt" aria-labelledby="projects">
-		<div class="inner">
-			<h2 id="projects">What you'll build</h2>
-			<p class="intro">Five projects join the units together, from a small fleet of Linux servers to production on AWS and Kubernetes.</p>
-			<div class="ld-grid">
-				{curriculum.projects.map((p, i) => <ProjectCard project={p} number={i + 1} />)}
-			</div>
-		</div>
-	</section>
-
-	<section class="band" aria-labelledby="teacher">
+	<section class="band alt" aria-labelledby="teacher">
 		<div class="inner teacher">
 			<Image
 				class="photo"
@@ -117,13 +72,6 @@ import ProjectCard from '../ProjectCard.astro';
 			</div>
 		</div>
 	</section>
-
-	<section class="band cta" aria-labelledby="ready">
-		<div class="inner narrow">
-			<h2 id="ready">Ready? Unit L1 runs right here in your browser.</h2>
-			<a class="ld-button" href={url('/units/l1/')}>Start unit L1</a>
-		</div>
-	</section>
 </div>
 
 <style>
@@ -141,9 +89,6 @@ import ProjectCard from '../ProjectCard.astro';
 		max-width: var(--ld-max);
 		margin: 0 auto;
 	}
-	.inner.narrow {
-		max-width: 44rem;
-	}
 	h2 {
 		margin: 0 0 1rem;
 		font-size: var(--sl-text-h2);
@@ -160,37 +105,14 @@ import ProjectCard from '../ProjectCard.astro';
 	.try {
 		background: var(--ld-accent-tint);
 	}
-	.try-inner {
-		display: grid;
-		gap: 1.5rem;
-		align-items: center;
-	}
-	@media (min-width: 56rem) {
-		.try-inner {
-			grid-template-columns: 1.4fr 1fr;
-		}
-	}
-	.try p {
-		margin: 0;
-		max-width: 40rem;
-		font-size: 1.125rem;
-	}
-	.try-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-	}
-	.ai p {
-		font-size: 1.1875rem;
-	}
-	.ai p + p {
-		margin-top: 1rem;
+	.next {
+		margin-top: 1.25rem;
 	}
 	.more {
 		margin-top: 1.5rem;
 	}
-	/* Read, Do, Check, Watch is a real sequence, so it reads left to right
-	   along a rail, like stops on a line. */
+	/* The three stages are a real sequence, so they read left to right along
+	   a rail, like stops on a line. */
 	.steps {
 		position: relative;
 		display: grid;
@@ -198,18 +120,17 @@ import ProjectCard from '../ProjectCard.astro';
 		margin: 0;
 		padding: 0;
 		list-style: none;
-		counter-reset: step;
 	}
 	@media (min-width: 50rem) {
 		.steps {
-			grid-template-columns: repeat(4, 1fr);
+			grid-template-columns: repeat(3, 1fr);
 		}
 		.steps::before {
 			content: '';
 			position: absolute;
 			top: 0.75rem;
 			left: 0.75rem;
-			right: 12%;
+			right: 20%;
 			height: var(--ld-rail);
 			margin-top: calc(var(--ld-rail) / -2);
 			border-radius: 3px;
@@ -245,6 +166,9 @@ import ProjectCard from '../ProjectCard.astro';
 		gap: 2rem;
 		align-items: center;
 	}
+	.teacher > div {
+		flex: 1 1 20rem;
+	}
 	.teacher h2 {
 		margin-bottom: 0.5rem;
 	}
@@ -262,11 +186,5 @@ import ProjectCard from '../ProjectCard.astro';
 	}
 	.more-about {
 		margin-top: 0.75rem;
-	}
-	.cta {
-		text-align: center;
-	}
-	.cta h2 {
-		margin-bottom: 1.5rem;
 	}
 </style>
