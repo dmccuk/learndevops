@@ -69,8 +69,36 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			const startedAt = performance.now();
 			const vms: VMSpec[] = JSON.parse(this.dataset.vms ?? '[]');
 			const base = this.dataset.base ?? '/vm/';
-			this.querySelector<HTMLElement>('.start')?.setAttribute('hidden', '');
+			const startBox = this.querySelector<HTMLElement>('.start');
+			startBox?.setAttribute('hidden', '');
 			this.setStatus('Loading the emulator…');
+
+			// Check the VM files are on the site before starting. Without them
+			// v86 waits forever instead of reporting an error.
+			const filesOk = await Promise.all(
+				['v86.wasm', 'state.bin.zst', 'fs.json'].map((f) =>
+					fetch(`${base}${f}`, { method: 'HEAD' })
+						.then((r) => r.ok)
+						.catch(() => false),
+				),
+			).then((all) => all.every(Boolean));
+			if (!filesOk) {
+				this.setStatus(
+					'The Linux image is not available right now. It may still be publishing; try again in a few minutes.',
+				);
+				startBox?.removeAttribute('hidden');
+				this.querySelector<HTMLButtonElement>('[data-start]')?.addEventListener('click', () => this.start(), {
+					once: true,
+				});
+				return;
+			}
+
+			// If start-up stalls for any other reason, say so rather than hang.
+			setTimeout(() => {
+				if ((window as unknown as { ldVmReadySeconds?: number }).ldVmReadySeconds === undefined) {
+					this.setStatus('This is taking longer than expected. Reload the page to try again.');
+				}
+			}, 90_000);
 
 			const [{ V86 }, { Terminal }, { FitAddon }] = await Promise.all([
 				import('v86'),
