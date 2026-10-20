@@ -1,0 +1,206 @@
+---
+/**
+ * Linux running inside the page, using the v86 emulator (BSD-2-Clause).
+ *
+ * Nothing heavy loads until the learner selects "Start". Then the emulator
+ * (about 2.4 MB) and a saved VM state are fetched from this site, and files
+ * load on demand as the VM reads them. Several VMs on one page share a
+ * private in-browser network, with no server involved.
+ *
+ * The VM files live in public/vm/ and are built by
+ * .github/workflows/browser-vm.yml (see labs/_browser-vm/README.md).
+ */
+interface VM {
+	/** Hostname inside the VM, e.g. "web1" */
+	name: string;
+	/** Address on the in-browser network, e.g. "10.5.0.11/24" */
+	ip: string;
+}
+interface Props {
+	vms?: VM[];
+	/** Commands typed into the first VM after it starts, e.g. setup files */
+	setup?: string;
+}
+const { vms = [{ name: 'ld-control', ip: '10.5.0.10/24' }], setup = '' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<ld-browser-vm class="not-content" data-vms={JSON.stringify(vms)} data-base={`${base}/vm/`} data-setup={setup}>
+	<div class="start">
+		<button type="button" class="ld-button" data-start>
+			{vms.length > 1 ? `Start ${vms.length} Linux servers` : 'Start the Linux terminal'}
+		</button>
+		<p class="note">
+			Runs entirely in your browser. The first start downloads about 30 MB; after that your browser caches it. The
+			password for <code>sudo</code> is <code>learner</code>.
+		</p>
+	</div>
+	<p class="status" role="status" aria-live="polite"></p>
+	<div class="terms">
+		{
+			vms.map((vm) => (
+				<section class="term-wrap" aria-label={`Terminal for ${vm.name}`} hidden>
+					<h3 class="term-title">{vm.name}</h3>
+					<div class="term" />
+				</section>
+			))
+		}
+	</div>
+</ld-browser-vm>
+
+<script>
+	import '@xterm/xterm/css/xterm.css';
+
+	type VMSpec = { name: string; ip: string };
+
+	class LdBrowserVM extends HTMLElement {
+		connectedCallback() {
+			this.querySelector<HTMLButtonElement>('[data-start]')?.addEventListener('click', () => this.start(), {
+				once: true,
+			});
+		}
+
+		private setStatus(text: string) {
+			const el = this.querySelector('.status');
+			if (el) el.textContent = text;
+		}
+
+		private async start() {
+			const startedAt = performance.now();
+			const vms: VMSpec[] = JSON.parse(this.dataset.vms ?? '[]');
+			const base = this.dataset.base ?? '/vm/';
+			this.querySelector<HTMLElement>('.start')?.setAttribute('hidden', '');
+			this.setStatus('Loading the emulator…');
+
+			const [{ V86 }, { Terminal }, { FitAddon }] = await Promise.all([
+				import('v86'),
+				import('@xterm/xterm'),
+				import('@xterm/addon-fit'),
+			]);
+
+			const wraps = [...this.querySelectorAll<HTMLElement>('.term-wrap')];
+			let ready = 0;
+
+			vms.forEach((vm, i) => {
+				const wrap = wraps[i];
+				wrap.hidden = false;
+				const term = new Terminal({
+					convertEol: false,
+					cursorBlink: true,
+					fontFamily: "'Overpass Mono', ui-monospace, monospace",
+					fontSize: 14,
+					theme: { background: '#0a131c', foreground: '#dce4ec', cursor: '#8fa8ff' },
+				});
+				const fit = new FitAddon();
+				term.loadAddon(fit);
+				term.open(wrap.querySelector('.term') as HTMLElement);
+				fit.fit();
+				new ResizeObserver(() => fit.fit()).observe(wrap);
+				term.write(`Starting ${vm.name}…\r\n`);
+
+				const emulator = new V86({
+					wasm_path: `${base}v86.wasm`,
+					bios: { url: `${base}seabios.bin` },
+					vga_bios: { url: `${base}vgabios.bin` },
+					memory_size: 256 * 1024 * 1024,
+					vga_memory_size: 2 * 1024 * 1024,
+					initial_state: { url: `${base}state.bin.zst` },
+					filesystem: { baseurl: `${base}rootfs-flat/`, basefs: `${base}fs.json` },
+					net_device: { type: 'virtio', relay_url: 'inbrowser' },
+					autostart: true,
+					disable_keyboard: true,
+					disable_mouse: true,
+				});
+
+				// Batch output into one write per frame; byte-by-byte writes are slow.
+				let pending: number[] = [];
+				let scheduled = false;
+				emulator.add_listener('serial0-output-byte', (byte: number) => {
+					pending.push(byte);
+					if (!scheduled) {
+						scheduled = true;
+						requestAnimationFrame(() => {
+							term.write(new Uint8Array(pending));
+							pending = [];
+							scheduled = false;
+						});
+					}
+				});
+				term.onData((data: string) => emulator.serial0_send(data));
+
+				emulator.add_listener('emulator-ready', () => {
+					// Give this VM its own name and address, then clear the screen.
+					const first = i === 0 && this.dataset.setup ? `${this.dataset.setup}\n` : '';
+					emulator.serial0_send(`sudo ld-net ${vm.name} ${vm.ip} && clear\n${first}`);
+					ready++;
+					if (ready === vms.length) {
+						const secs = ((performance.now() - startedAt) / 1000).toFixed(1);
+						this.setStatus(`${vms.length > 1 ? 'Servers' : 'Terminal'} ready in ${secs} s.`);
+						(window as unknown as { ldVmReadySeconds?: number }).ldVmReadySeconds = Number(secs);
+					}
+				});
+			});
+			this.setStatus('Starting Linux…');
+		}
+	}
+	customElements.define('ld-browser-vm', LdBrowserVM);
+</script>
+
+<style>
+	ld-browser-vm {
+		display: block;
+		margin: 1.5rem 0;
+	}
+	.start {
+		display: grid;
+		justify-items: start;
+		gap: 0.75rem;
+		padding: 1.5rem;
+		border: 1px solid var(--ld-border);
+		border-radius: var(--ld-radius-card);
+		background: var(--ld-surface);
+	}
+	.start[hidden] {
+		display: none;
+	}
+	.note {
+		margin: 0;
+		color: var(--ld-muted);
+		font-size: 0.9375rem;
+	}
+	.status {
+		margin: 0 0 0.5rem;
+		color: var(--ld-muted);
+		font-size: 0.9375rem;
+	}
+	.terms {
+		display: grid;
+		gap: 1rem;
+	}
+	@media (min-width: 72rem) {
+		.terms:has(.term-wrap:nth-child(2):not([hidden])) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	.term-wrap {
+		min-width: 0;
+		border: 1px solid var(--ld-border);
+		border-radius: var(--ld-radius-card);
+		background: #0a131c;
+		overflow: hidden;
+	}
+	.term-wrap[hidden] {
+		display: none;
+	}
+	.term-title {
+		margin: 0;
+		padding: 0.5rem 0.875rem 0.375rem;
+		border-bottom: 1px solid #2a3c4e;
+		color: #dce4ec;
+		font-size: 0.9375rem;
+	}
+	.term {
+		height: 26rem;
+		padding: 0.5rem;
+	}
+</style>

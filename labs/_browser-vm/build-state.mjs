@@ -11,13 +11,18 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { V86 } from 'v86';
 
 const [outDir, v86Dir] = process.argv.slice(2);
 const MEMORY_MB = 256;
 const TIMEOUT_MS = 10 * 60 * 1000;
 
+// This script runs from a folder where the v86 npm package is installed.
+const wasmPath = fileURLToPath(new URL('./node_modules/v86/build/v86.wasm', import.meta.url));
+
 const emulator = new V86({
+	wasm_path: wasmPath,
 	bios: { url: path.join(v86Dir, 'bios/seabios.bin') },
 	vga_bios: { url: path.join(v86Dir, 'bios/vgabios.bin') },
 	autostart: true,
