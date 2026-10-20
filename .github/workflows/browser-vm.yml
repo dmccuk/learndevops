@@ -1,5 +1,8 @@
-# Builds the in-browser VM image (v86 + Alpine) and uploads it as an artifact.
-# The image is large, so it is not committed to git. See labs/_browser-vm/README.md.
+# Builds the in-browser VM image (v86 + Alpine).
+# The image is large, so it is not committed to git. On every branch it is
+# uploaded as a build artifact. On main it is also published as a GitHub
+# Release (browser-vm-<date>-<commit>), which the site deploy downloads, and
+# the site is redeployed. See labs/_browser-vm/README.md.
 name: Browser VM image
 
 on:
@@ -20,6 +23,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # publish the release on main
+      actions: write # redeploy the site on main
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -80,3 +86,13 @@ jobs:
           name: browser-vm
           path: ${{ runner.temp }}/vm
           retention-days: 30
+
+      - name: Publish release and redeploy the site (main only)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="browser-vm-$(date -u +%Y%m%d)-${GITHUB_SHA::7}"
+          tar -C "$RUNNER_TEMP/vm" -cf "$RUNNER_TEMP/browser-vm.tar" .
+          gh release create "$TAG" "$RUNNER_TEMP/browser-vm.tar"             --title "In-browser VM image $TAG"             --notes-file "$RUNNER_TEMP/vm/VERSION"             --latest=false
+          gh workflow run site.yml --ref main

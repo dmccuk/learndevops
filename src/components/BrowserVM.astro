@@ -31,7 +31,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			{vms.length > 1 ? `Start ${vms.length} Linux servers` : 'Start the Linux terminal'}
 		</button>
 		<p class="note">
-			Runs entirely in your browser. The first start downloads about 30 MB; after that your browser caches it. The
+			Runs entirely in your browser. The first start downloads about 25 MB; after that your browser caches it. The
 			password for <code>sudo</code> is <code>learner</code>.
 		</p>
 	</div>
@@ -115,6 +115,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 					disable_mouse: true,
 					// No sound needed, and the speaker loads a blob: worklet the CSP blocks.
 					disable_speaker: true,
+				});
+
+				emulator.add_listener('download-error', () => {
+					term.write('\r\nThe Linux image could not be loaded. Check your connection and reload the page.\r\n');
+					this.setStatus('The Linux image could not be loaded.');
 				});
 
 				// Batch output into one write per frame; byte-by-byte writes are slow.

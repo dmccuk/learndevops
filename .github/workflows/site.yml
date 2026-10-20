@@ -40,6 +40,21 @@ jobs:
       - name: Type check, contrast, banned words, markdown lint
         run: npm run check
 
+      - name: Fetch the in-browser VM image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(gh release list --limit 50 --json tagName --jq '[.[] | select(.tagName | startswith("browser-vm-"))][0].tagName // ""')
+          if [ -z "$TAG" ]; then
+            echo "No browser-vm release yet; pages with a VM will show a load error."
+            exit 0
+          fi
+          echo "Using $TAG"
+          gh release download "$TAG" --pattern browser-vm.tar --dir "$RUNNER_TEMP"
+          mkdir -p public/vm
+          tar -xf "$RUNNER_TEMP/browser-vm.tar" -C public/vm
+          du -sh public/vm
+
       - name: Build (includes curriculum validation)
         run: npm run build
 
