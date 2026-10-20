@@ -16,7 +16,11 @@ RUN apk add --no-cache openrc alpine-base agetty alpine-conf linux-$KERNEL linux
 RUN apk add --no-cache \
 	bash bash-completion coreutils findutils grep sed gawk diffutils \
 	procps-ng util-linux less nano vim file tree tar gzip \
-	git openssh openssh-sftp-server rsync sudo shadow iproute2 iputils htop
+	git openssh openssh-sftp-server rsync sudo shadow iproute2 iputils htop \
+	nginx
+
+# nginx is installed but not started at boot. Labs (and the Works in Dev game)
+# configure and start it when they need a web server.
 
 # A normal user for the labs, with sudo. The password is shown on the page.
 RUN useradd -m -s /bin/bash learner \
