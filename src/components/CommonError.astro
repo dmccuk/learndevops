@@ -1,0 +1,58 @@
+---
+/**
+ * A common error in a unit: what you see, why it happens, how to fix it
+ * (spec section 7.3, item 9). Put the fix in the default slot.
+ */
+interface Props {
+	/** The exact error text the learner sees. */
+	see: string;
+	/** Why it happens, in one or two sentences. */
+	why: string;
+}
+const { see, why } = Astro.props;
+---
+
+<div class="common-error not-content">
+	<p class="label">What you see</p>
+	<pre><code>{see}</code></pre>
+	<p class="label">Why</p>
+	<p>{why}</p>
+	<p class="label">Fix</p>
+	<div class="fix"><slot /></div>
+</div>
+
+<style>
+	.common-error {
+		margin: 1rem 0 1.5rem;
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--ld-border);
+		border-inline-start: var(--ld-rail) solid var(--ld-warn);
+		border-radius: var(--ld-radius-card);
+		background: var(--ld-surface);
+	}
+	.label {
+		margin: 0.75rem 0 0.25rem;
+		font-weight: 700;
+		color: var(--ld-heading);
+	}
+	.label:first-child {
+		margin-top: 0;
+	}
+	p {
+		margin: 0;
+	}
+	pre {
+		margin: 0;
+		padding: 0.6rem 0.8rem;
+		border-radius: var(--ld-radius);
+		background: var(--ld-terminal);
+		color: var(--ld-terminal-text);
+		overflow-x: auto;
+	}
+	.fix :global(p) {
+		margin: 0;
+	}
+	.fix :global(code) {
+		font-size: 0.9em;
+	}
+</style>

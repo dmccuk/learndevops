@@ -19,7 +19,7 @@ tracks:
 
 units:
   # L · Linux and the shell
-  - { id: L1, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [], title: "The command line", outcome: "Move around, create, copy and find files without a GUI", status: planned }
+  - { id: L1, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [], title: "The command line", outcome: "Move around, create, copy and find files without a GUI", status: published }
   - { id: L2, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Permissions and users", outcome: "Read and change permissions and ownership, and use sudo safely", status: planned }
   - { id: L3, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Processes and logs", outcome: "Find what is running, stop it, and read system logs", status: planned }
   - { id: L4, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L3], title: "Services with systemd", outcome: "Start, stop, enable and debug a service", status: planned }

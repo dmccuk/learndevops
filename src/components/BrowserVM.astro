@@ -55,9 +55,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 	class LdBrowserVM extends HTMLElement {
 		connectedCallback() {
-			this.querySelector<HTMLButtonElement>('[data-start]')?.addEventListener('click', () => this.start(), {
-				once: true,
-			});
+			const button = this.querySelector<HTMLButtonElement>('[data-start]');
+			button?.addEventListener('click', () => this.start(), { once: true });
+			// Start downloading when the learner points at or tabs to the button,
+			// so less is left to fetch after they select it. Nothing loads before.
+			const warm = () => {
+				const base = this.dataset.base ?? '/vm/';
+				void import('v86');
+				void import('@xterm/xterm');
+				for (const f of ['state.bin.zst', 'v86.wasm', 'fs.json']) {
+					fetch(`${base}${f}`).catch(() => undefined);
+				}
+			};
+			button?.addEventListener('pointerenter', warm, { once: true });
+			button?.addEventListener('focus', warm, { once: true });
 		}
 
 		private setStatus(text: string) {
@@ -69,8 +80,36 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			const startedAt = performance.now();
 			const vms: VMSpec[] = JSON.parse(this.dataset.vms ?? '[]');
 			const base = this.dataset.base ?? '/vm/';
-			this.querySelector<HTMLElement>('.start')?.setAttribute('hidden', '');
+			const startBox = this.querySelector<HTMLElement>('.start');
+			startBox?.setAttribute('hidden', '');
 			this.setStatus('Loading the emulator…');
+
+			// Check the VM files are on the site before starting. Without them
+			// v86 waits forever instead of reporting an error.
+			const filesOk = await Promise.all(
+				['v86.wasm', 'state.bin.zst', 'fs.json'].map((f) =>
+					fetch(`${base}${f}`, { method: 'HEAD' })
+						.then((r) => r.ok)
+						.catch(() => false),
+				),
+			).then((all) => all.every(Boolean));
+			if (!filesOk) {
+				this.setStatus(
+					'The Linux image is not available right now. It may still be publishing; try again in a few minutes.',
+				);
+				startBox?.removeAttribute('hidden');
+				this.querySelector<HTMLButtonElement>('[data-start]')?.addEventListener('click', () => this.start(), {
+					once: true,
+				});
+				return;
+			}
+
+			// If start-up stalls for any other reason, say so rather than hang.
+			setTimeout(() => {
+				if ((window as unknown as { ldVmReadySeconds?: number }).ldVmReadySeconds === undefined) {
+					this.setStatus('This is taking longer than expected. Reload the page to try again.');
+				}
+			}, 90_000);
 
 			const [{ V86 }, { Terminal }, { FitAddon }] = await Promise.all([
 				import('v86'),
@@ -123,9 +162,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				});
 
 				// Batch output into one write per frame; byte-by-byte writes are slow.
+				// While the VM sets itself up, its output is hidden.
+				let quiet = true;
 				let pending: number[] = [];
 				let scheduled = false;
 				emulator.add_listener('serial0-output-byte', (byte: number) => {
+					if (quiet) return;
 					pending.push(byte);
 					if (!scheduled) {
 						scheduled = true;
@@ -155,47 +197,50 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 					};
 					drain();
 				};
-				term.onData((data: string) => type(data));
-
-				// Start-up commands run one at a time, each after the shell prompt
-				// comes back, so none of them is typed while another is running.
+				// Start-up commands run as one line ending in `echo LD-$((40+2))`. The
+				// shell prints "LD-42" only when everything before it has finished,
+				// and "LD-42" never appears in the echoed command itself.
 				let tail = '';
-				let waitPrompt: (() => void) | null = null;
+				let waitDone: (() => void) | null = null;
 				emulator.add_listener('serial0-output-byte', (byte: number) => {
 					tail = (tail + String.fromCharCode(byte)).slice(-64);
-					if (waitPrompt && /\$ $/.test(tail)) {
-						const done = waitPrompt;
-						waitPrompt = null;
+					if (waitDone && tail.includes('LD-42')) {
+						const done = waitDone;
+						waitDone = null;
 						done();
 					}
 				});
 				const run = (cmd: string) =>
 					new Promise<void>((resolve) => {
 						tail = '';
-						waitPrompt = resolve;
-						type(`${cmd}\n`);
+						waitDone = resolve;
+						type(`${cmd}; echo LD-$((40+2))\n`);
 					});
 
 				emulator.add_listener('emulator-ready', async () => {
-					// Give this VM its own name and address. A new login shell picks up
-					// the new hostname for the prompt.
 					const w = window as unknown as { ldVmTimings?: string[] };
 					w.ldVmTimings ??= [];
-					const mark = (label: string) => w.ldVmTimings!.push(`${vm.name} ${label} ${((performance.now() - startedAt) / 1000).toFixed(1)}s`);
+					const mark = (label: string) =>
+						w.ldVmTimings!.push(`${vm.name} ${label} ${((performance.now() - startedAt) / 1000).toFixed(1)}s`);
 					mark('restored');
-					await new Promise((r) => setTimeout(r, 300));
-					await run('true');
-					mark('first prompt');
-					// Tell Linux the terminal's real size, so long lines wrap correctly.
+					await new Promise((r) => setTimeout(r, 200));
+
+					// One line: tell Linux the terminal size (so long lines wrap
+					// correctly), give this VM its name and address, show the name in
+					// the prompt, then run any setup for the unit.
 					fit.fit();
-					await run(`stty cols ${term.cols} rows ${term.rows}`);
-					await run(`sudo ld-net ${vm.name} ${vm.ip}`);
-					mark('ld-net');
-					await run('exec bash');
-					mark('new shell');
-					if (i === 0 && this.dataset.setup) await run(this.dataset.setup);
-					mark('setup');
-					type('clear\n');
+					const setup = i === 0 && this.dataset.setup ? `; ${this.dataset.setup}` : '';
+					await run(
+						`stty cols ${term.cols} rows ${term.rows}; sudo ld-net ${vm.name} ${vm.ip}; PS1='\\u@${vm.name}:\\w\\$ '; cd${setup}`,
+					);
+					mark('ready');
+
+					// Show the terminal and hand the keyboard to the learner.
+					quiet = false;
+					term.reset();
+					term.onData((data: string) => type(data));
+					type('\n');
+					if (i === 0) term.focus();
 					ready++;
 					if (ready === vms.length) {
 						const secs = ((performance.now() - startedAt) / 1000).toFixed(1);

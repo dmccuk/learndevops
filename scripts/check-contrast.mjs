@@ -59,6 +59,7 @@ const PAIRS = [
 	['warn', 'warn-tint', TEXT],
 	['text', 'warn-tint', TEXT],
 	['text', 'accent-tint', TEXT],
+	['heading', 'accent-tint', TEXT],
 	['terminal-text', 'terminal', TEXT],
 	['terminal-muted', 'terminal', TEXT],
 	['terminal-prompt', 'terminal', TEXT],

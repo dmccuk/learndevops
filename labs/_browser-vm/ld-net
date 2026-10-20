@@ -6,16 +6,24 @@ set -eu
 name="$1"
 addr="$2"
 
-# v86 gives a restored VM a new MAC address. Reload the driver so Linux uses it.
-rmmod virtio_net 2>/dev/null || true
-modprobe virtio_net
-# Wait for the network card to appear (usually immediate).
-i=0
-while [ ! -e /sys/class/net/eth0 ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
-
 hostname "$name"
 echo "$name" > /etc/hostname
 
+# Every VM restores from the same saved state, so they all start with the same
+# MAC address. Give this one its own, made from the last part of its IP
+# address (10.5.0.11 -> 02:00:00:00:00:0b). This takes milliseconds; reloading
+# the network driver took several seconds. v86 does not filter by MAC address.
+# If an older image left the driver unloaded, load it first.
+[ -e /sys/class/net/eth0 ] || modprobe virtio_net
+i=0
+while [ ! -e /sys/class/net/eth0 ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
+
+last="${addr%/*}"
+last="${last##*.}"
+mac=$(printf '02:00:00:00:00:%02x' "$last")
+
+ip link set eth0 down
+ip link set eth0 address "$mac"
 ip link set eth0 up
 ip addr flush dev eth0
 ip addr add "$addr" dev eth0

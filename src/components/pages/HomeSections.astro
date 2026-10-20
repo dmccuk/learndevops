@@ -10,6 +10,22 @@ import ProjectCard from '../ProjectCard.astro';
 ---
 
 <div class="home not-content">
+	<section class="band try" aria-labelledby="try">
+		<div class="inner try-inner">
+			<div>
+				<h2 id="try">Try Linux right now, in this browser</h2>
+				<p>
+					Unit L1 is ready. It runs a real Linux computer inside the page: no account, no install, nothing sent to a
+					server. Or open the playground and try any command you like.
+				</p>
+			</div>
+			<div class="try-actions">
+				<a class="ld-button" href={url('/units/l1/')}>Start unit L1</a>
+				<a class="ld-button secondary" href={url('/playground/')}>Open the Linux playground</a>
+			</div>
+		</div>
+	</section>
+
 	<section class="band ai" aria-labelledby="ai">
 		<div class="inner narrow">
 			<h2 id="ai">Is DevOps still worth learning now AI writes code?</h2>
@@ -140,6 +156,29 @@ import ProjectCard from '../ProjectCard.astro';
 		margin: 0 0 1.75rem;
 		color: var(--ld-muted);
 		font-size: 1.125rem;
+	}
+	.try {
+		background: var(--ld-accent-tint);
+	}
+	.try-inner {
+		display: grid;
+		gap: 1.5rem;
+		align-items: center;
+	}
+	@media (min-width: 56rem) {
+		.try-inner {
+			grid-template-columns: 1.4fr 1fr;
+		}
+	}
+	.try p {
+		margin: 0;
+		max-width: 40rem;
+		font-size: 1.125rem;
+	}
+	.try-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
 	}
 	.ai p {
 		font-size: 1.1875rem;

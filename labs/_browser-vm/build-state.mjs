@@ -98,10 +98,11 @@ emulator.add_listener('serial0-output-byte', (byte) => {
 	if (stage === 'warm' && text.endsWith('LD-WARM\r\n')) {
 		stage = 'settle';
 		console.log('Warm. Settling ...');
-		// Unload the network driver so restored copies can load it with their
-		// own MAC address (see v86 docs/networking.md, state images). Keep the
-		// page cache: it makes the first commands after restore faster.
-		send("echo learner | sudo -S sh -c 'rmmod virtio_net; hostname localhost; sync'; clear; echo LD-READY\n");
+		// Keep the network driver loaded: restored copies set their own MAC
+		// address with ld-net, which is much faster than reloading the driver.
+		// Keep the page cache too: it makes the first commands after restore
+		// faster.
+		send("echo learner | sudo -S sh -c 'ip addr flush dev eth0; hostname localhost; sync'; clear; echo LD-READY\n");
 	}
 
 	if (stage === 'settle' && text.endsWith('LD-READY\r\n')) {

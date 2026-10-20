@@ -2,8 +2,358 @@
 title: "L1 The command line"
 description: "Move around, create, copy and find files without a GUI"
 unit: L1
+lastChecked: '2026-10-20'
 ---
 
-import UnitStub from '~/components/pages/UnitStub.astro';
+import { Aside } from '@astrojs/starlight/components';
+import BrowserVM from '~/components/BrowserVM.astro';
+import CommonError from '~/components/CommonError.astro';
+import UnitHeader from '~/components/UnitHeader.astro';
+import WhatsNext from '~/components/WhatsNext.astro';
+import WhereThisFits from '~/components/WhereThisFits.astro';
 
-<UnitStub id="L1" />
+<UnitHeader id="L1" />
+
+## You'll be able to
+
+Move around, create, copy and find files without a GUI. By the end of this unit you can:
+
+- read the shell prompt and always know where you are
+- move between folders using absolute and relative paths
+- create, copy, move, rename and delete files and folders
+- find files by name, and see a whole folder tree at once
+
+## Before you start
+
+Nothing. This is the first unit, and it runs in your browser.
+
+## Where this fits
+
+<WhereThisFits id="L1">
+
+Every other track builds on the command line. When you log in to a server, build a container, run a pipeline or read a log, you type the same commands you learn here. In a real team, most of the servers you look after have no desktop at all: the terminal is the only way in.
+
+</WhereThisFits>
+
+## Start the lab
+
+The lab runs in a small Linux computer inside this page. Nothing is installed on your computer, and nothing you type leaves your browser. When it starts, you are in a folder called `practice` with some files ready to explore.
+
+<BrowserVM vms={[{ name: 'ld-control', ip: '10.5.0.10/24' }]} setup="mkdir -p ~/practice/website ~/practice/logs ~/practice/old && cd ~/practice && echo alpha > notes.txt && echo beta >> notes.txt && echo gamma >> notes.txt && echo '<h1>Home</h1>' > website/index.html && echo '<h1>About</h1>' > website/about.html && echo started > logs/app.log && touch old/draft1.txt old/draft2.txt" />
+
+Want a clean start? Reload the page. Everything resets.
+
+## The lesson
+
+### Why use a command line at all?
+
+A desktop is built for one person clicking one thing at a time. Servers are different. They usually have no screen, you reach them over the network, and you often need to do the same job on many of them. The command line suits that work:
+
+- **It works anywhere.** The same commands work on your laptop, a server in a data centre and a container in the cloud.
+- **It can be repeated.** A command you type once can go into a script and run a thousand times without a mistake.
+- **It's precise.** `cp notes.txt backups/` means exactly one thing. Nobody has to guess which button you pressed.
+
+### The prompt tells you where you are
+
+When the terminal is ready, you see a line like this:
+
+```text
+learner@ld-control:~/practice$
+```
+
+Read it left to right:
+
+- `learner` is the user you are logged in as.
+- `ld-control` is the name of the computer.
+- `~/practice` is the folder you are in, called the **current directory**. The `~` is short for your home folder.
+- `$` means you are an ordinary user. Commands you type go after it.
+
+### One tree of folders
+
+Linux keeps every file in a single tree. The top of the tree is called the **root** and is written as a single `/`. Your home folder sits at `/home/learner`.
+
+You can point to any file in two ways:
+
+- An **absolute path** starts at the root, so it works from anywhere: `/home/learner/practice/notes.txt`.
+- A **relative path** starts from where you are now: `notes.txt`, or `website/index.html`.
+
+Two short names help with relative paths. A single dot, `.`, means "this folder". Two dots, `..`, mean "the folder above this one".
+
+### There is no recycle bin
+
+When you delete a file with `rm`, it is gone. There is no undo. That is one reason to slow down and check where you are before you delete anything.
+
+### Three habits that save time
+
+- Press **Tab** to finish a file or folder name. If nothing happens, press it twice to see the choices.
+- Press the **up arrow** to bring back the commands you typed earlier.
+- Press **Ctrl+C** to stop a command that is still running.
+
+To learn more about a command, add `--help`, for example `ls --help`.
+
+## The lab
+
+Type each command into the terminal above and press Enter. Compare what you see with the expected output.
+
+### 1. Find out where you are
+
+```sh
+pwd
+```
+
+`pwd` prints the current directory.
+
+```text
+/home/learner/practice
+```
+
+### 2. See what is here
+
+```sh
+ls
+```
+
+`ls` lists the files and folders in the current directory.
+
+```text
+logs  notes.txt  old  website
+```
+
+Files whose names start with a dot are hidden. Add `-a` to show everything:
+
+```sh
+ls -a
+```
+
+```text
+.  ..  logs  notes.txt  old  website
+```
+
+The `.` and `..` are the "this folder" and "folder above" entries from the lesson.
+
+You can also list a different folder without moving into it:
+
+```sh
+ls website
+```
+
+```text
+about.html  index.html
+```
+
+### 3. Read a file
+
+```sh
+cat notes.txt
+```
+
+```text
+alpha
+beta
+gamma
+```
+
+### 4. Move around
+
+Move into the `website` folder, check where you are, then go back up one level:
+
+```sh
+cd website
+pwd
+cd ..
+pwd
+```
+
+```text
+/home/learner/practice/website
+/home/learner/practice
+```
+
+`cd` on its own, or `cd ~`, takes you home from anywhere. Go home, then come back using a relative path:
+
+```sh
+cd ~
+pwd
+cd practice
+pwd
+```
+
+```text
+/home/learner
+/home/learner/practice
+```
+
+### 5. Create a folder and a file
+
+```sh
+mkdir backups
+touch backups/readme.txt
+ls backups
+```
+
+`mkdir` makes a folder. `touch` creates an empty file.
+
+```text
+readme.txt
+```
+
+### 6. Copy files and folders
+
+Copy a file into the new folder:
+
+```sh
+cp notes.txt backups/
+```
+
+Copying a folder needs `-r`, which means "recursive": the folder and everything inside it.
+
+```sh
+cp -r website backups/website-copy
+ls backups
+```
+
+```text
+notes.txt  readme.txt  website-copy
+```
+
+### 7. Rename and delete
+
+`mv` moves a file or folder. Moving it to a new name in the same place renames it:
+
+```sh
+mv old archive
+ls
+```
+
+```text
+archive  backups  logs  notes.txt  website
+```
+
+Delete one file inside `archive`, then check what is left:
+
+```sh
+rm archive/draft2.txt
+ls archive
+```
+
+```text
+draft1.txt
+```
+
+Now delete the whole `archive` folder. Like `cp`, removing a folder needs `-r`:
+
+```sh
+rm -r archive
+ls
+```
+
+```text
+backups  logs  notes.txt  website
+```
+
+### 8. Find files by name
+
+`find` searches a folder and everything below it. Here `.` means "start from this folder":
+
+```sh
+find . -name '*.html'
+```
+
+```text
+./website/index.html
+./website/about.html
+./backups/website-copy/index.html
+./backups/website-copy/about.html
+```
+
+The `*` matches any characters, so `'*.html'` matches every name ending in `.html`. The order of the results can differ on your screen; that's normal.
+
+### 9. See the whole tree
+
+```sh
+tree
+```
+
+```text
+.
+├── backups
+│   ├── notes.txt
+│   ├── readme.txt
+│   └── website-copy
+│       ├── about.html
+│       └── index.html
+├── logs
+│   └── app.log
+├── notes.txt
+└── website
+    ├── about.html
+    └── index.html
+
+5 directories, 8 files
+```
+
+<Aside title="In a real team">
+Engineers use these commands every day on servers they reach over SSH, which you learn in unit N2. The same commands also appear inside scripts, Dockerfiles and CI pipelines, so knowing them well pays off in every later track.
+</Aside>
+
+## Check your work
+
+Run these three commands. If your output matches, you have finished the unit.
+
+```sh
+ls ~/practice
+```
+
+```text
+backups  logs  notes.txt  website
+```
+
+```sh
+ls ~/practice/backups
+```
+
+```text
+notes.txt  readme.txt  website-copy
+```
+
+```sh
+find ~/practice -name '*.html' | wc -l
+```
+
+```text
+4
+```
+
+The last command counts the lines that `find` prints. `wc -l` means "word count, lines only", and the `|` sends the output of one command into the next. You will use `|` a lot in unit L6.
+
+## Common errors
+
+<CommonError see="cat: nots.txt: No such file or directory" why="The name is misspelt, or you are in a different folder from the file. Names are also case-sensitive: Notes.txt and notes.txt are different files.">
+Run `pwd` and `ls` to check where you are and what is there. Type the first few letters of the name and press **Tab** to let the shell finish it for you.
+</CommonError>
+
+<CommonError see="cp: -r not specified; omitting directory 'website'" why="cp copies single files by default. A folder holds other files, so cp needs to be told to copy everything inside it.">
+Add `-r`: `cp -r website backups/website-copy`.
+</CommonError>
+
+<CommonError see="rm: cannot remove 'archive': Is a directory" why="rm on its own removes files, not folders. This protects you from deleting a whole folder by accident.">
+If you really mean to delete the folder and everything in it, add `-r`: `rm -r archive`. Check the name first: there is no undo.
+</CommonError>
+
+<CommonError see="-bash: lss: command not found" why="The shell could not find a program with that name, usually because of a typo.">
+Check the spelling. Press the up arrow to bring the command back, fix it, and press Enter.
+</CommonError>
+
+<CommonError see="rm: cannot remove 'my': No such file or directory" why="A space separates one name from the next. rm my notes.txt is read as two names, my and notes.txt. rm complains about my, but it quietly deletes notes.txt.">
+Put names that contain spaces in quotes: `rm 'my notes.txt'`. Pressing **Tab** adds the quotes for you. This is also why many people avoid spaces in file names altogether.
+</CommonError>
+
+## Clean up
+
+Nothing to clean up. The Linux computer lives only in this page. Reload the page to start again with fresh files, or close the tab when you're done.
+
+## What's next
+
+<WhatsNext id="L1" />
+
+Last checked: 20 October 2026.

@@ -95,7 +95,7 @@ export default defineConfig({
 	},
 	integrations: [
 		sitemap({
-			filter: (page) => !draftPages.has(page) && !page.includes('/poc/'),
+			filter: (page) => !draftPages.has(page),
 		}),
 		starlight({
 			title: 'Learn DevOps',
@@ -141,6 +141,8 @@ export default defineConfig({
 						{ label: 'How the course works', link: '/start-here/' },
 						{ label: 'Your lab environments', link: '/start-here/environments/' },
 						{ label: 'Costs and safety', link: '/start-here/costs-and-safety/' },
+						{ label: 'Linux playground', link: '/playground/' },
+						{ label: 'Network playground', link: '/playground/network/' },
 					],
 				},
 				{ label: 'Curriculum', link: '/curriculum/' },
