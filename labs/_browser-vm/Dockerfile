@@ -20,7 +20,10 @@ RUN apk add --no-cache \
 	nginx
 
 # nginx is installed but not started at boot. Labs (and the Works in Dev game)
-# configure and start it when they need a web server.
+# configure and start it when they need a web server. Services like nginx
+# depend on OpenRC's networking service, which needs an interfaces file. The
+# page sets up eth0 itself (ld-net), so only the loopback is listed here.
+RUN printf 'auto lo\niface lo inet loopback\n' > /etc/network/interfaces
 
 # A normal user for the labs, with sudo. The password is shown on the page.
 RUN useradd -m -s /bin/bash learner \
