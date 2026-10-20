@@ -80,6 +80,8 @@ export default defineConfig({
 				"frame-src https://www.youtube-nocookie.com",
 				"font-src 'self'",
 				"connect-src 'self'",
+				// The in-browser VM (v86) starts helper workers from blob: URLs.
+				"worker-src 'self' blob:",
 				"object-src 'none'",
 				"base-uri 'self'",
 				"form-action 'self'",
@@ -93,7 +95,7 @@ export default defineConfig({
 	},
 	integrations: [
 		sitemap({
-			filter: (page) => !draftPages.has(page),
+			filter: (page) => !draftPages.has(page) && !page.includes('/poc/'),
 		}),
 		starlight({
 			title: 'Learn DevOps',

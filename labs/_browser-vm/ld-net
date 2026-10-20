@@ -1,0 +1,29 @@
+#!/bin/sh
+# Bring up networking in a restored in-browser VM.
+# Usage: ld-net <hostname> <ip/prefix>    e.g. ld-net web1 10.5.0.11/24
+set -eu
+
+name="$1"
+addr="$2"
+
+# v86 gives a restored VM a new MAC address. Reload the driver so Linux uses it.
+rmmod virtio_net 2>/dev/null || true
+modprobe virtio_net
+# Wait for the network card to appear (usually immediate).
+i=0
+while [ ! -e /sys/class/net/eth0 ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
+
+hostname "$name"
+echo "$name" > /etc/hostname
+
+ip link set eth0 up
+ip addr flush dev eth0
+ip addr add "$addr" dev eth0
+
+# Every lab VM can reach the others by name.
+cat > /etc/hosts <<EOF
+127.0.0.1 localhost
+10.5.0.10 ld-control
+10.5.0.11 web1
+10.5.0.12 web2
+EOF

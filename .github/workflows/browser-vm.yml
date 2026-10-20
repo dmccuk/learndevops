@@ -1,0 +1,98 @@
+# Builds the in-browser VM image (v86 + Alpine).
+# The image is large, so it is not committed to git. On every branch it is
+# uploaded as a build artifact. On main it is also published as a GitHub
+# Release (browser-vm-<date>-<commit>), which the site deploy downloads, and
+# the site is redeployed. See labs/_browser-vm/README.md.
+name: Browser VM image
+
+on:
+  push:
+    paths:
+      - labs/_browser-vm/**
+      - .github/workflows/browser-vm.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Pin v86 to the commit behind the npm release we use.
+  V86_REF: cc37f35c43bf14865d74ad76879ecf9410f69eb1
+  V86_NPM: 0.5.472
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # publish the release on main
+      actions: write # redeploy the site on main
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Get v86 tools and BIOS
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: copy/v86
+          ref: ${{ env.V86_REF }}
+          path: v86
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install tools
+        run: |
+          pip install zstandard
+          sudo apt-get install -y zstd
+          mkdir -p "$RUNNER_TEMP/v86npm" && cd "$RUNNER_TEMP/v86npm"
+          npm init -y >/dev/null && npm install --no-save "v86@$V86_NPM"
+
+      - name: Build the Linux image
+        run: |
+          OUT="$RUNNER_TEMP/vm"
+          mkdir -p "$OUT"
+          docker build labs/_browser-vm --platform linux/386 --tag ld-browser-vm
+          docker create --platform linux/386 --name ld-browser-vm ld-browser-vm
+          docker export ld-browser-vm -o "$OUT/rootfs.tar"
+          tar -f "$OUT/rootfs.tar" --delete .dockerenv || true
+          python3 v86/tools/fs2json.py --zstd --out "$OUT/fs.json" "$OUT/rootfs.tar"
+          mkdir -p "$OUT/rootfs-flat"
+          python3 v86/tools/copy-to-sha256.py --zstd "$OUT/rootfs.tar" "$OUT/rootfs-flat"
+          rm "$OUT/rootfs.tar"
+
+      - name: Boot once and save state
+        run: |
+          cp labs/_browser-vm/build-state.mjs "$RUNNER_TEMP/v86npm/"
+          node "$RUNNER_TEMP/v86npm/build-state.mjs" "$RUNNER_TEMP/vm" "$GITHUB_WORKSPACE/v86"
+          zstd -19 --rm "$RUNNER_TEMP/vm/state.bin" -o "$RUNNER_TEMP/vm/state.bin.zst"
+
+      - name: Add emulator and BIOS files
+        run: |
+          OUT="$RUNNER_TEMP/vm"
+          cp "$RUNNER_TEMP/v86npm/node_modules/v86/build/v86.wasm" "$OUT/"
+          cp v86/bios/seabios.bin v86/bios/vgabios.bin v86/bios/COPYING.LESSER "$OUT/"
+          cp "$RUNNER_TEMP/v86npm/node_modules/v86/LICENSE" "$OUT/LICENSE-v86"
+          echo "v86 $V86_NPM ($V86_REF), built $(date -u +%Y-%m-%dT%H:%MZ) from $GITHUB_SHA" > "$OUT/VERSION"
+
+      - name: Report sizes
+        run: |
+          cd "$RUNNER_TEMP/vm"
+          du -sh . rootfs-flat
+          ls -la
+          echo "Files in rootfs-flat: $(ls rootfs-flat | wc -l)"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-vm
+          path: ${{ runner.temp }}/vm
+          retention-days: 30
+
+      - name: Publish release and redeploy the site (main only)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="browser-vm-$(date -u +%Y%m%d)-${GITHUB_SHA::7}"
+          tar -C "$RUNNER_TEMP/vm" -cf "$RUNNER_TEMP/browser-vm.tar" .
+          gh release create "$TAG" "$RUNNER_TEMP/browser-vm.tar"             --title "In-browser VM image $TAG"             --notes-file "$RUNNER_TEMP/vm/VERSION"             --latest=false
+          gh workflow run site.yml --ref main

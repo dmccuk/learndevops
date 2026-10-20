@@ -8,6 +8,11 @@
  * After the build, this integration hashes every inline <script> (without a
  * src) and <style> in each HTML file and adds the hashes to that page's
  * Content-Security-Policy <meta> tag. No 'unsafe-inline' is needed.
+ *
+ * One exception: pages with an in-browser VM (<ld-browser-vm>) use xterm.js,
+ * which adds <style> elements at run time that cannot be hashed in advance.
+ * On those pages only, style-src allows 'unsafe-inline' instead of hashes.
+ * Scripts stay hash-checked on every page.
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -41,6 +46,18 @@ function addHashes(policy, directive, hashes) {
 	return parts.join('; ');
 }
 
+/**
+ * Replaces style-src hashes with 'unsafe-inline' (hashes would disable it).
+ * @param {string} policy
+ */
+function allowInlineStyles(policy) {
+	return policy
+		.split(';')
+		.map((p) => p.trim())
+		.map((p) => (p.startsWith('style-src ') ? "style-src 'self' 'unsafe-inline'" : p))
+		.join('; ');
+}
+
 /** @returns {import('astro').AstroIntegration} */
 export default function cspInlineHashes() {
 	return {
@@ -59,7 +76,11 @@ export default function cspInlineHashes() {
 					const styles = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map((m) => sha256(m[1]));
 					let policy = meta[1];
 					policy = addHashes(policy, 'script-src', [...new Set(scripts)]);
-					policy = addHashes(policy, 'style-src', [...new Set(styles)]);
+					if (html.includes('<ld-browser-vm')) {
+						policy = allowInlineStyles(policy);
+					} else {
+						policy = addHashes(policy, 'style-src', [...new Set(styles)]);
+					}
 					if (policy !== meta[1]) {
 						fs.writeFileSync(file, html.replace(meta[0], meta[0].replace(meta[1], policy)));
 						pages++;
