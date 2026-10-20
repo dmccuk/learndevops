@@ -9,7 +9,9 @@ addr="$2"
 # v86 gives a restored VM a new MAC address. Reload the driver so Linux uses it.
 rmmod virtio_net 2>/dev/null || true
 modprobe virtio_net
-sleep 1
+# Wait for the network card to appear (usually immediate).
+i=0
+while [ ! -e /sys/class/net/eth0 ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
 
 hostname "$name"
 echo "$name" > /etc/hostname

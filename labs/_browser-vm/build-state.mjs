@@ -44,6 +44,43 @@ const timer = setTimeout(() => {
 	process.exit(1);
 }, TIMEOUT_MS);
 
+// Commands run once before saving, so the files they need are already loaded
+// in the saved state. Restored VMs then start in about a second, not ten.
+const WARM_UP = [
+	'sudo ld-net warm 10.5.0.99/24',
+	'bash -ic true',
+	'git --version',
+	'ls -la /etc > /dev/null',
+	'cat /etc/os-release > /dev/null',
+	'grep -c a /etc/passwd > /dev/null',
+	"awk 'END{print NR}' /etc/passwd > /dev/null",
+	'sed -n 1p /etc/passwd > /dev/null',
+	'ps aux > /dev/null',
+	'free -m > /dev/null',
+	'df -h > /dev/null',
+	'id > /dev/null',
+	'ping -c 1 127.0.0.1 > /dev/null',
+	'ssh -V 2> /dev/null',
+	'scp 2> /dev/null',
+	'rsync --version > /dev/null',
+	'nano --version > /dev/null',
+	'less --version > /dev/null',
+	'tree --version > /dev/null',
+].join('; ');
+
+// The serial port buffers only a few characters, so type in small chunks.
+function send(input) {
+	const chunks = input.match(/[\s\S]{1,8}/g) ?? [];
+	let k = 0;
+	const next = () => {
+		if (k < chunks.length) {
+			emulator.serial0_send(chunks[k++]);
+			setTimeout(next, 10);
+		}
+	};
+	next();
+}
+
 console.log('Booting the VM ...');
 let text = '';
 let stage = 'boot';
@@ -53,13 +90,18 @@ emulator.add_listener('serial0-output-byte', (byte) => {
 
 	// Autologin lands at a bash prompt such as "learner@localhost:~$ ".
 	if (stage === 'boot' && /learner@[^\n]*\$ $/.test(text)) {
+		stage = 'warm';
+		console.log('Logged in. Warming up ...');
+		send(`${WARM_UP}; echo LD-WARM\n`);
+	}
+
+	if (stage === 'warm' && text.endsWith('LD-WARM\r\n')) {
 		stage = 'settle';
-		console.log('Logged in. Settling ...');
+		console.log('Warm. Settling ...');
 		// Unload the network driver so restored copies can load it with their
-		// own MAC address (see v86 docs/networking.md, state images).
-		emulator.serial0_send(
-			"clear; sudo -n true 2>/dev/null; echo learner | sudo -S sh -c 'rmmod virtio_net; sync; echo 3 > /proc/sys/vm/drop_caches'; clear; echo LD-READY\n",
-		);
+		// own MAC address (see v86 docs/networking.md, state images). Keep the
+		// page cache: it makes the first commands after restore faster.
+		send("echo learner | sudo -S sh -c 'rmmod virtio_net; hostname localhost; sync'; clear; echo LD-READY\n");
 	}
 
 	if (stage === 'settle' && text.endsWith('LD-READY\r\n')) {
