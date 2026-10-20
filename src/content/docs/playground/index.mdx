@@ -1,0 +1,33 @@
+---
+title: Linux playground
+description: A Linux terminal that runs entirely in your browser. Try commands, break things and start again, with nothing to install.
+---
+
+import BrowserVM from '~/components/BrowserVM.astro';
+
+A real Linux computer, running inside this page. Nothing is installed on your computer and nothing runs on a server: the whole machine lives in your browser tab. Try any command you like. If something breaks, reload the page and you get a fresh machine.
+
+<BrowserVM setup="mkdir -p ~/practice && cd ~/practice && echo alpha > notes.txt && echo beta >> notes.txt && echo gamma >> notes.txt" />
+
+## Things to try
+
+```sh
+pwd
+ls -la
+cat notes.txt
+mkdir projects && cd projects
+git init
+```
+
+New to the command line? Unit [L1 The command line](/units/l1/) walks you through it step by step, in the same kind of terminal.
+
+## Two servers on a network
+
+The [network playground](/playground/network/) starts two Linux servers in this tab, so you can practise `ping`, `ssh` and `scp` between them.
+
+## What this terminal can and can't do
+
+- It has bash, git, the usual Linux tools, nano and vim.
+- It has no internet access, so `apt`, `apk` and `git clone` from the internet won't work.
+- It's a small 32-bit machine with 256 MB of memory, so it's slower than a real server.
+- Nothing is saved. Reloading the page starts a fresh machine.

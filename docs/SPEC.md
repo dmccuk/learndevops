@@ -589,7 +589,7 @@ aws: false
 - Link out to **https://webvm.io** in a new tab. Do **not** embed it in an iframe and do **not** self-host or download CheerpX: its public deployment is free for individuals, but hosting it elsewhere requires a commercial licence.
 - Because the browser VM cannot reach the internet, each browser unit provides a **setup block**: a single paste-able heredoc command that creates the practice files (for example sample logs for L6). Keep each setup block under 60 lines.
 - Browser units use self-check lists with expected outputs instead of `./check`. Each also offers "Prefer a full environment? Do this unit in Codespaces," where `./check` works.
-- **In-page terminal (proof of concept, October 2026):** a self-hosted v86 emulator (BSD-2-Clause) running a small Alpine image, embedded in the page with xterm.js, is live at `/poc/terminal/` and `/poc/network/` (two VMs that can `ping`, `ssh` and `scp` to each other through v86's in-browser network). See `labs/_browser-vm/README.md` for how it works, measurements and limits. If it is adopted, browser units run in the page instead of linking to webvm.io.
+- **In-page terminal (adopted October 2026):** browser units run a self-hosted v86 emulator (BSD-2-Clause) with a small Alpine image, embedded in the page with xterm.js, instead of linking to webvm.io. Unit L1 uses it, and the playground pages (`/playground/` and `/playground/network/`) let learners try any command, including `ping`, `ssh` and `scp` between two VMs on v86's in-browser network. Practice files come from the unit's setup command, so browser units no longer need a separate setup block. See `labs/_browser-vm/README.md` for how it works, measurements and limits.
 
 ### 9.3 Codespaces environment
 

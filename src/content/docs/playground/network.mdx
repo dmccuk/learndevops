@@ -1,0 +1,45 @@
+---
+title: Network playground
+description: Two Linux servers running in your browser on a private network, for practising ping, SSH and file transfer.
+---
+
+import BrowserVM from '~/components/BrowserVM.astro';
+
+Two Linux servers, `web1` and `web2`, run in this tab on a private network. They can reach each other by name, but not the internet. Nothing runs on a server: both machines live in your browser.
+
+<BrowserVM vms={[{ name: 'web1', ip: '10.5.0.11/24' }, { name: 'web2', ip: '10.5.0.12/24' }]} />
+
+## Things to try
+
+In the `web1` terminal, check you can reach `web2`:
+
+```sh
+ping -c 3 web2
+```
+
+Log in to `web2` over SSH. The password is `learner`.
+
+```sh
+ssh learner@web2
+```
+
+The first time, SSH asks whether you trust `web2`. Type `yes`. Your prompt changes to `learner@web2`: you are now typing on the other server. Type `exit` to come back.
+
+Copy a file from `web1` to `web2`:
+
+```sh
+echo "hello from web1" > hello.txt
+scp hello.txt learner@web2:
+```
+
+Then, in the `web2` terminal:
+
+```sh
+cat hello.txt
+```
+
+## Good to know
+
+- Both servers share your computer's memory and processor, so they are slower than one.
+- Every machine started from this page uses the same SSH host keys. That's fine for a sandbox with no internet access, but never copy keys between real servers.
+- Unit [N2 SSH properly](/units/n2/) covers keys, SSH config files and jump hosts in depth.

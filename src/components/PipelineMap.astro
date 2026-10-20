@@ -371,8 +371,19 @@ const listId = `${uid}-list`;
 		font-size: 13px;
 		font-weight: 600;
 	}
-	.dim {
-		opacity: 0.4;
+	/* De-emphasise other stages with colour, not transparency, so their text
+	   still meets contrast. The line roundels keep their colours. */
+	.pm-row.dim .pm-stage {
+		fill: var(--ld-bg);
+	}
+	.pm-row.dim .pm-stage-label,
+	.dim .pm-chip-label,
+	.pm-band.dim .pm-band-lead {
+		fill: var(--ld-dim);
+		font-weight: 400;
+	}
+	.dim .pm-chip-box {
+		fill: var(--ld-bg);
 	}
 
 	/* --- List (below 640px) --- */
@@ -404,7 +415,11 @@ const listId = `${uid}-list`;
 		border-width: 2px;
 	}
 	.pm-list-stage.dim {
-		opacity: 0.55;
+		background: var(--ld-bg);
+	}
+	.pm-list-stage.dim .pm-list-label {
+		color: var(--ld-dim);
+		font-weight: 400;
 	}
 	.pm-list-label {
 		display: block;
