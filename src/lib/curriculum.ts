@@ -23,7 +23,7 @@ export const STAGES = [
 	'security',
 ] as const;
 
-export const ENVIRONMENTS = ['browser', 'codespaces', 'codespaces-4core', 'laptop', 'aws'] as const;
+export const ENVIRONMENTS = ['browser', 'codespaces', 'codespaces-4core', 'fleet', 'laptop', 'aws'] as const;
 export const STATUSES = ['planned', 'draft', 'published'] as const;
 
 const unitId = z.string().regex(/^[A-Z]{1,2}\d{1,2}$/, 'Unit IDs look like K2 or AI1');
@@ -281,6 +281,7 @@ export const ENVIRONMENT_LABELS: Record<Environment, string> = {
 	browser: 'Browser',
 	codespaces: 'Codespaces',
 	'codespaces-4core': 'Codespaces (4-core)',
+	fleet: 'Multi-machine lab',
 	laptop: 'Laptop',
 	aws: 'AWS',
 };

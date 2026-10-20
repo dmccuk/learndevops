@@ -1,7 +1,7 @@
 # learndevops.co.uk — Build Specification
 
 **Owner:** dmccuk (GitHub)  
-**Version:** 1.1 — 19 October 2026 (design direction changed to the transit map)  
+**Version:** 1.2 — 19 October 2026 (multi-machine lab, fleet path and five projects added)  
 **Audience for this document:** Claude Code (the builder) and the site owner (the reviewer)
 
 ---
@@ -24,17 +24,18 @@ Read this whole document before writing any code. Then:
 
 A free, open-source DevOps learning website, hosted on GitHub Pages, at `learndevops.co.uk` (domain to be connected later; see section 13).
 
-**The idea:** a library of **60 short, standalone units** (30–60 minutes each) in **13 tracks**. Each unit teaches one skill and ends with one clear outcome. Every unit can be started cold from a ready-made checkpoint, but also shows where it fits in the whole DevOps pipeline. **Learning paths** and **three projects** string units together into the full "laptop to production" story.
+**The idea:** a library of **66 short, standalone units** (30–60 minutes each) in **13 tracks**. Each unit teaches one skill and ends with one clear outcome. Every unit can be started cold from a ready-made checkpoint, but also shows where it fits in the whole DevOps pipeline. **Learning paths** and **five projects** string units together, from a small fleet of Linux servers to production on AWS and Kubernetes.
 
 **Audience:** complete beginners and sysadmins moving into DevOps. They use Windows or Mac laptops. Many have never used Linux.
 
-**Hands-on labs run in four places**, and learners need nothing installed to begin:
+**Hands-on labs run in five places**, and learners need nothing installed to begin:
 
 | Environment | Used for | Learner needs |
 | --- | --- | --- |
 | Browser | Linux and Git basics | A browser |
 | GitHub Codespaces | Most units, including all core Kubernetes units | A free GitHub account |
-| Laptop (Multipass VMs) | systemd, SSH, a real multi-node Kubernetes cluster | Multipass installed |
+| Multi-machine lab (Docker Compose) | A small fleet of Linux servers: SSH, file transfer, performance, systemd, Ansible | Codespaces, or Docker on their computer |
+| Laptop (Multipass VMs) | A real multi-node Kubernetes cluster (K9) | Multipass installed |
 | AWS | Cloud provisioning, deployment, managed Kubernetes | Their own AWS account |
 
 **This is a modern refresh of the existing repo**, not a new one. The original course repo (`dmccuk/devops_tools_course`) is renamed to `dmccuk/learndevops` and rebuilt in place, so its stars, forks and history are kept. The original course is preserved as the git tag `v1-original` and its files are moved into `legacy/`. Link to the tag from the About page as "the original course".
@@ -244,13 +245,13 @@ Build `/` as a custom Starlight page (`template: splash` or a custom Astro layou
 2. **Hero** (two columns, stacking on mobile):
    - Short line above the heading: "Free and hands-on. Nothing to install to start."
    - H1: **From a blank laptop to a working CI/CD pipeline.**
-   - Text: "A free DevOps course in 60 short, hands-on units. Start with Linux in your browser, move into a ready-made cloud workspace, and finish by deploying a real app to AWS or Kubernetes."
+   - Text: "A free DevOps course in 66 short, hands-on units. Start with Linux in your browser, move into a ready-made cloud workspace, and finish by deploying a real app to AWS or Kubernetes."
    - Buttons: **Start unit L1** (→ `/units/l1/`), **View the code on GitHub** (→ repo).
    - Small print: "Works on Windows, Mac and Linux. All you need is a browser and a free GitHub account."
    - Right column: the course map (`TransitMap`): every track as a line in pipeline order, every unit as a station link, with a key for ready, coming soon and interchange stations.
 3. **AI band:** H2 "Is DevOps still worth learning now AI writes code?" Text: "**Yes.** AI can write code, but someone still has to build it, test it, ship it, secure it and keep it running. AI means more code arrives, faster. That makes reliable pipelines, infrastructure as code and good monitoring matter more, not less." Link: "Read the full answer" → FAQ.
 4. **Pipeline map:** label "The big picture", H2 "Every track teaches one stage of the same pipeline", then the `PipelineMap` component (section 8) with every track clickable.
-5. **Ways in:** H2 "Pick a path, or just pick a unit". Cards for the five paths (section 7.5), each with who it's for and unit count.
+5. **Ways in:** H2 "Pick a path, or just pick a unit". Cards for the six paths (section 7.5), each with who it's for and unit count.
 6. **How every unit works:** four items: **Read** (a short lesson that explains the why), **Do** (a hands-on lab from a ready-made starting point), **Check** (a script tells you whether it worked), **Watch** (videos on the London IAC YouTube channel, where available).
 7. **Projects:** three cards (section 7.6).
 8. **Who's teaching:** circular `[PHOTO]` placeholder, `[YOUR NAME]`, `[A few lines on your DevOps background]`.
@@ -280,7 +281,7 @@ Unit fields:
 | `outcome` | string | Completes "After this unit, you can…" |
 | `track` | string | Track ID |
 | `stage` | enum | `foundations`, `code`, `build-test`, `package`, `provision`, `configure`, `deploy`, `operate`, `observe`, `security` |
-| `runsIn` | enum | `browser`, `codespaces`, `codespaces-4core`, `laptop`, `aws` |
+| `runsIn` | enum | `browser`, `codespaces`, `codespaces-4core`, `fleet`, `laptop`, `aws` |
 | `alsoRunsIn` | enum[] | Optional. Browser units also run in `codespaces`. |
 | `minutes` | number | Estimate, 30–60 |
 | `prerequisites` | unit ID[] | Skills needed, as the units that teach them |
@@ -329,7 +330,7 @@ Every unit MDX page follows this exact order. The header block and the "Where th
 12. **What's next** (`WhatsNext`): next unit in the track, units that list this one as a prerequisite, and the path link if `?path=` is set.
 13. **Footer line:** "Last checked: <date>", and an "Edit this page on GitHub" link.
 
-### 7.4 All 60 units
+### 7.4 All 66 units
 
 Seed `curriculum.yaml` with these. `status` starts as `planned` for all, then moves to `draft`/`published` as milestones complete. `minutes` are estimates.
 
@@ -339,9 +340,13 @@ units:
   - { id: L1, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [], title: "The command line", outcome: "Move around, create, copy and find files without a GUI" }
   - { id: L2, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Permissions and users", outcome: "Read and change permissions and ownership, and use sudo safely" }
   - { id: L3, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Processes and logs", outcome: "Find what is running, stop it, and read system logs" }
-  - { id: L4, track: L, stage: foundations, runsIn: laptop, minutes: 45, prerequisites: [L3], title: "Services with systemd", outcome: "Start, stop, enable and debug a service" }
+  - { id: L4, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L3], title: "Services with systemd", outcome: "Start, stop, enable and debug a service" }
   - { id: L5, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 60, prerequisites: [L1], title: "Bash scripting", outcome: "Write a script with arguments, loops and proper exit codes" }
   - { id: L6, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [L1], title: "Text processing", outcome: "Pull answers out of log files with grep, sed, awk and pipes" }
+  - { id: L7, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L1], title: "Your first fleet", outcome: "Start a lab of small Linux servers and move between them with SSH" }
+  - { id: L8, track: L, stage: foundations, runsIn: fleet, minutes: 40, prerequisites: [L7], title: "Moving files around", outcome: "Copy and sync files between servers with scp and rsync, and prove they arrived intact" }
+  - { id: L9, track: L, stage: foundations, runsIn: fleet, minutes: 50, prerequisites: [L3, L7], title: "Performance basics", outcome: "Find out whether a slow server is short of CPU, memory, disk or network" }
+  - { id: L10, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L4], title: "Scheduled jobs and logs", outcome: "Run jobs on a schedule with cron and systemd timers, and stop logs filling the disk" }
 
   # G · Git and collaboration
   - { id: G1, track: G, stage: code, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [L1], title: "Git basics", outcome: "Commit, branch, merge and undo a mistake" }
@@ -351,8 +356,9 @@ units:
 
   # N · Networking essentials
   - { id: N1, track: N, stage: foundations, runsIn: codespaces, minutes: 60, prerequisites: [L1], title: "Networking for DevOps", outcome: "Explain ports, DNS, HTTP and TLS, and debug with curl and dig" }
-  - { id: N2, track: N, stage: foundations, runsIn: laptop, minutes: 45, prerequisites: [L2], title: "SSH properly", outcome: "Create keys, write an SSH config and hop through a jump host" }
+  - { id: N2, track: N, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L2, L7], title: "SSH properly", outcome: "Create keys, write an SSH config and hop through a jump host" }
   - { id: N3, track: N, stage: foundations, runsIn: codespaces, minutes: 45, prerequisites: [N1, C4], title: "Load balancers and proxies", outcome: "Put a reverse proxy in front of two app servers" }
+  - { id: N4, track: N, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [N1, L7], title: "Networks between machines", outcome: "Check connectivity between servers and open or block a port with a firewall" }
 
   # C · Containers
   - { id: C1, track: C, stage: package, runsIn: codespaces, minutes: 45, prerequisites: [L1], title: "Containers explained", outcome: "Run, inspect and stop containers, and explain images vs containers" }
@@ -374,10 +380,11 @@ units:
   - { id: K10, track: K, stage: deploy, runsIn: aws, minutes: 60, costNote: true, prerequisites: [K2, I2, W1], title: "Managed Kubernetes", outcome: "Create an EKS cluster with Terraform, deploy to it and tear it down" }
 
   # A · Configuration with Ansible
-  - { id: A1, track: A, stage: configure, runsIn: codespaces, minutes: 45, prerequisites: [L2], title: "Ansible basics", outcome: "Write an inventory and run commands across many servers" }
-  - { id: A2, track: A, stage: configure, runsIn: codespaces, minutes: 50, prerequisites: [A1], title: "Playbooks", outcome: "Install and configure a web server, safely re-runnable" }
-  - { id: A3, track: A, stage: configure, runsIn: codespaces, minutes: 50, prerequisites: [A2], title: "Roles and templates", outcome: "Turn a playbook into a reusable role with variables" }
-  - { id: A4, track: A, stage: configure, runsIn: codespaces, minutes: 40, prerequisites: [A2], title: "Testing Ansible", outcome: "Use assert, ansible-lint and check-mode dry runs" }
+  - { id: A1, track: A, stage: configure, runsIn: fleet, minutes: 45, prerequisites: [L2], title: "Ansible basics", outcome: "Write an inventory and run commands across many servers" }
+  - { id: A2, track: A, stage: configure, runsIn: fleet, minutes: 50, prerequisites: [A1], title: "Playbooks", outcome: "Install and configure a web server, safely re-runnable" }
+  - { id: A3, track: A, stage: configure, runsIn: fleet, minutes: 50, prerequisites: [A2], title: "Roles and templates", outcome: "Turn a playbook into a reusable role with variables" }
+  - { id: A4, track: A, stage: configure, runsIn: fleet, minutes: 40, prerequisites: [A2], title: "Testing Ansible", outcome: "Use assert, ansible-lint and check-mode dry runs" }
+  - { id: A5, track: A, stage: configure, runsIn: fleet, minutes: 50, prerequisites: [A2], title: "Ansible for operations", outcome: "Patch servers, manage users and restart services across a fleet, one batch at a time" }
 
   # I · Infrastructure as code
   - { id: I1, track: I, stage: provision, runsIn: codespaces, minutes: 45, prerequisites: [C1], title: "IaC concepts", outcome: "Plan, apply and destroy infrastructure locally with the Docker provider" }
@@ -426,6 +433,11 @@ units:
 
 ```yaml
 paths:
+  - id: fleet
+    name: "Linux fleet basics"
+    for: "New to Linux servers, or a sysadmin who wants a refresher"
+    units: [L1, L2, L3, L7, N2, L8, L9, L4, L10, N4]
+    endsWith: "Project 1: Run a small fleet"
   - id: beginner
     name: "Complete beginner"
     for: "No Linux or Git experience yet"
@@ -434,19 +446,19 @@ paths:
   - id: servers
     name: "Servers and automation"
     for: "Sysadmins moving into DevOps"
-    units: [W1, N2, A1, A2, A3, A4, I1, I2, I3, I4, I5, P1, P2, P3, P4, O2, O4]
-    endsWith: "Project 1: Ship it on servers"
+    units: [L7, N2, A1, A2, A3, A4, A5, W1, I1, I2, I3, I4, I5, P1, P2, P3, P4, O2, O4]
+    endsWith: "Project 3: Ship it on servers"
   - id: kubernetes
     name: "Kubernetes"
     for: "Comfortable running Docker containers"
     units: [K1, K2, K3, K4, K5, K6, K7, K8, P5, O5, K9]
     optional: [K10]
-    endsWith: "Project 2: Ship it on Kubernetes"
+    endsWith: "Project 4: Ship it on Kubernetes"
   - id: reliability
     name: "Reliability"
     for: "Already deploying, and want to run things well"
     units: [O1, O2, O3, O4, O5, R1, R2, R3, S1, S2, S3]
-    endsWith: "Project 3: Keep it running"
+    endsWith: "Project 5: Keep it running"
   - id: one-tool
     name: "Just one tool"
     for: "Need a single skill for work"
@@ -458,29 +470,39 @@ Note: the beginner path drops L4 (needs a laptop VM) so the whole path runs with
 
 ### 7.6 Projects
 
-Projects are pages with a brief, acceptance criteria, a lab folder (`labs/project-1/` etc.), and a `./check project-1` script. They reuse units, so most of the work is wiring things together.
+Projects are pages with a brief, acceptance criteria, a lab folder (`labs/project-1/` etc.), and a `./check project-1` script. Projects 1 and 2 are the first pass: real server work on a small fleet before the cloud and Kubernetes projects. They reuse units, so most of the work is wiring things together.
 
 ```yaml
 projects:
   - id: project-1
+    name: "Run a small fleet"
+    summary: "Four Linux servers to set up by hand: users and SSH keys, a web service under systemd, nightly backups copied to another server, and a slow server to diagnose."
+    draws: [L1, L2, L3, L4, L7, L8, L9, L10, N2, N4]
+    runsIn: fleet
+  - id: project-2
+    name: "Automate the fleet with Ansible"
+    summary: "Rebuild Project 1 with Ansible, then run day-to-day operations: patching in batches, adding and removing users, and health checks across every server."
+    draws: [L4, L10, N2, A1, A2, A3, A4, A5]
+    runsIn: fleet
+  - id: project-3
     name: "Ship it on servers"
     summary: "The course app on EC2 behind a load balancer, deployed automatically on every merge."
-    draws: [W1, I1, I2, I3, I4, I5, A1, A2, A3, A4, P1, P2, P3, P4, O2, O4]
+    draws: [W1, I1, I2, I3, I4, I5, A1, A2, A3, A4, A5, P1, P2, P3, P4, O2, O4]
     runsIn: aws
     costNote: true
-  - id: project-2
+  - id: project-4
     name: "Ship it on Kubernetes"
     summary: "The same app on a cluster, deployed by GitOps, with dashboards and alerts."
     draws: [C1, C2, C3, C4, C5, K1, K2, K3, K4, K5, K6, K7, K8, P1, P2, P3, P5, O5]
     runsIn: codespaces-4core
-  - id: project-3
+  - id: project-5
     name: "Keep it running"
     summary: "A broken system to diagnose, fix and write up, then harden."
     draws: [O1, O2, O3, O4, R1, R2, R3, S1, S2, S3]
     runsIn: codespaces
 ```
 
-Project 3 ships with a deliberately broken setup (`./start project-3` injects three faults: a bad config value, a memory limit that causes restarts, and a missing alert). The check passes when all three are fixed and a postmortem file exists with the required headings.
+Project 5 ships with a deliberately broken setup (`./start project-5` injects three faults: a bad config value, a memory limit that causes restarts, and a missing alert). The check passes when all three are fixed and a postmortem file exists with the required headings.
 
 ---
 
@@ -581,13 +603,13 @@ aws: false
 - On create, print a welcome message pointing to `./start --list`.
 - Add `PATH` so `start`, `check` and `cleanup` work from anywhere.
 
-`.devcontainer/monitoring/devcontainer.json`: same, but 4 CPUs and 16 GB, for O5 and Project 2. Units that need it show a second "Open in Codespaces (4-core)" button using the `devcontainer_path` query parameter.
+`.devcontainer/monitoring/devcontainer.json`: same, but 4 CPUs and 16 GB, for O5 and Project 4. Units that need it show a second "Open in Codespaces (4-core)" button using the `devcontainer_path` query parameter.
 
 The README and Environments page must state the Codespaces free allowance, link to GitHub's billing docs, and tell learners how to stop and delete codespaces. Look the current allowance up from GitHub's docs; do not hard-code it from this spec.
 
 ### 9.4 Laptop environment (Multipass)
 
-- Units L4, N2 and K9 run on Multipass VMs on the learner's laptop (Windows, macOS including Apple Silicon, Linux).
+- Unit K9 runs on Multipass VMs on the learner's laptop (Windows, macOS including Apple Silicon, Linux). Units that only need several servers use the multi-machine lab instead (section 9.6), because it is lighter and also runs in Codespaces.
 - Provide `labs/_laptop/` with cloud-init files and scripts:
   - `make-vm.sh` / `make-vm.ps1`: create Ubuntu LTS VMs with the course's SSH key and tools.
   - `k3s-cluster.sh` / `.ps1`: create three VMs (`ld-server`, `ld-agent-1`, `ld-agent-2`) and join them into a k3s cluster.
@@ -610,6 +632,33 @@ AWS labs create **real, billable resources in the learner's own account**. Rules
 
 ---
 
+### 9.6 Multi-machine lab (Docker Compose)
+
+A small fleet of Linux servers on one computer, for units that need several machines talking to each other: SSH and jump hosts, file transfer, performance diagnosis, systemd services, scheduled jobs, firewalls and Ansible. It is the first-pass environment, used by the fleet path and Projects 1 and 2 before learners move to the cloud and Kubernetes.
+
+**How it works**
+
+- Docker Compose starts one container per server: a control node (`ld-control`) and three or four managed servers (`ld-web1`, `ld-web2`, `ld-db1`, and `ld-bastion` where a unit needs a jump host).
+- Each server runs **systemd as its first process**, plus **sshd**, so services, `systemctl`, `journalctl`, users and SSH behave as they do on a real server. This needs privileged containers with access to the host's cgroups. Verify the current settings for Docker Engine and Docker Desktop, and test them in CI.
+- The servers share one private Compose network and reach each other by name. Units that teach jump hosts (N2) use two networks, so the managed servers can only be reached through `ld-bastion`.
+- A browser terminal (for example ttyd) runs on each server, and a small portal page links to them, so learners do not need an SSH client.
+- Each server's home directory is a bind mount under `~/workspace/<unit-id>/`, so learners' files survive restarts.
+- Logins use SSH keys generated by `./start`, not shared passwords.
+- Images are multi-architecture (amd64 and arm64), so the lab runs on Apple silicon.
+
+**Where it runs**
+
+- **In Codespaces**, using the devcontainer's Docker-in-Docker. Nothing to install. This is the default.
+- **Locally**, with Docker on Windows, macOS or Linux.
+
+**Rules**
+
+- `lab.yaml` gains `fleet: [control, web1, web2, db1]` to say which servers a unit starts. `./start` brings them up, `./check` can run commands on any server over SSH, and `./cleanup` removes the containers, networks and volumes.
+- Build our own images and Compose files under `labs/_fleet/`. Similar public labs exist, for example James Spurin's Dive Into Ansible lab, but their repositories have no licence, so do not copy from them. Use the same general technique, which is widely documented.
+- Explain on the Environments page that the servers share the host's kernel. They are lighter than VMs but not identical: kernel modules, reboots and low-level networking need a real VM (K9 uses Multipass).
+- Privileged containers are acceptable on a learner's own machine or codespace, but say so plainly on the Environments page.
+- TODO(owner): check Docker Desktop's current licence terms on docker.com before writing local setup steps, and name free alternatives (for example Rancher Desktop or Podman Desktop) after confirming they work with the lab.
+
 ## 10. The course app
 
 A small web app the learner builds, packages, deploys and monitors throughout. Keep it under ~300 lines so beginners can read all of it.
@@ -623,7 +672,7 @@ A small web app the learner builds, packages, deploys and monitors throughout. K
   - `GET /metrics` — Prometheus metrics (request count, latency histogram, app info with version).
   - `POST /api/services` and `GET /api/services` — simple JSON API.
 - **Config by environment variable:** `APP_VERSION`, `APP_COLOUR` (changes the page accent, used to show blue-green and canary releases), `DATABASE_URL`, `LOG_LEVEL`. Logs are JSON lines on stdout.
-- **Fault switches** for R1 and Project 3, off by default: `FAULT_SLOW_MS`, `FAULT_ERROR_RATE`, `FAULT_LEAK_MB`.
+- **Fault switches** for R1 and Project 5, off by default: `FAULT_SLOW_MS`, `FAULT_ERROR_RATE`, `FAULT_LEAK_MB`.
 - **Tests:** pytest, at least 90% line coverage, run in `app.yml`.
 - **No Dockerfile in `app/`.** Writing it is the C2 lab. Reference Dockerfiles live in `labs/c2/solution/` and `labs/c3/solution/`.
 
@@ -747,15 +796,16 @@ Build in this order. Each milestone is one pull request.
 - Move the original files into `legacy/` and add the README banner.
 - Repo structure, Astro + Starlight, theme tokens, fonts, both themes.
 - Home page (section 6), Start here, Environments, Costs and safety (section 12), About, FAQ, Glossary (initial 40 terms), Videos, 404.
-- `curriculum.yaml` seeded with all 60 units (status `planned`), tracks, paths and projects; validation in place.
+- `curriculum.yaml` seeded with all units (status `planned`), tracks, paths and projects; validation in place.
 - Generated stub pages for every unit, track, path and project.
 - `PipelineMap` and all list components.
 - CI (site checks) and Pages deployment working at `dmccuk.github.io/learndevops/`.
-- **Done when:** the site is live, every link works, Lighthouse targets met, all 60 stub pages exist and validation fails if a unit is removed from either YAML or MDX.
+- **Done when:** the site is live, every link works, Lighthouse targets met, all unit stub pages exist and validation fails if a unit is removed from either YAML or MDX.
 
 ### M2 — Lab tooling and the course app
 
 - `.devcontainer/` (both variants), `post-create.sh`, `bin/start|check|cleanup`, `labs/_lib/`.
+- The multi-machine lab (section 9.6): server images, the Compose file, and a CI job that starts it, checks SSH between servers, and tears it down.
 - The course app with tests.
 - `labs.yml` workflow running against a sample unit.
 - `docs/writing-a-unit.md` showing how to add a unit end to end, using a `labs/_template/` folder.
@@ -767,21 +817,21 @@ Write these units completely, with labs, checks, common errors and solutions: **
 
 - **Done when:** each pilot unit passes the lab CI (solution passes, starter fails), the browser units work in webvm.io with no network, and the owner has reviewed them. **Stop and wait for owner feedback before M4.**
 
-### M4 — Beginner path
+### M4 — Beginner path, fleet basics and Project 1
 
-All units in the beginner path (section 7.5), plus L4.
+All units in the beginner and fleet paths (section 7.5), and Project 1: Run a small fleet.
 
-### M5 — Kubernetes track and Project 2
+### M5 — Kubernetes track and Project 4
 
-K1–K9, P5, O5 and Project 2 (including the 4-core devcontainer). K10 is written but stays `draft` until the owner has run it in a real AWS account.
+K1–K9, P5, O5 and Project 4 (including the 4-core devcontainer). K10 is written but stays `draft` until the owner has run it in a real AWS account.
 
-### M6 — Servers path, AWS units and Project 1
+### M6 — Servers path, Ansible, AWS units, and Projects 2 and 3
 
-W1–W4, I1–I5, A1–A4, N2, P3, P4, O2, O4 and Project 1, with all AWS safety rules in section 9.5. AWS units stay `draft` until the owner has run each one in a real account and confirmed cleanup.
+W1–W4, I1–I5, A1–A5, P3, P4, O2, O4, Project 2 (Automate the fleet with Ansible) and Project 3 (Ship it on servers), with all AWS safety rules in section 9.5. AWS units stay `draft` until the owner has run each one in a real account and confirmed cleanup.
 
 ### M7 — Reliability, security, AI
 
-O1, O3, R1–R3, S1–S3, N3, C5, G4, P6, AI1, AI2 and Project 3.
+O1, O3, R1–R3, S1–S3, N3, C5, G4, P6, AI1, AI2 and Project 5.
 
 ### M8 — Polish
 
@@ -836,7 +886,7 @@ Build in this order, so each step works without the next.
 - **"Continue where you left off":** the home map highlights the learner's next station (local progress).
 - **Review drills:** each unit ends with 3–5 recall questions (add these from M3 onwards, so this needs no rework later). The site suggests revisiting them after one day, one week and one month.
 - **Reminders without collecting emails:** a "Remind me to review" button that downloads a calendar file (`.ics`).
-- **"Break it" drills:** repeatable fault scenarios in the style of Project 3, for practising diagnosis.
+- **"Break it" drills:** repeatable fault scenarios in the style of Project 5, for practising diagnosis.
 - **What's new:** an RSS feed of new and updated units, linked from the footer and the YouTube channel.
 - **Community:** GitHub Discussions for questions and "show what you built". Free, with no tracking on this site.
 - **Measuring return visits** needs analytics, which section 2 rules out. If the owner wants numbers, consider a cookie-free, privacy-friendly counter, and record that decision here first.

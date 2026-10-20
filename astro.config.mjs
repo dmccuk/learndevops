@@ -98,7 +98,7 @@ export default defineConfig({
 		starlight({
 			title: 'Learn DevOps',
 			description:
-				'A free DevOps course in 60 short, hands-on units. Linux, Git, containers, Kubernetes, CI/CD, infrastructure as code, AWS and observability.',
+				'A free DevOps course in 66 short, hands-on units. Linux, Git, containers, Kubernetes, CI/CD, infrastructure as code, AWS and observability.',
 			titleDelimiter: '—',
 			favicon: '/favicon.svg',
 			credits: false,

@@ -22,9 +22,13 @@ units:
   - { id: L1, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [], title: "The command line", outcome: "Move around, create, copy and find files without a GUI", status: planned }
   - { id: L2, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Permissions and users", outcome: "Read and change permissions and ownership, and use sudo safely", status: planned }
   - { id: L3, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 40, prerequisites: [L1], title: "Processes and logs", outcome: "Find what is running, stop it, and read system logs", status: planned }
-  - { id: L4, track: L, stage: foundations, runsIn: laptop, minutes: 45, prerequisites: [L3], title: "Services with systemd", outcome: "Start, stop, enable and debug a service", status: planned }
+  - { id: L4, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L3], title: "Services with systemd", outcome: "Start, stop, enable and debug a service", status: planned }
   - { id: L5, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 60, prerequisites: [L1], title: "Bash scripting", outcome: "Write a script with arguments, loops and proper exit codes", status: planned }
   - { id: L6, track: L, stage: foundations, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [L1], title: "Text processing", outcome: "Pull answers out of log files with grep, sed, awk and pipes", status: planned }
+  - { id: L7, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L1], title: "Your first fleet", outcome: "Start a lab of small Linux servers and move between them with SSH", status: planned }
+  - { id: L8, track: L, stage: foundations, runsIn: fleet, minutes: 40, prerequisites: [L7], title: "Moving files around", outcome: "Copy and sync files between servers with scp and rsync, and prove they arrived intact", status: planned }
+  - { id: L9, track: L, stage: foundations, runsIn: fleet, minutes: 50, prerequisites: [L3, L7], title: "Performance basics", outcome: "Find out whether a slow server is short of CPU, memory, disk or network", status: planned }
+  - { id: L10, track: L, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L4], title: "Scheduled jobs and logs", outcome: "Run jobs on a schedule with cron and systemd timers, and stop logs filling the disk", status: planned }
 
   # G · Git and collaboration
   - { id: G1, track: G, stage: code, runsIn: browser, alsoRunsIn: [codespaces], minutes: 45, prerequisites: [L1], title: "Git basics", outcome: "Commit, branch, merge and undo a mistake", status: planned }
@@ -34,8 +38,9 @@ units:
 
   # N · Networking essentials
   - { id: N1, track: N, stage: foundations, runsIn: codespaces, minutes: 60, prerequisites: [L1], title: "Networking for DevOps", outcome: "Explain ports, DNS, HTTP and TLS, and debug with curl and dig", status: planned }
-  - { id: N2, track: N, stage: foundations, runsIn: laptop, minutes: 45, prerequisites: [L2], title: "SSH properly", outcome: "Create keys, write an SSH config and hop through a jump host", status: planned }
+  - { id: N2, track: N, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [L2, L7], title: "SSH properly", outcome: "Create keys, write an SSH config and hop through a jump host", status: planned }
   - { id: N3, track: N, stage: foundations, runsIn: codespaces, minutes: 45, prerequisites: [N1, C4], title: "Load balancers and proxies", outcome: "Put a reverse proxy in front of two app servers", status: planned }
+  - { id: N4, track: N, stage: foundations, runsIn: fleet, minutes: 45, prerequisites: [N1, L7], title: "Networks between machines", outcome: "Check connectivity between servers and open or block a port with a firewall", status: planned }
 
   # C · Containers
   - { id: C1, track: C, stage: package, runsIn: codespaces, minutes: 45, prerequisites: [L1], title: "Containers explained", outcome: "Run, inspect and stop containers, and explain images vs containers", status: planned }
@@ -57,10 +62,11 @@ units:
   - { id: K10, track: K, stage: deploy, runsIn: aws, minutes: 60, costNote: true, prerequisites: [K2, I2, W1], title: "Managed Kubernetes", outcome: "Create an EKS cluster with Terraform, deploy to it and tear it down", status: planned }
 
   # A · Configuration with Ansible
-  - { id: A1, track: A, stage: configure, runsIn: codespaces, minutes: 45, prerequisites: [L2], title: "Ansible basics", outcome: "Write an inventory and run commands across many servers", status: planned }
-  - { id: A2, track: A, stage: configure, runsIn: codespaces, minutes: 50, prerequisites: [A1], title: "Playbooks", outcome: "Install and configure a web server, safely re-runnable", status: planned }
-  - { id: A3, track: A, stage: configure, runsIn: codespaces, minutes: 50, prerequisites: [A2], title: "Roles and templates", outcome: "Turn a playbook into a reusable role with variables", status: planned }
-  - { id: A4, track: A, stage: configure, runsIn: codespaces, minutes: 40, prerequisites: [A2], title: "Testing Ansible", outcome: "Use assert, ansible-lint and check-mode dry runs", status: planned }
+  - { id: A1, track: A, stage: configure, runsIn: fleet, minutes: 45, prerequisites: [L2], title: "Ansible basics", outcome: "Write an inventory and run commands across many servers", status: planned }
+  - { id: A2, track: A, stage: configure, runsIn: fleet, minutes: 50, prerequisites: [A1], title: "Playbooks", outcome: "Install and configure a web server, safely re-runnable", status: planned }
+  - { id: A3, track: A, stage: configure, runsIn: fleet, minutes: 50, prerequisites: [A2], title: "Roles and templates", outcome: "Turn a playbook into a reusable role with variables", status: planned }
+  - { id: A4, track: A, stage: configure, runsIn: fleet, minutes: 40, prerequisites: [A2], title: "Testing Ansible", outcome: "Use assert, ansible-lint and check-mode dry runs", status: planned }
+  - { id: A5, track: A, stage: configure, runsIn: fleet, minutes: 50, prerequisites: [A2], title: "Ansible for operations", outcome: "Patch servers, manage users and restart services across a fleet, one batch at a time", status: planned }
 
   # I · Infrastructure as code
   - { id: I1, track: I, stage: provision, runsIn: codespaces, minutes: 45, prerequisites: [C1], title: "IaC concepts", outcome: "Plan, apply and destroy infrastructure locally with the Docker provider", status: planned, video: { youtubeId: "VS2sQgUgomE", title: "Install Terraform and build instances in AWS", legacy: true } }
@@ -105,6 +111,11 @@ units:
   - { id: AI2, track: AI, stage: code, runsIn: codespaces, minutes: 40, prerequisites: [AI1, P3], title: "Guardrails", outcome: "Route AI-written changes through the same reviews, tests and policy checks as yours", status: planned }
 
 paths:
+  - id: fleet
+    name: "Linux fleet basics"
+    for: "New to Linux servers, or a sysadmin who wants a refresher"
+    units: [L1, L2, L3, L7, N2, L8, L9, L4, L10, N4]
+    endsWith: "Project 1: Run a small fleet"
   - id: beginner
     name: "Complete beginner"
     for: "No Linux or Git experience yet"
@@ -113,19 +124,19 @@ paths:
   - id: servers
     name: "Servers and automation"
     for: "Sysadmins moving into DevOps"
-    units: [W1, N2, A1, A2, A3, A4, I1, I2, I3, I4, I5, P1, P2, P3, P4, O2, O4]
-    endsWith: "Project 1: Ship it on servers"
+    units: [L7, N2, A1, A2, A3, A4, A5, W1, I1, I2, I3, I4, I5, P1, P2, P3, P4, O2, O4]
+    endsWith: "Project 3: Ship it on servers"
   - id: kubernetes
     name: "Kubernetes"
     for: "Comfortable running Docker containers"
     units: [K1, K2, K3, K4, K5, K6, K7, K8, P5, O5, K9]
     optional: [K10]
-    endsWith: "Project 2: Ship it on Kubernetes"
+    endsWith: "Project 4: Ship it on Kubernetes"
   - id: reliability
     name: "Reliability"
     for: "Already deploying, and want to run things well"
     units: [O1, O2, O3, O4, O5, R1, R2, R3, S1, S2, S3]
-    endsWith: "Project 3: Keep it running"
+    endsWith: "Project 5: Keep it running"
   - id: one-tool
     name: "Just one tool"
     for: "Need a single skill for work"
@@ -134,17 +145,27 @@ paths:
 
 projects:
   - id: project-1
+    name: "Run a small fleet"
+    summary: "Four Linux servers to set up by hand: users and SSH keys, a web service under systemd, nightly backups copied to another server, and a slow server to diagnose."
+    draws: [L1, L2, L3, L4, L7, L8, L9, L10, N2, N4]
+    runsIn: fleet
+  - id: project-2
+    name: "Automate the fleet with Ansible"
+    summary: "Rebuild Project 1 with Ansible, then run day-to-day operations: patching in batches, adding and removing users, and health checks across every server."
+    draws: [L4, L10, N2, A1, A2, A3, A4, A5]
+    runsIn: fleet
+  - id: project-3
     name: "Ship it on servers"
     summary: "The course app on EC2 behind a load balancer, deployed automatically on every merge."
-    draws: [W1, I1, I2, I3, I4, I5, A1, A2, A3, A4, P1, P2, P3, P4, O2, O4]
+    draws: [W1, I1, I2, I3, I4, I5, A1, A2, A3, A4, A5, P1, P2, P3, P4, O2, O4]
     runsIn: aws
     costNote: true
-  - id: project-2
+  - id: project-4
     name: "Ship it on Kubernetes"
     summary: "The same app on a cluster, deployed by GitOps, with dashboards and alerts."
     draws: [C1, C2, C3, C4, C5, K1, K2, K3, K4, K5, K6, K7, K8, P1, P2, P3, P5, O5]
     runsIn: codespaces-4core
-  - id: project-3
+  - id: project-5
     name: "Keep it running"
     summary: "A broken system to diagnose, fix and write up, then harden."
     draws: [O1, O2, O3, O4, R1, R2, R3, S1, S2, S3]

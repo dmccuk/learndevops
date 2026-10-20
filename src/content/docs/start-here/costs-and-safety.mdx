@@ -17,7 +17,8 @@ You are responsible for any charges in your own cloud accounts. Follow the clean
 | This website and course | Nobody | The course is free and open source. The owner pays only for the domain name. |
 | Browser units | Nobody | They run in your browser. |
 | GitHub Codespaces | Your GitHub account | Free within GitHub's monthly allowance. GitHub Free accounts get 120 core hours and 15 GB-month of storage a month ([GitHub Docs](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)). See [the free allowance](/start-here/environments/#the-free-allowance). |
-| Multipass (laptop units) | Nobody | Open-source software on your own computer. |
+| Multi-machine lab | Nobody, or your Codespaces allowance | Runs on your own computer with Docker, or inside a codespace. |
+| Multipass (unit K9) | Nobody | Open-source software on your own computer. |
 | AWS units | You, on your own AWS account and card | Every AWS unit is marked "Costs money" and shows an estimated cost. |
 
 ## Things only run when you use them
@@ -26,7 +27,8 @@ Nothing in this course should keep running after you stop working.
 
 - **Codespaces** stop on their own after a period of no activity: 30 minutes by default. You can change this to anywhere from 5 to 240 minutes in your GitHub settings under **Codespaces → Default idle timeout** ([GitHub Docs](https://docs.github.com/en/codespaces/setting-your-user-preferences/setting-your-timeout-period-for-github-codespaces)). Stopped codespaces still use storage until you delete them.
 - **Kubernetes clusters** made with kind inside a codespace are deleted by each unit's `./cleanup` command.
-- **Multipass VMs** are deleted by each laptop unit's teardown step.
+- **Multi-machine lab servers** are stopped and removed by each unit's `./cleanup` command.
+- **Multipass VMs** are deleted by K9's teardown step.
 - **AWS resources** are deleted by `terraform destroy` and then checked by `./cleanup`. See the rules below.
 
 ## AWS safety rules
