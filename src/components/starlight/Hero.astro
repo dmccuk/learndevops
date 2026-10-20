@@ -1,8 +1,7 @@
 ---
-// Home page hero (spec section 6, item 2). The course map is the hero: every
-// track a line, every unit a station. Only the home page sets `hero`.
-import { REPO_URL, url } from '../../lib/url';
-import TransitMap from '../TransitMap.astro';
+// Home page hero (spec section 6, item 2). Kept short so the live terminal
+// below it is the first thing to try. The course map lives on /curriculum/.
+import { url } from '../../lib/url';
 
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline } = data.hero || {};
@@ -15,28 +14,20 @@ const { title = data.title, tagline } = data.hero || {};
 		{tagline && <p class="tagline">{tagline}</p>}
 		<div class="actions">
 			<a class="ld-button" href={url('/units/l1/')}>Start unit L1</a>
-			<a class="ld-button secondary" href={REPO_URL}>View the code on GitHub</a>
+			<a class="ld-button secondary" href={url('/curriculum/')}>See the curriculum</a>
 		</div>
 		<p class="small">Works on Windows, Mac and Linux. All you need is a browser and a free GitHub account.</p>
-	</div>
-	<div class="map">
-		<h2 class="ld-sr-only">Course map</h2>
-		<TransitMap />
 	</div>
 </section>
 
 <style>
 	.hero {
-		display: grid;
-		gap: 2.5rem;
+		max-width: 46rem;
 		padding-block: 1.5rem 3rem;
 	}
 	@media (min-width: 72rem) {
 		.hero {
-			grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
-			gap: 3.5rem;
-			align-items: center;
-			padding-block: 3.5rem 4.5rem;
+			padding-block: 4rem 3.5rem;
 		}
 	}
 	.kicker {
@@ -68,17 +59,5 @@ const { title = data.title, tagline } = data.hero || {};
 		margin-top: 1rem;
 		font-size: 0.9375rem;
 		color: var(--ld-dim);
-	}
-	.map {
-		min-width: 0;
-		padding: 1.25rem 1rem 1.25rem;
-		border: 1px solid var(--ld-border);
-		border-radius: var(--ld-radius-card);
-		background: var(--ld-surface);
-	}
-	@media (min-width: 40rem) {
-		.map {
-			padding: 1.5rem 1.75rem;
-		}
 	}
 </style>
