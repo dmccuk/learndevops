@@ -78,6 +78,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 				import('@xterm/addon-fit'),
 			]);
 
+			// Measure the terminal font only after it has loaded, or letters misalign.
+			await document.fonts.load("14px 'Overpass Mono'").catch(() => undefined);
+
 			const wraps = [...this.querySelectorAll<HTMLElement>('.term-wrap')];
 			let ready = 0;
 
@@ -110,6 +113,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 					autostart: true,
 					disable_keyboard: true,
 					disable_mouse: true,
+					// No sound needed, and the speaker loads a blob: worklet the CSP blocks.
+					disable_speaker: true,
 				});
 
 				// Batch output into one write per frame; byte-by-byte writes are slow.
@@ -126,12 +131,66 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 						});
 					}
 				});
-				term.onData((data: string) => emulator.serial0_send(data));
+				// The emulated serial port only buffers a few characters, so long input
+				// (start-up commands, pasted text) is fed in small chunks.
+				let queue = '';
+				let draining = false;
+				const type = (text: string) => {
+					queue += text;
+					if (draining) return;
+					draining = true;
+					const drain = () => {
+						if (!queue) {
+							draining = false;
+							return;
+						}
+						emulator.serial0_send(queue.slice(0, 8));
+						queue = queue.slice(8);
+						setTimeout(drain, 10);
+					};
+					drain();
+				};
+				term.onData((data: string) => type(data));
 
-				emulator.add_listener('emulator-ready', () => {
-					// Give this VM its own name and address, then clear the screen.
-					const first = i === 0 && this.dataset.setup ? `${this.dataset.setup}\n` : '';
-					emulator.serial0_send(`sudo ld-net ${vm.name} ${vm.ip} && clear\n${first}`);
+				// Start-up commands run one at a time, each after the shell prompt
+				// comes back, so none of them is typed while another is running.
+				let tail = '';
+				let waitPrompt: (() => void) | null = null;
+				emulator.add_listener('serial0-output-byte', (byte: number) => {
+					tail = (tail + String.fromCharCode(byte)).slice(-64);
+					if (waitPrompt && /\$ $/.test(tail)) {
+						const done = waitPrompt;
+						waitPrompt = null;
+						done();
+					}
+				});
+				const run = (cmd: string) =>
+					new Promise<void>((resolve) => {
+						tail = '';
+						waitPrompt = resolve;
+						type(`${cmd}\n`);
+					});
+
+				emulator.add_listener('emulator-ready', async () => {
+					// Give this VM its own name and address. A new login shell picks up
+					// the new hostname for the prompt.
+					const w = window as unknown as { ldVmTimings?: string[] };
+					w.ldVmTimings ??= [];
+					const mark = (label: string) => w.ldVmTimings!.push(`${vm.name} ${label} ${((performance.now() - startedAt) / 1000).toFixed(1)}s`);
+					mark('restored');
+					await new Promise((r) => setTimeout(r, 300));
+					await run('true');
+					mark('first prompt');
+					// Tell Linux the terminal's real size, so long lines wrap correctly.
+					fit.fit();
+					await run(`stty cols ${term.cols} rows ${term.rows}`);
+					await run(`sudo ld-net ${vm.name} ${vm.ip}`);
+					mark('ld-net');
+					await run('exec bash');
+					mark('new shell');
+					if (i === 0 && this.dataset.setup) await run(this.dataset.setup);
+					mark('setup');
+					type('clear\n');
 					ready++;
 					if (ready === vms.length) {
 						const secs = ((performance.now() - startedAt) / 1000).toFixed(1);
@@ -177,7 +236,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		display: grid;
 		gap: 1rem;
 	}
-	@media (min-width: 72rem) {
+	/* Side by side only where each terminal still gets about 80 columns. */
+	ld-browser-vm {
+		container-type: inline-size;
+	}
+	@container (min-width: 90rem) {
 		.terms:has(.term-wrap:nth-child(2):not([hidden])) {
 			grid-template-columns: 1fr 1fr;
 		}
