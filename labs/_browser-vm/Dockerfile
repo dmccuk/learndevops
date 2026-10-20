@@ -34,7 +34,9 @@ RUN useradd -m -s /bin/bash learner \
 RUN sed -i '/^tty[0-9]/d' /etc/inittab \
 	&& echo 'ttyS0::respawn:/sbin/agetty --autologin learner -s ttyS0 115200 vt100' >> /etc/inittab
 
-RUN setup-hostname ld-vm
+# Docker manages /etc/hostname, so the page sets each VM's name after start
+# (see ld-net). Blank the welcome message so learners see a clean terminal.
+RUN : > /etc/motd
 
 # SSH server, for units that connect two in-browser VMs. Host keys are made at
 # build time, so every VM from this image shares them; acceptable for a

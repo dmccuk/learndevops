@@ -51,8 +51,8 @@ let stage = 'boot';
 emulator.add_listener('serial0-output-byte', (byte) => {
 	text += String.fromCharCode(byte);
 
-	// Autologin lands at a bash prompt such as "learner@ld-vm:~$ ".
-	if (stage === 'boot' && /learner@ld-vm[^\n]*\$ $/.test(text)) {
+	// Autologin lands at a bash prompt such as "learner@localhost:~$ ".
+	if (stage === 'boot' && /learner@[^\n]*\$ $/.test(text)) {
 		stage = 'settle';
 		console.log('Logged in. Settling ...');
 		// Unload the network driver so restored copies can load it with their
