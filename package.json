@@ -20,14 +20,14 @@
     "sync": "node scripts/sync.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-satteri": "0.4.4",
+    "@astrojs/markdown-satteri": "0.4.5",
     "@astrojs/sitemap": "3.7.4",
     "@astrojs/starlight": "0.42.6",
     "@fontsource/overpass": "5.3.0",
     "@fontsource/overpass-mono": "5.3.0",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/xterm": "6.0.0",
-    "astro": "7.4.1",
+    "astro": "7.4.2",
     "satteri": "0.10.5",
     "sharp": "0.35.5",
     "v86": "0.5.472",
@@ -35,7 +35,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.11",
+    "@astrojs/check": "0.9.12",
     "linkinator": "8.1.0",
     "markdownlint-cli2": "0.23.3",
     "typescript": "6.0.3"
