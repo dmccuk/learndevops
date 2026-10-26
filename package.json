@@ -37,7 +37,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.11",
     "linkinator": "8.1.0",
-    "markdownlint-cli2": "0.23.3",
+    "markdownlint-cli2": "0.24.0",
     "typescript": "6.0.3"
   }
 }
